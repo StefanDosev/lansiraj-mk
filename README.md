@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Лансирај
 
-## Getting Started
+Лансирај is a Macedonian proof-based project-launch system. The v0.1 beta guides a learner through assignments, submitted evidence, human review, revision or approval, and a small public launch.
 
-First, run the development server:
+## Requirements
+
+- Node.js 22
+- npm 10.9.2 (pinned in `package.json` because npm 11 currently rejects an optional Tailwind WASM peer-dependency path)
+
+## Local setup
 
 ```bash
+npm ci
+copy .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>. Populate `.env.local` only with values for a non-production Supabase project. Never commit credentials or participant data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-## Learn More
+Run the complete non-secret baseline gate with `npm run check`.
 
-To learn more about Next.js, take a look at the following resources:
+The following scripts reserve stable command names for later build phases. They become release gates when their corresponding dependencies, fixtures, and infrastructure are introduced:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `npm run test:unit` — Vitest domain tests
+- `npm run test:database` — local Supabase database and RLS tests
+- `npm run test:e2e` — Playwright critical workflow tests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment matrix
 
-## Deploy on Vercel
+| Environment | Supabase target | Configuration source | Data rule |
+| --- | --- | --- | --- |
+| Local | Local Supabase project | `.env.local`, copied from `.env.example` | Fake seed and test data only |
+| Preview | Dedicated non-production Supabase project | Vercel Preview environment variables | Never point previews at production |
+| Production | Production Supabase project | Vercel Production environment variables | Real beta data; no development seed |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Required browser-safe variables:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+Secret or service-role keys must never use a `NEXT_PUBLIC_` prefix and must not be used in normal application request paths.
+
+## Continuous integration
+
+GitHub Actions runs a lockfile-based install, lint, typecheck, and production build for pushes and pull requests targeting `main`. Database and browser tests will join CI in the phases that introduce their infrastructure.
+
+## Project documentation
+
+- Product and engineering context lives in `context/`.
+- Durable architecture decisions live in `docs/adr/`.
+- Feature status lives in `context/progress-tracker (1).md`.
+
+The context files currently retain their imported ` (1).md` suffix and remain authoritative until deliberately renamed.

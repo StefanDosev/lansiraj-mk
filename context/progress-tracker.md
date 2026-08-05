@@ -4,24 +4,24 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Current Status
 
-**Phase:** 0 — Architecture freeze  
-**Last completed:** Lansiraj context pack aligned with Product Brief, Brand Identity, and Architecture Plan v1.0  
-**In progress:** None  
-**Next:** 01 Repository baseline and environment matrix  
-**Blockers:** The application repository is not present in this workspace; implementation status is therefore intentionally unclaimed.
+**Phase:** 1 — Foundation and Auth
+**Last completed:** 04 Supabase SSR foundation
+**In progress:** None
+**Next:** Begin 05 Identity and enrollment schema using the architect workflow
+**Blockers:** None
 
 ## Progress
 
 ### Phase 0 — Architecture Freeze
 
 - [x] 00 Align product, brand, architecture, and build context
-- [ ] 01 Repository baseline, scripts, CI, environment matrix, and ADRs
-- [ ] 02 Curriculum v1 seed: six stages, ten assignments, acceptance criteria
+- [x] 01 Repository baseline, scripts, CI, environment matrix, and ADRs
+- [x] 02 Curriculum v1 seed: six stages, ten assignments, acceptance criteria
 
 ### Phase 1 — Foundation and Auth
 
-- [ ] 03 Encode brand tokens, fonts, app shell, and responsive foundations
-- [ ] 04 Configure Supabase browser/server clients and session proxy
+- [x] 03 Encode brand tokens, fonts, app shell, and responsive foundations
+- [x] 04 Configure Supabase browser/server clients and session proxy
 - [ ] 05 Create cohorts, invites, profiles, memberships, and reviewer-role migrations
 - [ ] 06 Add RLS policies and database security tests
 - [ ] 07 Build magic-link sign-in, callback, sign-out, pending-access, and protected shell
@@ -74,7 +74,12 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-05 — Completed Phase 04 with typed Supabase browser/server clients, request-scoped Next.js 16 cookie handling, root `proxy.ts` session refresh through verified `getClaims()`, generated local database types, environment validation, and static-asset matcher exclusions. All 16 unit tests, 10 database assertions, and 24 Playwright checks pass; lint, typecheck, production build, and `git diff --check` pass. Authorization remains outside the proxy and must be enforced in server code and RLS.
+- 2026-08-05 — Completed Phase 03 after Playwright verification of `/`, `/auth/sign-in`, `/app`, `/app/project`, and `/admin` at 360 px and desktop. All 24 shell checks pass, covering horizontal overflow, Macedonian language metadata and glyph support, skip-link focus transfer, reduced motion, and semantic-token WCAG AA contrast. Visual captures were inspected, the skip-link targets were made programmatically focusable, and lint, typecheck, production build, and `git diff --check` pass.
+- 2026-08-05 — Completed Phase 02 with migration-managed Curriculum v1: six ordered stages, ten ordered Macedonian assignments, thirty acceptance criteria, `requires_review = true`, authenticated read-only RLS, deterministic UUIDs, and pgTAP assertions. A clean local Supabase reset and all 10 database tests passed. Local Supabase uses ports `55320–55329` because Windows reserves the default `54320–54329` range on this workstation.
+- 2026-08-05 — Started Phase 03 with self-hosted Onest and Unbounded through `next/font`, Lansiraj metadata, responsive semantic containers, a keyboard skip link, and distinct public, auth, learner, and reviewer shells. Lint, typecheck, and production build pass. Phase 03 remains in progress until 360 px/desktop visual, contrast, and Macedonian glyph QA can be performed.
+- 2026-08-05 — Completed Phase 01 with Node 22 and npm 10.9.2 pinned, stable verification scripts, environment documentation, GitHub Actions CI, and ADRs for the modular monolith, Supabase authorization, and curriculum versioning. Tailwind's WASM fallback peers are pinned as development dependencies because npm otherwise produces a lockfile that fails clean installation. An isolated `npm ci` followed by lint, typecheck, and production build passed.
+- 2026-08-05 — Added the Tailwind CSS v4 global token foundation in `app/globals.css`; Phase 03 remains incomplete until fonts and the application shells pass its exit gate.
 - Add implementation discoveries here only when they differ from the approved context.
 - Record architecture changes in a short ADR when a beta finding or concrete technical constraint justifies them.
 - Never store credentials, real participant evidence, or private interview data in this file.
-

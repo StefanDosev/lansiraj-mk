@@ -1,0 +1,3 @@
+-- Curriculum v1 is seeded by its versioned migration so local resets and
+-- deployed environments receive exactly the same immutable learning path.
+-- Add fake local cohort/project fixtures here only when those schemas exist.
