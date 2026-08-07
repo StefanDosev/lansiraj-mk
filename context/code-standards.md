@@ -189,6 +189,7 @@ Event metadata is minimal and non-sensitive. Do not copy evidence text, feedback
 Validate environment values in one server-safe module. Browser-safe values may be exposed only when intentionally public.
 
 ```text
+NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
@@ -209,4 +210,3 @@ If the existing landing page still uses the legacy anon-key name, migrate delibe
 - Do not narrate obvious code.
 - Public utilities and database functions need concise contracts for inputs, outputs, and invariants.
 - Durable architecture changes go in `docs/adr`; build status goes in `progress-tracker.md`.
-

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const routes = ["/", "/auth/sign-in", "/app", "/app/project", "/admin"];
+const routes = ["/", "/auth/sign-in"];
 const macedonianGlyphs = "ЃѓЌќЅѕЉљЊњЏџ";
 
 for (const route of routes) {
@@ -31,6 +31,14 @@ for (const route of routes) {
         path: testInfo.outputPath("shell.png"),
       });
     }
+  });
+}
+
+for (const route of ["/app", "/app/project", "/app/onboarding", "/admin", "/access-pending"]) {
+  test(`${route} redirects an unauthenticated visitor to sign in`, async ({ page }) => {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/auth\/sign-in$/);
+    await expect(page.getByRole("heading", { name: "Најави се во Лансирај" })).toBeVisible();
   });
 }
 

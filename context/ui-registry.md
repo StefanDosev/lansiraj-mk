@@ -2,6 +2,8 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
+Last reviewed: 2026-08-07 during Phase 07. Authentication forms, access states, and guarded-shell actions are registered below.
+
 ## How to Use
 
 Before building:
@@ -67,7 +69,7 @@ Last updated: 2026-08-05
 ### Application Shells
 
 Files: `app/(marketing)/layout.tsx`, `app/(auth)/layout.tsx`, `app/(learner)/app/layout.tsx`, `app/admin/layout.tsx`
-Last updated: 2026-08-05
+Last updated: 2026-08-07
 
 | Property | Pattern |
 | --- | --- |
@@ -81,7 +83,64 @@ Last updated: 2026-08-05
 | Shadow | none |
 | Accent usage | Cobalt for current product navigation; Acid only as reviewer proof-state metadata |
 
-**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
+**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Learner and reviewer shells enforce authorization before rendering and expose the compact sign-out action. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
+
+### Magic Link Form
+
+File: `features/auth/components/magic-link-form.tsx`
+Last updated: 2026-08-07
+
+| Property | Class |
+| --- | --- |
+| Background | input `bg-white`; form inherits its panel surface |
+| Border | input `border border-stone-300`; action `border-2 border-ink` |
+| Border radius | input `rounded-md`; action `rounded-sm` |
+| Text — primary | `text-ink`; supporting/status copy `text-stone-700` |
+| Typography | label/action `font-semibold`; supporting copy `text-sm leading-relaxed` |
+| Spacing | form `mt-6 space-y-4`; input `px-3.5 py-3`; action `px-5 py-2.5` |
+| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; restrained lift on hover |
+| Shadow | none |
+| Accent usage | `bg-launch` for the primary submit action |
+
+**Pattern notes:** Authentication fields always pair a visible label with persistent help text, inline validation, `aria-invalid`, and a polite status region. Provider outcomes use neutral copy so the UI does not reveal whether an invitation or account exists. Submit actions retain a 44 px minimum target and remove transform motion for reduced-motion users.
+
+### Sign-out Action
+
+File: `features/auth/components/sign-out-button.tsx`
+Last updated: 2026-08-07
+
+| Property | Class |
+| --- | --- |
+| Background | transparent |
+| Border | none |
+| Border radius | `rounded-sm` |
+| Text — primary | `text-ink`; inverse variant `text-white` |
+| Typography | `text-sm font-semibold` |
+| Spacing | `px-3`; `min-h-11` target |
+| Interactive state | global Cobalt focus outline |
+| Shadow | none |
+| Accent usage | none |
+
+**Pattern notes:** Use this compact server-action form in authenticated shell headers and terminal access states. The inverse variant is reserved for Ink surfaces.
+
+### Access State Panel
+
+Files: `app/(auth)/access-pending/page.tsx`, `app/(learner)/app/onboarding/page.tsx`
+Last updated: 2026-08-07
+
+| Property | Class |
+| --- | --- |
+| Background | `bg-white` |
+| Border | `border border-stone-300`; internal divider `border-stone-200` |
+| Border radius | `rounded-md` |
+| Text — primary | heading `text-ink`; body `text-stone-700` |
+| Typography | eyebrow `text-sm font-semibold uppercase tracking-widest`; heading `font-display text-3xl font-semibold leading-tight`; body `text-lg leading-relaxed` |
+| Spacing | `p-5 md:p-6`; heading `mt-3`; body `mt-4`; terminal action `mt-6 pt-4` |
+| Interactive state | inherited from contained actions |
+| Shadow | none |
+| Accent usage | Cobalt eyebrow text identifies the current access checkpoint |
+
+**Pattern notes:** Quiet product checkpoints use one bordered White panel and a short hierarchy: Cobalt eyebrow, display heading, explanatory copy, then an optional divided action. This pattern is suitable for pending, empty, and onboarding checkpoint states; it must not expose invite existence or internal authorization reasons.
 
 ## Foundations
 

@@ -44,9 +44,12 @@ The following scripts reserve stable command names for later build phases. They 
 Required browser-safe variables:
 
 ```text
+NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
+
+`NEXT_PUBLIC_SITE_URL` is the canonical local or production application origin. Vercel preview deployments use the platform-provided preview origin and must also be included in Supabase Auth's redirect allowlist.
 
 Secret or service-role keys must never use a `NEXT_PUBLIC_` prefix and must not be used in normal application request paths.
 

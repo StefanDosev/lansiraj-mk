@@ -53,6 +53,7 @@ Install/use `@supabase/supabase-js` and `@supabase/ssr` only if they are not alr
 ### Environment
 
 ```text
+NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```

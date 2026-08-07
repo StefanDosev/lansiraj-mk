@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 1 — Foundation and Auth
-**Last completed:** 04 Supabase SSR foundation
+**Last completed:** 07 Invitation magic-link flow and protected shell
 **In progress:** None
-**Next:** Begin 05 Identity and enrollment schema using the architect workflow
+**Next:** Begin 08 preview deployment and invited/unauthorized auth verification
 **Blockers:** None
 
 ## Progress
@@ -22,9 +22,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 - [x] 03 Encode brand tokens, fonts, app shell, and responsive foundations
 - [x] 04 Configure Supabase browser/server clients and session proxy
-- [ ] 05 Create cohorts, invites, profiles, memberships, and reviewer-role migrations
-- [ ] 06 Add RLS policies and database security tests
-- [ ] 07 Build magic-link sign-in, callback, sign-out, pending-access, and protected shell
+- [x] 05 Create cohorts, invites, profiles, memberships, and reviewer-role migrations
+- [x] 06 Add RLS policies and database security tests
+- [x] 07 Build magic-link sign-in, callback, sign-out, pending-access, and protected shell
 - [ ] 08 Deploy preview and verify invited/unauthorized auth paths
 
 ### Phase 2 — Onboarding and Project
@@ -74,6 +74,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-07 — Completed Phase 07 with neutral magic-link sign-in, PKCE callback exchange, atomic invite acceptance, deterministic reviewer/learner/onboarding/pending routing, guarded learner and reviewer shells, sign-out, and a pending-access state. Invite acceptance derives identity from verified Auth data, rejects ambiguous matches without mutation, and is idempotent. Playwright derives its endpoints from the running local Supabase stack so hosted development settings cannot bypass Mailpit. A clean local reset, all 109 database assertions, application-schema lint, 27 unit tests, 34 passing browser checks with 2 intentional skips, lint, typecheck, production build, and `git diff --check` pass.
+- 2026-08-07 — Completed Phase 06 with a standalone 50-assertion pgTAP authorization matrix covering anonymous, Learner A, Learner B, reviewer, and authenticated outsider personas. The harness proves cross-learner and cross-cohort isolation, anonymous denial, outsider invisibility, protected-column boundaries, reviewer management limits, and prevention of self-granted reviewer access. No production policy changes were required. A clean local reset, all 87 database assertions, application-schema lint, 16 unit tests, lint, typecheck, production build, and `git diff --check` pass.
+- 2026-08-07 — Completed Phase 05 with cohorts, durable normalized-email invites, explicitly created profiles, active/removed cohort memberships, and private reviewer roles. Added constrained timestamps and lifecycle values, policy-supporting indexes, narrow column grants, RLS for exposed identity tables, and `private.is_reviewer()` with a fixed empty search path. A clean local reset, schema lint, all 37 database assertions, 16 unit tests, lint, typecheck, production build, and `git diff --check` pass. Comprehensive multi-persona denial coverage remains Phase 06.
 - 2026-08-05 — Completed Phase 04 with typed Supabase browser/server clients, request-scoped Next.js 16 cookie handling, root `proxy.ts` session refresh through verified `getClaims()`, generated local database types, environment validation, and static-asset matcher exclusions. All 16 unit tests, 10 database assertions, and 24 Playwright checks pass; lint, typecheck, production build, and `git diff --check` pass. Authorization remains outside the proxy and must be enforced in server code and RLS.
 - 2026-08-05 — Completed Phase 03 after Playwright verification of `/`, `/auth/sign-in`, `/app`, `/app/project`, and `/admin` at 360 px and desktop. All 24 shell checks pass, covering horizontal overflow, Macedonian language metadata and glyph support, skip-link focus transfer, reduced motion, and semantic-token WCAG AA contrast. Visual captures were inspected, the skip-link targets were made programmatically focusable, and lint, typecheck, production build, and `git diff --check` pass.
 - 2026-08-05 — Completed Phase 02 with migration-managed Curriculum v1: six ordered stages, ten ordered Macedonian assignments, thirty acceptance criteria, `requires_review = true`, authenticated read-only RLS, deterministic UUIDs, and pgTAP assertions. A clean local Supabase reset and all 10 database tests passed. Local Supabase uses ports `55320–55329` because Windows reserves the default `54320–54329` range on this workstation.

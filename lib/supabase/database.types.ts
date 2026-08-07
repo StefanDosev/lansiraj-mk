@@ -116,6 +116,115 @@ export type Database = {
           },
         ]
       }
+      cohort_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          cohort_id: string
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          cohort_id: string
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at: string
+          id?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          cohort_id?: string
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_invites_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cohort_members: {
+        Row: {
+          cohort_id: string
+          created_at: string
+          id: string
+          joined_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cohort_id: string
+          created_at?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cohort_id?: string
+          created_at?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_members_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cohorts: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: string
+          name: string
+          starts_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          name: string
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          name?: string
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       curriculum_stages: {
         Row: {
           created_at: string
@@ -149,12 +258,50 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          locale: string
+          onboarding_completed_at: string | null
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          locale?: string
+          onboarding_completed_at?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          locale?: string
+          onboarding_completed_at?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_cohort_invite: { Args: never; Returns: string }
+      get_access_state: {
+        Args: never
+        Returns: {
+          has_active_membership: boolean
+          is_reviewer: boolean
+          onboarding_completed: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
