@@ -102,7 +102,7 @@ Last updated: 2026-08-07
 | Shadow | none |
 | Accent usage | `bg-launch` for the primary submit action |
 
-**Pattern notes:** Authentication fields always pair a visible label with persistent help text, inline validation, `aria-invalid`, and a polite status region. Provider outcomes use neutral copy so the UI does not reveal whether an invitation or account exists. Submit actions retain a 44 px minimum target and remove transform motion for reduced-motion users.
+**Pattern notes:** Authentication fields always pair a visible label with persistent help text, inline validation, `aria-invalid`, and a polite status region. Provider outcomes use neutral copy so the UI does not reveal whether an invitation or account exists. Both authorization-code and token-hash email verification failures reuse the same neutral retry state; protocol details must never appear in the interface. Submit actions retain a 44 px minimum target and remove transform motion for reduced-motion users.
 
 ### Sign-out Action
 

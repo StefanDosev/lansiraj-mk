@@ -110,6 +110,18 @@ test("onboarding state guards direct learner navigation", async ({ page, request
   }
 });
 
+test("invalid token confirmation returns a neutral retry state", async ({ page }) => {
+  await page.goto("/auth/confirm?token_hash=invalid&type=email");
+  await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);
+  await expect(page.getByRole("alert").filter({ hasText: "Линкот не може да се потврди" })).toBeVisible();
+});
+
+test("invalid code confirmation returns a neutral retry state", async ({ page }) => {
+  await page.goto("/auth/confirm?code=invalid");
+  await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);
+  await expect(page.getByRole("alert").filter({ hasText: "Линкот не може да се потврди" })).toBeVisible();
+});
+
 test("invalid callback returns a neutral retry state", async ({ page }) => {
   await page.goto("/auth/callback");
   await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);

@@ -6,9 +6,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 **Phase:** 1 — Foundation and Auth
 **Last completed:** 07 Invitation magic-link flow and protected shell
-**In progress:** None
-**Next:** Begin 08 preview deployment and invited/unauthorized auth verification
-**Blockers:** The configured preview Vercel/Supabase target is not yet identified
+**In progress:** 08 Auth preview checkpoint
+**Next:** Deploy the dual-flow email confirmation fix and repeat invited/unauthorized checks on mobile and desktop
+**Blockers:** Hosted preview verification remains; Supabase's free default mailer prevents custom templates, so preview uses the supported authorization-code flow with Confirm Email disabled
 
 ## Progress
 
@@ -74,6 +74,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-08 — Phase 08 preview infrastructure is configured at Vercel project `lansiraj` with `main` mapped to Production and feature branches mapped to Preview. The preview uses the existing dev/test Supabase project with explicit callback and confirmation redirect allowlist entries. Manual testing proved outsider routing to `/access-pending` but exposed an unreliable separate first-time confirmation step. Added `/auth/confirm`, shared post-auth access resolution, token-hash support for future custom SMTP templates, and authorization-code compatibility for Supabase's free default mailer; Confirm Email is disabled for the passwordless dev/test flow. Local verification passes, while Phase 08 remains open until the corrected preview passes invited and unauthorized flows on mobile and desktop.
 - 2026-08-08 — Closed and verified the Phase 07 guard review gap: reviewers now take precedence over learner membership, incomplete learners are redirected from `/app` and `/app/project` to `/app/onboarding`, and completed learners are redirected away from onboarding. Added focused guard unit tests and an invited-learner Playwright path backed by safe per-run local fixtures. The 109 database assertions, 31 unit tests, 35 browser tests with 4 intentional skips, lint, typecheck, production build, and diff checks pass. Phase 08 repository inspection found no linked Vercel project or explicit preview target, so no external deployment changes were made.
 - 2026-08-07 — Completed Phase 07 with neutral magic-link sign-in, PKCE callback exchange, atomic invite acceptance, deterministic reviewer/learner/onboarding/pending routing, guarded learner and reviewer shells, sign-out, and a pending-access state. Invite acceptance derives identity from verified Auth data, rejects ambiguous matches without mutation, and is idempotent. Playwright derives its endpoints from the running local Supabase stack so hosted development settings cannot bypass Mailpit. A clean local reset, all 109 database assertions, application-schema lint, 27 unit tests, 34 passing browser checks with 2 intentional skips, lint, typecheck, production build, and `git diff --check` pass.
 - 2026-08-07 — Completed Phase 06 with a standalone 50-assertion pgTAP authorization matrix covering anonymous, Learner A, Learner B, reviewer, and authenticated outsider personas. The harness proves cross-learner and cross-cohort isolation, anonymous denial, outsider invisibility, protected-column boundaries, reviewer management limits, and prevention of self-granted reviewer access. No production policy changes were required. A clean local reset, all 87 database assertions, application-schema lint, 16 unit tests, lint, typecheck, production build, and `git diff --check` pass.
