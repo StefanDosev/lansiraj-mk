@@ -16,15 +16,17 @@ function getLocalSupabaseEnvironment() {
       .map((match) => [match[1], match[2]]),
   );
 
-  if (!values.API_URL || !values.PUBLISHABLE_KEY || !values.MAILPIT_URL) {
+  if (!values.API_URL || !values.PUBLISHABLE_KEY || !values.SECRET_KEY || !values.MAILPIT_URL) {
     throw new Error("The local Supabase stack is missing required E2E endpoints. Run `npx supabase start` first.");
   }
 
-  return values as Record<"API_URL" | "PUBLISHABLE_KEY" | "MAILPIT_URL", string>;
+  return values as Record<"API_URL" | "PUBLISHABLE_KEY" | "SECRET_KEY" | "MAILPIT_URL", string>;
 }
 
 const localSupabase = getLocalSupabaseEnvironment();
 process.env.E2E_MAILPIT_URL = localSupabase.MAILPIT_URL;
+process.env.E2E_SUPABASE_URL = localSupabase.API_URL;
+process.env.E2E_SUPABASE_SECRET_KEY = localSupabase.SECRET_KEY;
 
 export default defineConfig({
   testDir: "./tests/e2e",

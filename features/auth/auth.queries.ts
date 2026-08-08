@@ -32,7 +32,20 @@ export async function getAccessState(): Promise<AccessState> {
 export async function requireLearnerAccess() {
   const state = await getAccessState();
   if (!state.isAuthenticated) redirect("/auth/sign-in");
-  if (!state.hasActiveMembership) redirect(state.isReviewer ? "/admin" : "/access-pending");
+  if (state.isReviewer) redirect("/admin");
+  if (!state.hasActiveMembership) redirect("/access-pending");
+  return state;
+}
+
+export async function requireCompletedLearnerAccess() {
+  const state = await requireLearnerAccess();
+  if (!state.onboardingCompleted) redirect("/app/onboarding");
+  return state;
+}
+
+export async function requireLearnerOnboardingAccess() {
+  const state = await requireLearnerAccess();
+  if (state.onboardingCompleted) redirect("/app");
   return state;
 }
 

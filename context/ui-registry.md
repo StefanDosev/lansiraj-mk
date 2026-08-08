@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-07 during Phase 07. Authentication forms, access states, and guarded-shell actions are registered below.
+Last reviewed: 2026-08-08 during Phase 07 review closure. Authentication forms, access states, and guarded-shell actions are registered below.
 
 ## How to Use
 
@@ -69,7 +69,7 @@ Last updated: 2026-08-05
 ### Application Shells
 
 Files: `app/(marketing)/layout.tsx`, `app/(auth)/layout.tsx`, `app/(learner)/app/layout.tsx`, `app/admin/layout.tsx`
-Last updated: 2026-08-07
+Last updated: 2026-08-08
 
 | Property | Pattern |
 | --- | --- |
@@ -83,7 +83,7 @@ Last updated: 2026-08-07
 | Shadow | none |
 | Accent usage | Cobalt for current product navigation; Acid only as reviewer proof-state metadata |
 
-**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Learner and reviewer shells enforce authorization before rendering and expose the compact sign-out action. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
+**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Learner and reviewer shells enforce authorization before rendering and expose the compact sign-out action. Reviewer precedence is enforced at the learner-shell boundary. Post-onboarding learner pages additionally require completed onboarding, while `/app/onboarding` redirects completed learners to `/app`. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
 
 ### Magic Link Form
 

@@ -61,6 +61,4 @@ GitHub Actions runs a lockfile-based install, lint, typecheck, and production bu
 
 - Product and engineering context lives in `context/`.
 - Durable architecture decisions live in `docs/adr/`.
-- Feature status lives in `context/progress-tracker (1).md`.
-
-The context files currently retain their imported ` (1).md` suffix and remain authoritative until deliberately renamed.
+- Feature status lives in `context/progress-tracker.md`.

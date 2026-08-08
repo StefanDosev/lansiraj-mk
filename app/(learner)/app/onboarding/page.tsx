@@ -1,4 +1,8 @@
-export default function OnboardingCheckpointPage() {
+import { requireLearnerOnboardingAccess } from "@/features/auth";
+
+export default async function OnboardingCheckpointPage() {
+  await requireLearnerOnboardingAccess();
+
   return (
     <section className="max-w-3xl rounded-md border border-stone-300 bg-white p-5 md:p-6">
       <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">Следен чекор</p>

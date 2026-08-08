@@ -1,4 +1,8 @@
-export default function LearnerFoundationPage() {
+import { requireCompletedLearnerAccess } from "@/features/auth";
+
+export default async function LearnerFoundationPage() {
+  await requireCompletedLearnerAccess();
+
   return (
     <section className="max-w-3xl">
       <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">
