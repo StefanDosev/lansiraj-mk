@@ -5,10 +5,10 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 1 — Foundation and Auth
-**Last completed:** 07 Invitation magic-link flow and protected shell
-**In progress:** 08 Auth preview checkpoint
-**Next:** Deploy the dual-flow email confirmation fix and repeat invited/unauthorized checks on mobile and desktop
-**Blockers:** Hosted preview verification remains; Supabase's free default mailer prevents custom templates, so preview uses the supported authorization-code flow with Confirm Email disabled
+**Last completed:** 08 Auth preview checkpoint
+**In progress:** None
+**Next:** Begin 09 learner onboarding UI and validation
+**Blockers:** None
 
 ## Progress
 
@@ -25,7 +25,7 @@ Update this file after every completed feature. An agent reading it must know wh
 - [x] 05 Create cohorts, invites, profiles, memberships, and reviewer-role migrations
 - [x] 06 Add RLS policies and database security tests
 - [x] 07 Build magic-link sign-in, callback, sign-out, pending-access, and protected shell
-- [ ] 08 Deploy preview and verify invited/unauthorized auth paths
+- [x] 08 Deploy preview and verify invited/unauthorized auth paths
 
 ### Phase 2 — Onboarding and Project
 
@@ -74,6 +74,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-10 — Completed Phase 08 on the stable Vercel branch Preview. Supabase's free default mailer uses authorization-code magic links with Confirm Email disabled; Preview callbacks use `VERCEL_BRANCH_URL` so PKCE cookies and code exchange stay on one hostname. Applied and verified all three repository migrations against the linked dev/test Supabase project, with no advisor errors. Manual invited and unauthorized flows passed on desktop and mobile, the Vercel deployment and GitHub checks passed, and the temporary cohort, invitation, and membership fixture was removed with zero rows remaining.
 - 2026-08-10 — Recovered the repeated Preview callback failure to a PKCE cookie-domain mismatch: the sign-in request ran on Vercel's stable branch alias while `VERCEL_URL` generated a commit-specific email callback. Preview authentication origins now prefer `VERCEL_BRANCH_URL` and fall back to `VERCEL_URL`, keeping the request, verifier cookie, and callback on one hostname. Phase 08 remains open until this targeted deployment passes invited and unauthorized flows on mobile and desktop.
 - 2026-08-08 — Phase 08 preview infrastructure is configured at Vercel project `lansiraj` with `main` mapped to Production and feature branches mapped to Preview. The preview uses the existing dev/test Supabase project with explicit callback and confirmation redirect allowlist entries. Manual testing proved outsider routing to `/access-pending` but exposed an unreliable separate first-time confirmation step. Added `/auth/confirm`, shared post-auth access resolution, token-hash support for future custom SMTP templates, and authorization-code compatibility for Supabase's free default mailer; Confirm Email is disabled for the passwordless dev/test flow. Local verification passes, while Phase 08 remains open until the corrected preview passes invited and unauthorized flows on mobile and desktop.
 - 2026-08-08 — Closed and verified the Phase 07 guard review gap: reviewers now take precedence over learner membership, incomplete learners are redirected from `/app` and `/app/project` to `/app/onboarding`, and completed learners are redirected away from onboarding. Added focused guard unit tests and an invited-learner Playwright path backed by safe per-run local fixtures. The 109 database assertions, 31 unit tests, 35 browser tests with 4 intentional skips, lint, typecheck, production build, and diff checks pass. Phase 08 repository inspection found no linked Vercel project or explicit preview target, so no external deployment changes were made.
