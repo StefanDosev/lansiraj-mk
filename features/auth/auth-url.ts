@@ -2,6 +2,7 @@ type AppOriginEnvironment = {
   nodeEnv: string | undefined;
   siteUrl: string | undefined;
   vercelEnv: string | undefined;
+  vercelBranchUrl?: string | undefined;
   vercelUrl: string | undefined;
 };
 
@@ -20,7 +21,11 @@ function parseOrigin(value: string, variableName: string) {
   return url.origin;
 }
 
-export function resolveAppOrigin({ nodeEnv, siteUrl, vercelEnv, vercelUrl }: AppOriginEnvironment) {
+export function resolveAppOrigin({ nodeEnv, siteUrl, vercelEnv, vercelBranchUrl, vercelUrl }: AppOriginEnvironment) {
+  if (vercelEnv === "preview" && vercelBranchUrl?.trim()) {
+    return parseOrigin(vercelBranchUrl.trim(), "VERCEL_BRANCH_URL");
+  }
+
   if (vercelEnv === "preview" && vercelUrl?.trim()) {
     return parseOrigin(vercelUrl.trim(), "VERCEL_URL");
   }
@@ -37,6 +42,7 @@ export function getAppOrigin() {
     nodeEnv: process.env.NODE_ENV,
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
     vercelEnv: process.env.VERCEL_ENV,
+    vercelBranchUrl: process.env.VERCEL_BRANCH_URL,
     vercelUrl: process.env.VERCEL_URL,
   });
 }
