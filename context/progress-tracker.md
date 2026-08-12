@@ -4,10 +4,10 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Current Status
 
-**Phase:** 1 — Foundation and Auth
-**Last completed:** 08 Auth preview checkpoint
+**Phase:** 2 — Onboarding and Project
+**Last completed:** 11 project scope summary and manual scope-readiness state
 **In progress:** None
-**Next:** Begin 09 learner onboarding UI and validation
+**Next:** Begin 12 versioned curriculum Markdown and acceptance criteria
 **Blockers:** None
 
 ## Progress
@@ -29,9 +29,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ### Phase 2 — Onboarding and Project
 
-- [ ] 09 Build learner onboarding UI and validation
-- [ ] 10 Create one scoped project and instantiate project assignments
-- [ ] 11 Build project scope summary and manual scope-readiness state
+- [x] 09 Build learner onboarding UI and validation
+- [x] 10 Create one scoped project and instantiate project assignments
+- [x] 11 Build project scope summary and manual scope-readiness state
 
 ### Phase 3 — Curriculum and Dashboard
 
@@ -74,6 +74,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-12 — Completed Phase 11 with one shared read-only learner/reviewer project-scope summary, Macedonian date display, explicit non-blocking manual readiness states, and a focused reviewer route for replacing the current assessment. The database enforces reviewer-only mutation, note constraints, owner/reviewer visibility, and assignment independence through RLS and a controlled RPC. A clean local reset, all 178 database assertions, 39 unit tests, targeted desktop learner-to-reviewer browser verification, lint, typecheck, and production build pass. The visual patterns were imprinted in the UI registry.
+- 2026-08-12 — Completed Phase 10 with an explicit learner confirmation action, curriculum-version pinning, ten owner-scoped `project_assignments`, Assignment 01 as the sole available step, minimal activity events, and a retry-safe row-locked `start_project()` transaction. The RPC rejects missing/malformed curriculum without mutating the draft and rejects inconsistent partial initialization. A clean local reset, all 153 database assertions, 35 unit tests, 42 browser checks with 3 intentional skips, lint, typecheck, production build, application-schema lint, database security/performance advisors, and mobile/desktop start-flow verification pass. The full local email suite is stable with one Playwright worker; parallel magic-link fixtures can interfere while local Supabase helper commands cycle nonessential services.
+- 2026-08-10 — Completed Phase 09 with a constrained draft project schema, atomic onboarding RPC, owner/reviewer RLS, shared Zod validation, focus-managed field errors that preserve input, and explicit evidence/privacy guidance. A clean local reset, all 125 database assertions, 35 unit tests, and 42 browser checks with 3 intentional skips pass; lint, typecheck, production build, database advisors, desktop verification, and 360 px visual/overflow QA also pass. Phase 10 will activate the draft project and instantiate the ten assignment projections.
 - 2026-08-10 — Completed Phase 08 on the stable Vercel branch Preview. Supabase's free default mailer uses authorization-code magic links with Confirm Email disabled; Preview callbacks use `VERCEL_BRANCH_URL` so PKCE cookies and code exchange stay on one hostname. Applied and verified all three repository migrations against the linked dev/test Supabase project, with no advisor errors. Manual invited and unauthorized flows passed on desktop and mobile, the Vercel deployment and GitHub checks passed, and the temporary cohort, invitation, and membership fixture was removed with zero rows remaining.
 - 2026-08-10 — Recovered the repeated Preview callback failure to a PKCE cookie-domain mismatch: the sign-in request ran on Vercel's stable branch alias while `VERCEL_URL` generated a commit-specific email callback. Preview authentication origins now prefer `VERCEL_BRANCH_URL` and fall back to `VERCEL_URL`, keeping the request, verifier cookie, and callback on one hostname. Phase 08 remains open until this targeted deployment passes invited and unauthorized flows on mobile and desktop.
 - 2026-08-08 — Phase 08 preview infrastructure is configured at Vercel project `lansiraj` with `main` mapped to Production and feature branches mapped to Preview. The preview uses the existing dev/test Supabase project with explicit callback and confirmation redirect allowlist entries. Manual testing proved outsider routing to `/access-pending` but exposed an unreliable separate first-time confirmation step. Added `/auth/confirm`, shared post-auth access resolution, token-hash support for future custom SMTP templates, and authorization-code compatibility for Supabase's free default mailer; Confirm Email is disabled for the passwordless dev/test flow. Local verification passes, while Phase 08 remains open until the corrected preview passes invited and unauthorized flows on mobile and desktop.

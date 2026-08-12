@@ -1,47 +1,46 @@
-# Memory — Phase 03 and Phase 04 completion
+# Memory — Phase 11 project scope readiness
 
-Last updated: 2026-08-05 14:33 +02:00
+Last updated: 2026-08-12 15:20 +02:00
 
 ## What was built
 
-- Completed Phase 03: Onest/Unbounded typography, semantic Tailwind foundations, shared Brand Signature and Skip Link, and distinct marketing, auth, learner, and reviewer shells for `/`, `/auth/sign-in`, `/app`, `/app/project`, and `/admin`.
-- Added Playwright configuration and `tests/e2e/shells.spec.ts` with 24 checks across 360 px, desktop, and reduced-motion contexts.
-- Fixed skip-link focus transfer by making each target main landmark programmatically focusable.
-- Completed Phase 04 in `lib/supabase/`: validated environment access, typed browser/server clients, generated `database.types.ts`, and request-scoped cookie handling.
-- Added root `proxy.ts` and `lib/supabase/proxy.ts` for session refresh through verified `getClaims()` with static-asset exclusions and no authorization redirects.
-- Installed Vitest, added its scoped configuration, and added 16 environment, matcher, and cookie-propagation unit tests.
-- Updated canonical `context/progress-tracker.md` and `context/ui-registry.md`.
+- Completed Phases 10 and 11 after the prior Phase 09 handoff.
+- Phase 10 activates the learner's single draft project, pins Curriculum v1, creates ten project-assignment projections, and makes only Assignment 01 available through a retry-safe database transaction.
+- Phase 11 adds the shared read-only project scope summary at `/app/project` and the focused reviewer assessment route at `/admin/projects/[projectId]`.
+- Added `project_scope_assessments`, owner/reviewer RLS, least-privilege grants, and reviewer-only `assess_project_scope(...)` RPC in `supabase/migrations/20260812130428_add_project_scope_readiness.sql`.
+- Added project scope queries, types, Zod validation, server action, shared summary, reviewer form, database types, and unit/database/Playwright coverage under `features/projects/`, `app/`, `lib/supabase/`, `supabase/tests/`, and `tests/`.
+- Updated `context/ui-registry.md` with the shared scope-summary and inverse reviewer-form patterns, and marked Phase 11 complete in `context/progress-tracker.md`.
 
 ## Decisions made
 
-- Supabase modules live under root `lib/supabase/`, matching the root-level `app/` structure.
-- Environment values are validated when a client is created, not at module-import time.
-- The proxy refreshes cookies broadly but never decides learner/reviewer access; server code and RLS remain authoritative.
-- Server authorization must use verified claims and must not trust `getSession()`.
-- Phase 05 must begin with the architect workflow.
+- Manual scope readiness is separate from assignment approval and never blocks or mutates project assignments.
+- Readiness has two reviewer-controlled states: `ready` and `needs_reduction`; the latter requires a concrete note of at least 10 characters.
+- The latest assessment replaces the current state while retaining reviewer identity and review timestamp.
+- Learner and reviewer scope fields are read-only. Reviewers mutate only the assessment through the controlled RPC.
+- The focused project review route is intentionally not a reviewer queue; the queue remains Phase 18.
+- Project dates are stored as dates and formatted at the Macedonian display edge.
 
 ## Problems solved
 
-- Replaced the unavailable in-app preview workflow with repeatable Playwright visual and interaction QA.
-- Fixed skip-link navigation that changed the URL without moving keyboard focus.
-- Configured Vitest to exclude Playwright specs and resolve the repository alias.
-- Used the actual Next.js 16 matcher-test export because the installed API retains the legacy middleware helper name despite proxy documentation.
-- Supabase CLI operations require permission to write their telemetry cache outside the workspace; font-dependent production builds require network access.
+- Updated local Supabase database types so the one-to-one scope-assessment relation and assessment RPC are recognized by strict TypeScript queries.
+- Confirmed the full learner-to-reviewer browser flow works with local Mailpit: learner starts a project, sees the read-only scope, reviewer records a reduction request, and Assignment 01 remains available.
+- PowerShell blocks the `npx.ps1` shim on this workstation; use `npx.cmd` or npm scripts when invoking Node CLIs.
 
 ## Current state
 
-- Phases 00–04 are complete; Phase 05 has not started.
-- All 16 unit tests, 10 pgTAP database assertions, and 24 Playwright checks pass.
-- Lint, TypeScript, production build, and `git diff --check` pass.
-- Playwright verified all five shell routes through the real local session proxy. One outer test command timed out during dev-server shutdown after all 24 assertions passed because sandboxed font requests kept retrying.
-- The local Supabase stack is running. Do not persist, print, or copy its generated local credentials.
-- The worktree includes earlier user-owned baseline changes and this session's changes; preserve unrelated edits.
+- Phases 00–11 are marked complete. Phase 12 is next.
+- Verification passes: clean local Supabase reset, 178 database assertions, 39 unit tests, 42 Playwright checks with 3 intentional skips, ESLint, TypeScript, production build, and Supabase schema lint.
+- The `/review` audit found no plan-alignment, architecture, design-system, or production-readiness issues in Phase 11.
+- Phase 09–11 changes remain in the shared dirty worktree and have not been committed, pushed, deployed, or Preview-verified. Preserve all existing unrelated changes.
+- `git diff --check` reports pre-existing trailing whitespace in `.agents/skills/vercel-react-best-practices/SKILL.md`; this is unrelated to Phase 11 and was not modified during closeout.
+- No credentials, tokens, environment values, or project secrets are stored here.
 
 ## Next session starts with
 
-Run `/remember restore`, verify runtime Supabase values are stored in ignored `.env.local` rather than committed `.env.example`, then start Phase 05 — identity and enrollment schema — using `/architect`.
+Run `/remember restore`, confirm the handoff, read `AGENTS.md` and every context file in its required order, then use `/architect` before implementing Phase 12: versioned curriculum Markdown and acceptance criteria.
 
 ## Open questions
 
-- `.env.example` is currently untracked and contains non-empty browser-safe configuration. Next.js does not load that file at runtime; decide with the developer whether to migrate the values to ignored `.env.local` and return `.env.example` to a names-only template before committing.
-- npm continues to report three high-severity dependency advisories; no forced audit fix was applied because it may introduce breaking upgrades.
+- Whether to commit/deploy and Preview-verify the accumulated Phase 09–11 changes before beginning Phase 12.
+- The exact Phase 12 curriculum rendering contract should be resolved during `/architect`, including Markdown ownership, sanitization, and the boundary between curriculum content and learner progress state.
+- When production needs a separate Supabase project and custom SMTP/branded authentication email templates.

@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-08 during Phase 07 review closure. Authentication forms, access states, and guarded-shell actions are registered below.
+Last reviewed: 2026-08-12 during Phase 11 implementation. Authentication, onboarding, project-start, and scope-readiness patterns are registered below.
 
 ## How to Use
 
@@ -141,6 +141,82 @@ Last updated: 2026-08-07
 | Accent usage | Cobalt eyebrow text identifies the current access checkpoint |
 
 **Pattern notes:** Quiet product checkpoints use one bordered White panel and a short hierarchy: Cobalt eyebrow, display heading, explanatory copy, then an optional divided action. This pattern is suitable for pending, empty, and onboarding checkpoint states; it must not expose invite existence or internal authorization reasons.
+
+### Learner Onboarding Form
+
+File: `features/onboarding/components/onboarding-form.tsx`
+Last updated: 2026-08-10
+
+| Property | Class |
+| --- | --- |
+| Background | form inherits White card; inputs `bg-white`; notice `bg-stone-100` |
+| Border | fields `border border-stone-300`; sections `border-stone-200`; invalid summary `border-coral` |
+| Border radius | fields/panels `rounded-md`; primary action `rounded-sm` |
+| Text — primary | `text-ink`; supporting copy `text-stone-700` |
+| Typography | section legends `font-display text-xl font-semibold`; labels/action `font-semibold`; help/error `text-sm leading-relaxed` |
+| Spacing | form `space-y-8`; field groups `space-y-5`; controls `px-3.5 py-3`; panels `p-4` |
+| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; disabled action opacity; reduced-motion-safe hover lift |
+| Shadow | none |
+| Accent usage | Cobalt identifies context/focus; Coral marks validation structure; Launch Yellow is reserved for the primary continuation action |
+
+**Pattern notes:** Long product forms use semantic fieldsets with display-font legends, visible labels, persistent help, inline errors connected through `aria-describedby`, and a focus-managed form-level alert that preserves submitted values. Related numeric/date controls may form two columns only at medium widths. Privacy guidance is a quiet Stone panel rather than a consent checkbox. Verified at 360 px and desktop without horizontal overflow.
+
+### Project Start Confirmation
+
+Files: `app/(learner)/app/page.tsx`, `features/projects/components/start-project-form.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | main panel `bg-white`; context rail `bg-stone-100` |
+| Border | panels `border border-stone-300`; scope divider `border-stone-200`; primary task `border-2 border-ink` |
+| Border radius | panels `rounded-md`; primary action `rounded-sm` |
+| Text — primary | heading/body labels `text-ink`; supporting copy `text-stone-700` |
+| Typography | eyebrow `text-sm font-semibold uppercase tracking-widest`; title `font-display text-3xl font-semibold`; scope labels/action `font-semibold` |
+| Spacing | panels `p-5 md:p-6`; scope rows `space-y-6`; primary action `px-5 py-2.5` |
+| Interactive state | pending action is disabled with reduced opacity; restrained hover lift with reduced-motion fallback |
+| Shadow | none |
+| Accent usage | Cobalt identifies the checkpoint; Launch Yellow is reserved for the explicit start action |
+
+**Pattern notes:** A consequential project transition uses a server-rendered confirmation card with the saved scope visible before one explicit action. Only the action’s pending/error state crosses the client boundary. After success, the same layout becomes a quiet active-project checkpoint: the available assignment uses a strong Ink artifact border, while the context rail explains the exact unlock rule. The layout is one column by default and adds a sticky rail only at desktop width.
+
+### Project Scope Summary
+
+File: `features/projects/components/project-scope-summary.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | summary `bg-white`; readiness panel `bg-stone-100` |
+| Border | `border border-stone-300`; internal dividers `border-stone-200` |
+| Border radius | panels `rounded-md`; status badge `rounded-sm` |
+| Text — primary | `text-ink`; supporting metadata `text-stone-700` |
+| Typography | eyebrow `text-sm font-semibold uppercase tracking-widest`; title `font-display text-3xl font-semibold`; readiness heading `font-display text-xl font-semibold` |
+| Spacing | panels `p-5 md:p-6`; field grid `gap-6` |
+| Interactive state | none; this component is intentionally read-only |
+| Shadow | none |
+| Accent usage | Cobalt identifies context; Acid means ready; Coral means reduction needed |
+
+**Pattern notes:** Project scope has one shared server-renderable representation for learner and reviewer surfaces. Values remain read-only in both contexts. Readiness never relies on colour alone: a marker, heading, explanatory copy, and review date communicate state. The panel explicitly states that scope readiness does not change project status or block assignments.
+
+### Reviewer Scope Assessment Form
+
+File: `features/projects/components/scope-assessment-form.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | container `bg-ink`; textarea `bg-white` |
+| Border | container/options `border-stone-700`; success `border-acid`; error `border-coral` |
+| Border radius | fields/panels `rounded-md`; primary action `rounded-sm` |
+| Text — primary | inverse `text-white`; help `text-stone-300`; field text `text-ink` |
+| Typography | heading `font-display text-xl font-semibold`; labels/action `font-semibold`; help/status `text-sm` |
+| Spacing | panel `p-5 md:p-6`; control groups `mt-6`; controls `px-4 py-3` |
+| Interactive state | selected option `has-checked:border-acid`; Cobalt textarea focus; disabled action opacity; reduced-motion-safe hover lift |
+| Shadow | none |
+| Accent usage | Acid marks the reviewer proof action and success; Coral marks validation failure |
+
+**Pattern notes:** Reviewer decision forms stay on the inverse Ink surface and keep the mutation as the only client boundary. Radio decisions use full-width 44 px targets, validation focuses its alert, and the correction note is conditionally required without hiding the field. Latest assessment replaces current state while the database remains the authorization boundary.
 
 ## Foundations
 

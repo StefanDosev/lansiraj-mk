@@ -51,7 +51,7 @@ test("authenticated outsider receives neutral pending access and can sign out", 
 });
 
 test("onboarding state guards direct learner navigation", async ({ page, request }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "One deterministic local email flow is sufficient.");
+  test.skip(testInfo.project.name === "reduced-motion", "Desktop and mobile cover this stateful email flow.");
 
   const supabaseUrl = process.env.E2E_SUPABASE_URL;
   const secretKey = process.env.E2E_SUPABASE_SECRET_KEY;
@@ -88,18 +88,96 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await page.goto("/app/project");
     await expect(page).toHaveURL(/\/app\/onboarding$/);
 
+    await page.getByLabel("Име за приказ").fill("Ана");
+    await page.getByLabel("Работен наслов").fill("X");
+    await page.getByRole("button", { name: "Зачувај и продолжи" }).click();
+    const errorSummary = page.locator("#onboarding-error-summary");
+    await expect(errorSummary).toBeVisible();
+    await expect(errorSummary).toBeFocused();
+    await expect(page.getByLabel("Име за приказ")).toHaveValue("Ана");
+    await expect(page.getByLabel("Работен наслов")).toHaveValue("X");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: testInfo.outputPath("onboarding-validation.png") });
+
+    await page.getByLabel("Работен наслов").fill("Мал планер");
+    await page.getByLabel("За кого е проектот?").fill("Студенти што учат самостојно");
+    await page.getByLabel("Кој болен проблем го решава?").fill("Ги губат малите задачи и не знаат што е следно.");
+    await page.getByLabel("Една главна акција").fill("Да ја означат следната важна задача.");
+    await page.getByLabel("Што нема да градиш?").fill("Плаќања\nChat\nМобилна апликација");
+    await page.getByLabel("Часови неделно").fill("5");
+    await page.getByRole("button", { name: "Зачувај и продолжи" }).click();
+    await expect(page).toHaveURL(/\/app$/);
+
     const { data: users, error: usersError } = await admin.auth.admin.listUsers();
     expect(usersError).toBeNull();
     const learner = users.users.find((user) => user.email === learnerEmail);
     expect(learner).toBeTruthy();
-    runLocalSql(
-      `update public.profiles set onboarding_completed_at = now() where user_id = '${learner!.id}'`,
-    );
+    const { data: projects, error: projectsError } = await admin
+      .from("projects")
+      .select("owner_id,title,status,non_features")
+      .eq("owner_id", learner!.id);
+    expect(projectsError).toBeNull();
+    expect(projects).toEqual([{ owner_id: learner!.id, title: "Мал планер", status: "draft", non_features: ["Плаќања", "Chat", "Мобилна апликација"] }]);
+
+    await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
+    await page.getByRole("button", { name: "Започни го проектот" }).click();
+    await expect(page.getByText("Проектот е започнат")).toBeVisible();
+    await expect(page.getByText("1 од 10 задачи е достапна")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+    const { data: startedProjects, error: startedProjectsError } = await admin
+      .from("projects")
+      .select("id,status,curriculum_version")
+      .eq("owner_id", learner!.id)
+      .single();
+    expect(startedProjectsError).toBeNull();
+    expect(startedProjects).toMatchObject({ status: "active", curriculum_version: "v1" });
+
+    const { data: projections, error: projectionsError } = await admin
+      .from("project_assignments")
+      .select("state,assignment:assignments(position)")
+      .eq("project_id", startedProjects!.id);
+    expect(projectionsError).toBeNull();
+    expect(projections).toHaveLength(10);
+    expect(projections!.filter((projection) => projection.state === "available")).toEqual([
+      { state: "available", assignment: { position: 1 } },
+    ]);
+    expect(projections!.filter((projection) => projection.state === "locked")).toHaveLength(9);
+
+    await page.goto("/app/project");
+    await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Сè уште нема проценка" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+    await page.getByRole("button", { name: "Одјави се" }).click();
+    runLocalSql(`insert into private.reviewer_roles (user_id) values ('${reviewer.user!.id}')`);
+    await openLatestMagicLink(page, request, reviewerEmail);
+    await expect(page).toHaveURL(/\/admin$/);
+    await page.goto(`/admin/projects/${startedProjects!.id}`);
+    await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
+    await page.getByLabel("Потребно е намалување").check();
+    await page.getByLabel("Белешка").fill("Намали ја главната акција на еден јасен исход.");
+    await page.getByRole("button", { name: "Зачувај проценка" }).click();
+    await expect(page.getByRole("status")).toContainText("Проценката е зачувана");
+
+    const { data: assessments, error: assessmentsError } = await admin
+      .from("project_scope_assessments")
+      .select("readiness,note,reviewed_by")
+      .eq("project_id", startedProjects!.id);
+    expect(assessmentsError).toBeNull();
+    expect(assessments).toEqual([{
+      readiness: "needs_reduction",
+      note: "Намали ја главната акција на еден јасен исход.",
+      reviewed_by: reviewer.user!.id,
+    }]);
+    expect(projections!.filter((projection) => projection.state === "available")).toHaveLength(1);
 
     await page.goto("/app/onboarding");
-    await expect(page).toHaveURL(/\/app$/);
+    await expect(page).toHaveURL(/\/admin$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   } finally {
+    runLocalSql(`delete from public.projects where cohort_id = '${cohortId}'`);
     runLocalSql(`delete from public.cohort_invites where cohort_id = '${cohortId}'`);
     runLocalSql(`delete from public.cohort_members where cohort_id = '${cohortId}'`);
     runLocalSql(`delete from public.cohorts where id = '${cohortId}'`);

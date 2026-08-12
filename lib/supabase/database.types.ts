@@ -66,6 +66,41 @@ export type Database = {
           },
         ]
       }
+      activity_events: {
+        Row: {
+          actor_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          project_id: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          project_id: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignments: {
         Row: {
           body_md: string
@@ -288,12 +323,183 @@ export type Database = {
         }
         Relationships: []
       }
+      project_assignments: {
+        Row: {
+          approved_at: string | null
+          assignment_id: string
+          available_at: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          project_id: string
+          state: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          assignment_id: string
+          available_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          project_id: string
+          state: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          assignment_id?: string
+          available_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          project_id?: string
+          state?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_assignments_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_scope_assessments: {
+        Row: {
+          created_at: string
+          note: string | null
+          project_id: string
+          readiness: string
+          reviewed_at: string
+          reviewed_by: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          project_id: string
+          readiness: string
+          reviewed_at?: string
+          reviewed_by: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          project_id?: string
+          readiness?: string
+          reviewed_at?: string
+          reviewed_by?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_scope_assessments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          cohort_id: string
+          core_action: string
+          created_at: string
+          curriculum_version: string | null
+          id: string
+          live_url: string | null
+          non_features: string[]
+          owner_id: string
+          problem_statement: string
+          status: string
+          target_launch_date: string
+          target_user: string
+          title: string
+          updated_at: string
+          weekly_hours: number
+        }
+        Insert: {
+          cohort_id: string
+          core_action: string
+          created_at?: string
+          curriculum_version?: string | null
+          id?: string
+          live_url?: string | null
+          non_features: string[]
+          owner_id: string
+          problem_statement: string
+          status?: string
+          target_launch_date: string
+          target_user: string
+          title: string
+          updated_at?: string
+          weekly_hours: number
+        }
+        Update: {
+          cohort_id?: string
+          core_action?: string
+          created_at?: string
+          curriculum_version?: string | null
+          id?: string
+          live_url?: string | null
+          non_features?: string[]
+          owner_id?: string
+          problem_statement?: string
+          status?: string
+          target_launch_date?: string
+          target_user?: string
+          title?: string
+          updated_at?: string
+          weekly_hours?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       accept_cohort_invite: { Args: never; Returns: string }
+      assess_project_scope: {
+        Args: { p_note: string; p_project_id: string; p_readiness: string }
+        Returns: undefined
+      }
+      complete_onboarding: {
+        Args: {
+          p_core_action: string
+          p_display_name: string
+          p_non_features: string[]
+          p_problem_statement: string
+          p_project_title: string
+          p_target_launch_date: string
+          p_target_user: string
+          p_weekly_hours: number
+        }
+        Returns: string
+      }
       get_access_state: {
         Args: never
         Returns: {
@@ -302,6 +508,7 @@ export type Database = {
           onboarding_completed: boolean
         }[]
       }
+      start_project: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

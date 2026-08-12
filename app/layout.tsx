@@ -30,6 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="mk"
+      data-scroll-behavior="smooth"
       className={`${onest.variable} ${unbounded.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
