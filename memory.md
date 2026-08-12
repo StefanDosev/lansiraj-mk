@@ -1,46 +1,48 @@
-# Memory — Phase 11 project scope readiness
+# Memory — Phase 14 journey rail and project overview
 
-Last updated: 2026-08-12 15:20 +02:00
+Last updated: 2026-08-12 16:29 +02:00
 
 ## What was built
 
-- Completed Phases 10 and 11 after the prior Phase 09 handoff.
-- Phase 10 activates the learner's single draft project, pins Curriculum v1, creates ten project-assignment projections, and makes only Assignment 01 available through a retry-safe database transaction.
-- Phase 11 adds the shared read-only project scope summary at `/app/project` and the focused reviewer assessment route at `/admin/projects/[projectId]`.
-- Added `project_scope_assessments`, owner/reviewer RLS, least-privilege grants, and reviewer-only `assess_project_scope(...)` RPC in `supabase/migrations/20260812130428_add_project_scope_readiness.sql`.
-- Added project scope queries, types, Zod validation, server action, shared summary, reviewer form, database types, and unit/database/Playwright coverage under `features/projects/`, `app/`, `lib/supabase/`, `supabase/tests/`, and `tests/`.
-- Updated `context/ui-registry.md` with the shared scope-summary and inverse reviewer-form patterns, and marked Phase 11 complete in `context/progress-tracker.md`.
+- Completed Phases 12–14 after the previous Phase 11 handoff.
+- Phase 12 adds authenticated assignment routes at `/app/assignments/[slug]`, safe migration-owned curriculum Markdown rendering, ordered acceptance criteria, proof prompts, readable locked assignments, and an intentional not-found state under `features/curriculum/` and `app/(learner)/app/assignments/`.
+- Phase 13 replaces the active-project placeholder at `/app` with a server-rendered current-assignment dashboard under `features/progress/`. It derives the earliest non-approved task, approved/total progress, state-specific copy/actions, required proof, feedback placeholder, and exact unlock condition.
+- Phase 14 extends `/app/project` with `features/journey/`: a pure journey derivation model, six-stage responsive rail, ten linked assignment rows, explicit state labels, exact locked prerequisites, and a guarded live-project endpoint.
+- Extended the current-project projection and types with assignment proof/stage context and the nullable project live URL.
+- Added unit coverage in `tests/unit/curriculum-markdown.test.tsx`, `tests/unit/current-assignment-dashboard.test.ts`, and `tests/unit/project-journey.test.ts`; expanded `tests/e2e/auth.spec.ts` across the learner curriculum, dashboard, and journey.
+- Registered Curriculum Markdown, Assignment Curriculum, Current Assignment Dashboard, and Project Journey patterns in `context/ui-registry.md`; marked Phase 14 complete in `context/progress-tracker.md`.
 
 ## Decisions made
 
-- Manual scope readiness is separate from assignment approval and never blocks or mutates project assignments.
-- Readiness has two reviewer-controlled states: `ready` and `needs_reduction`; the latter requires a concrete note of at least 10 characters.
-- The latest assessment replaces the current state while retaining reviewer identity and review timestamp.
-- Learner and reviewer scope fields are read-only. Reviewers mutate only the assessment through the controlled RPC.
-- The focused project review route is intentionally not a reviewer queue; the queue remains Phase 18.
-- Project dates are stored as dates and formatted at the Macedonian display edge.
+- Curriculum Markdown is migration-managed trusted content rendered in a Server Component with raw HTML skipped, an explicit element allowlist, safe URL transformation, and safe external-link attributes. Learner-authored evidence must remain plain text and typed URLs.
+- The current assignment is the earliest ordered non-approved assignment. An earlier locked inconsistency takes precedence over a later available task; progression never skips ahead.
+- Progress is derived from approved assignments over total assignments and is never stored or manually edited as a percentage.
+- All ten assignment titles remain navigable, including locked tasks, because curriculum stays readable for preparation while submission remains state-gated.
+- A stage is approved only when all its tasks are approved. The stage containing the earliest non-approved task adopts that task’s state; all later tasks/stages normalize to locked.
+- The final endpoint stays named and locked until the `public-launch-outreach` assignment is approved. It then exposes the HTTPS live URL; approved launch evidence without a URL is an explicit data error.
+- The journey uses one semantic DOM order that adapts from a mobile vertical stepper to a desktop horizontal rail without duplicating accessible content or relying on colour/motion.
 
 ## Problems solved
 
-- Updated local Supabase database types so the one-to-one scope-assessment relation and assessment RPC are recognized by strict TypeScript queries.
-- Confirmed the full learner-to-reviewer browser flow works with local Mailpit: learner starts a project, sees the read-only scope, reviewer records a reduction request, and Assignment 01 remains available.
-- PowerShell blocks the `npx.ps1` shim on this workstation; use `npx.cmd` or npm scripts when invoking Node CLIs.
+- The expanded curriculum browser flow exceeded the generic Playwright scenario timeout; `/recover` identified accumulated navigation time rather than an application hang, and the stateful scenario now has a 60-second timeout.
+- A Phase 14 endpoint assertion matched identical prerequisite copy in both Task 09 and the endpoint. The locator is now scoped to the labelled endpoint region, preserving strict semantic browser assertions.
+- PowerShell blocks the `npm.ps1`/`npx.ps1` shims on this workstation. Use `npm.cmd`, `npx.cmd`, or repository scripts.
 
 ## Current state
 
-- Phases 00–11 are marked complete. Phase 12 is next.
-- Verification passes: clean local Supabase reset, 178 database assertions, 39 unit tests, 42 Playwright checks with 3 intentional skips, ESLint, TypeScript, production build, and Supabase schema lint.
-- The `/review` audit found no plan-alignment, architecture, design-system, or production-readiness issues in Phase 11.
-- Phase 09–11 changes remain in the shared dirty worktree and have not been committed, pushed, deployed, or Preview-verified. Preserve all existing unrelated changes.
-- `git diff --check` reports pre-existing trailing whitespace in `.agents/skills/vercel-react-best-practices/SKILL.md`; this is unrelated to Phase 11 and was not modified during closeout.
-- No credentials, tokens, environment values, or project secrets are stored here.
+- Phases 00–14 are marked complete. Phase 15 is next: draft text and repeatable typed-link evidence inputs.
+- Verification passes: ESLint, strict TypeScript, Next.js production build, `git diff --check`, 51 unit tests, 178 database assertions, and 45 Playwright cases with 42 passing and 3 intentional skips across desktop, 360 px mobile, and reduced motion.
+- `/review` found no plan-alignment, architecture, design-system, accessibility, or production-readiness issues in Phase 14.
+- Phase 09–14 changes remain together in the shared dirty worktree and are not committed, pushed, deployed, or Preview-verified. Preserve all existing changes and do not overwrite unrelated work.
+- The pinned Markdown dependency is `react-markdown` 10.1.0. A prior audit noted four high-severity transitive advisories in existing build-tool chains; no forced dependency upgrade was made.
+- No credentials, tokens, environment values, participant data, or project secrets are stored here.
 
 ## Next session starts with
 
-Run `/remember restore`, confirm the handoff, read `AGENTS.md` and every context file in its required order, then use `/architect` before implementing Phase 12: versioned curriculum Markdown and acceptance criteria.
+Run `/remember restore`, confirm this handoff, read `AGENTS.md` and all context files in its required order, then use `/architect` before Phase 15. Design the draft evidence contract around owner-editable drafts for available/revision assignments, plain text evidence, repeatable labelled HTTPS links, explicit save unless autosave can be proven reliable, Zod validation, and database/RLS enforcement.
 
 ## Open questions
 
-- Whether to commit/deploy and Preview-verify the accumulated Phase 09–11 changes before beginning Phase 12.
-- The exact Phase 12 curriculum rendering contract should be resolved during `/architect`, including Markdown ownership, sanitization, and the boundary between curriculum content and learner progress state.
+- Whether to commit/deploy and Preview-verify the accumulated Phase 09–14 changes before beginning Phase 15.
+- Phase 15 must decide draft persistence boundaries, link types/limits, save conflict behavior, and whether a new evidence schema should be introduced wholly in Phase 15 or split with immutable submission in Phase 16.
 - When production needs a separate Supabase project and custom SMTP/branded authentication email templates.

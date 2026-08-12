@@ -5,6 +5,11 @@ export type ProjectAssignmentSummary = {
     position: number;
     slug: string;
     title: string;
+    proofPromptMarkdown: string;
+    stage: {
+      position: number;
+      title: string;
+    };
   };
 };
 
@@ -19,6 +24,7 @@ export type CurrentProject = {
   targetLaunchDate: string;
   status: "draft" | "active" | "completed" | "archived";
   curriculumVersion: string | null;
+  liveUrl: string | null;
   assignments: ProjectAssignmentSummary[];
   scopeAssessment: ProjectScopeAssessment | null;
 };

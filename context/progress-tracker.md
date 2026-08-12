@@ -4,10 +4,10 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Current Status
 
-**Phase:** 2 — Onboarding and Project
-**Last completed:** 11 project scope summary and manual scope-readiness state
+**Phase:** 3 — Curriculum and Dashboard
+**Last completed:** 14 six-stage journey rail and project overview
 **In progress:** None
-**Next:** Begin 12 versioned curriculum Markdown and acceptance criteria
+**Next:** Begin 15 draft text and typed-link evidence form
 **Blockers:** None
 
 ## Progress
@@ -35,9 +35,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ### Phase 3 — Curriculum and Dashboard
 
-- [ ] 12 Render versioned curriculum Markdown and acceptance criteria
-- [ ] 13 Build current-assignment dashboard and exact unlock messaging
-- [ ] 14 Build six-stage journey rail and project overview
+- [x] 12 Render versioned curriculum Markdown and acceptance criteria
+- [x] 13 Build current-assignment dashboard and exact unlock messaging
+- [x] 14 Build six-stage journey rail and project overview
 
 ### Phase 4 — Proof Submission
 
@@ -74,6 +74,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-12 — Completed Phase 14 with a pure journey derivation model, six-stage responsive rail, ten ordered linked tasks, explicit text states, exact locked prerequisites, and a guarded public endpoint that appears only after launch evidence approval. Later inconsistent states normalize to locked, approved launch data without a URL surfaces an explicit error, and one semantic DOM order adapts from the mobile stepper to the desktop rail. The journey pattern is registered in the UI registry. All 178 database assertions, 51 unit tests, 42 browser checks with 3 intentional skips, lint, typecheck, production build, and diff checks pass.
+- 2026-08-12 — Completed Phase 13 with a pure ordered current-assignment derivation model, database-derived approved/total progress, required-proof preview, intentional feedback placeholder, state-specific primary actions, and exact unlock messaging. Available, submitted, revision-required, locked inconsistency, empty projection, and completed-path states are explicit without adding submission/review schema early. The richer active-project query includes stage and proof context, and the dashboard pattern is registered in the UI registry. All 178 database assertions, 45 unit tests, targeted mobile/desktop learner flow, lint, typecheck, and production build pass.
+- 2026-08-12 — Completed Phase 12 with active-project and pinned-version assignment queries, safe Server Component Markdown rendering, ordered semantic acceptance criteria, readable available/locked assignment states, and an intentional not-found boundary. The learner dashboard now links to the current assignment. Raw HTML is skipped, unsafe URL protocols are rejected, all ten seeded assignments render from the database, and the shared curriculum patterns are registered in the UI registry. All 178 database assertions, 39 unit tests, targeted mobile/desktop learner flow, lint, typecheck, and production build pass.
 - 2026-08-12 — Completed Phase 11 with one shared read-only learner/reviewer project-scope summary, Macedonian date display, explicit non-blocking manual readiness states, and a focused reviewer route for replacing the current assessment. The database enforces reviewer-only mutation, note constraints, owner/reviewer visibility, and assignment independence through RLS and a controlled RPC. A clean local reset, all 178 database assertions, 39 unit tests, targeted desktop learner-to-reviewer browser verification, lint, typecheck, and production build pass. The visual patterns were imprinted in the UI registry.
 - 2026-08-12 — Completed Phase 10 with an explicit learner confirmation action, curriculum-version pinning, ten owner-scoped `project_assignments`, Assignment 01 as the sole available step, minimal activity events, and a retry-safe row-locked `start_project()` transaction. The RPC rejects missing/malformed curriculum without mutating the draft and rejects inconsistent partial initialization. A clean local reset, all 153 database assertions, 35 unit tests, 42 browser checks with 3 intentional skips, lint, typecheck, production build, application-schema lint, database security/performance advisors, and mobile/desktop start-flow verification pass. The full local email suite is stable with one Playwright worker; parallel magic-link fixtures can interfere while local Supabase helper commands cycle nonessential services.
 - 2026-08-10 — Completed Phase 09 with a constrained draft project schema, atomic onboarding RPC, owner/reviewer RLS, shared Zod validation, focus-managed field errors that preserve input, and explicit evidence/privacy guidance. A clean local reset, all 125 database assertions, 35 unit tests, and 42 browser checks with 3 intentional skips pass; lint, typecheck, production build, database advisors, desktop verification, and 360 px visual/overflow QA also pass. Phase 10 will activate the draft project and instantiate the ten assignment projections.

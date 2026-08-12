@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-12 during Phase 11 implementation. Authentication, onboarding, project-start, and scope-readiness patterns are registered below.
+Last reviewed: 2026-08-12 during Phase 14 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, and journey patterns are registered below.
 
 ## How to Use
 
@@ -217,6 +217,82 @@ Last updated: 2026-08-12
 | Accent usage | Acid marks the reviewer proof action and success; Coral marks validation failure |
 
 **Pattern notes:** Reviewer decision forms stay on the inverse Ink surface and keep the mutation as the only client boundary. Radio decisions use full-width 44 px targets, validation focuses its alert, and the correction note is conditionally required without hiding the field. Latest assessment replaces current state while the database remains the authorization boundary.
+
+### Curriculum Markdown
+
+File: `features/curriculum/components/curriculum-markdown.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | inherited; code/table headers `bg-stone-100` |
+| Border | blockquote `border-cobalt`; code/table `border-stone-300` |
+| Border radius | code `rounded-sm`; preformatted blocks `rounded-md` |
+| Text — primary | headings/strong/code `text-ink`; body `text-stone-700`; links `text-cobalt` |
+| Typography | headings `font-display font-semibold`; body/list `leading-relaxed`; code `text-sm` |
+| Spacing | root `space-y-4`; lists `space-y-2 pl-6`; blocks/tables `p-3` or `p-4` |
+| Interactive state | links inherit the global Cobalt focus outline |
+| Shadow | none |
+| Accent usage | Cobalt is limited to links and blockquote structure |
+
+**Pattern notes:** Migration-managed curriculum Markdown renders through one Server Component with raw HTML skipped, an explicit element allowlist, and safe URL transformation. Headings are normalized below the page heading; external links open separately with `noopener`/`noreferrer`. Learner-authored content must not use this renderer.
+
+### Assignment Curriculum
+
+File: `features/curriculum/components/assignment-curriculum.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | main article `bg-white`; state/context rail `bg-stone-100` |
+| Border | article/criteria/rail `border-stone-300`; section dividers `border-stone-200` |
+| Border radius | article, criteria, and rail `rounded-md`; status `rounded-sm` |
+| Text — primary | titles/numbers `text-ink`; supporting content `text-stone-700` |
+| Typography | page title `font-display text-3xl md:text-4xl font-semibold`; section titles `font-display text-2xl font-semibold` |
+| Spacing | panels `p-5 md:p-6`; sections `mt-8 pt-6`; criteria `space-y-3 p-4` |
+| Interactive state | back link uses underlined Cobalt treatment and the global focus outline |
+| Shadow | none |
+| Accent usage | Cobalt identifies curriculum context; status colours remain state-specific |
+
+**Pattern notes:** Assignment reading order is stage/task identity, state metadata, guidance, semantic acceptance-criteria list, proof requirement, then contextual state guidance. Criteria are never checkboxes before review. The desktop context rail becomes a normal trailing section on narrow screens, and locked assignments remain readable without exposing progress mutations.
+
+### Current Assignment Dashboard
+
+File: `features/progress/components/current-assignment-dashboard.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | task `bg-white`; feedback/context `bg-stone-100` |
+| Border | panels `border-stone-300`; section dividers `border-stone-200`; state badge uses its semantic border |
+| Border radius | panels `rounded-md`; state badge `rounded-sm` |
+| Text — primary | headings/status `text-ink`; supporting copy `text-stone-700` |
+| Typography | task title `font-display text-3xl md:text-4xl font-semibold`; panel headings `font-display text-lg` or `text-xl font-semibold` |
+| Spacing | task `p-5 md:p-6`; feedback `p-4`; sections `mt-8 pt-6` |
+| Interactive state | primary task link uses registered Launch action and reduced-motion-safe lift |
+| Shadow | none |
+| Accent usage | Cobalt identifies stage/path context; Cobalt, Coral, and Acid remain state-specific |
+
+**Pattern notes:** The dashboard has one dominant task and one exact unlock rail. It renders a pure discriminated view model, never calculates progress in JSX, and shows approved/total counts rather than a writable percentage. Required proof appears before the primary action; feedback has an intentional empty state until review data exists. Empty, completed, and inconsistent locked projections use the quiet terminal-panel pattern.
+
+### Project Journey
+
+File: `features/journey/components/project-journey.tsx`
+Last updated: 2026-08-12
+
+| Property | Class |
+| --- | --- |
+| Background | journey `bg-white`; locked endpoint `bg-stone-100` |
+| Border | container/checkpoints `border-stone-300`; task dividers `border-stone-200`; semantic checkpoint borders use Ink, Cobalt, or Coral |
+| Border radius | container/endpoint `rounded-md`; checkpoints `rounded-full` |
+| Text — primary | headings/links `text-ink`; supporting state copy `text-stone-700` |
+| Typography | section title `font-display text-2xl md:text-3xl font-semibold`; task links/states `font-semibold` |
+| Spacing | container `p-5 md:p-6`; task rows `py-4`; major sections `mt-8 pt-6` |
+| Interactive state | task/live links are underlined, retain global focus, and use Cobalt hover or primary link treatment |
+| Shadow | none |
+| Accent usage | Cobalt identifies journey context/submitted checkpoints; Coral marks revision/error; Acid fills approved checkpoints |
+
+**Pattern notes:** Six stages and ten assignments share one semantic DOM order: the stage rail adapts from a mobile vertical stepper to a desktop horizontal rail without duplicating content. Number, explicit state text, and exact locked prerequisite carry all meaning without colour or motion. Every assignment remains a readable link even while locked. The final endpoint is named while locked, becomes an external live URL only after launch evidence is approved, and exposes missing approved-project data as an error rather than false completion.
 
 ## Foundations
 

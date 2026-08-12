@@ -14,11 +14,18 @@ const projectProjection = `
   target_launch_date,
   status,
   curriculum_version,
+  live_url,
   project_scope_assessments(readiness,note,reviewed_at),
   project_assignments(
     state,
     available_at,
-    assignment:assignments(position,slug,title)
+    assignment:assignments(
+      position,
+      slug,
+      title,
+      proof_prompt_md,
+      stage:curriculum_stages(position,title)
+    )
   )
 `;
 
@@ -33,11 +40,18 @@ type ProjectProjection = {
   target_launch_date: string;
   status: CurrentProject["status"];
   curriculum_version: string | null;
+  live_url: string | null;
   project_scope_assessments: { readiness: string; note: string | null; reviewed_at: string } | null;
   project_assignments: Array<{
     state: ProjectAssignmentSummary["state"];
     available_at: string | null;
-    assignment: ProjectAssignmentSummary["assignment"];
+    assignment: {
+      position: number;
+      slug: string;
+      title: string;
+      proof_prompt_md: string;
+      stage: ProjectAssignmentSummary["assignment"]["stage"];
+    };
   }>;
 };
 
@@ -62,11 +76,18 @@ function mapProject(data: ProjectProjection): CurrentProject {
     targetLaunchDate: data.target_launch_date,
     status: data.status,
     curriculumVersion: data.curriculum_version,
+    liveUrl: data.live_url,
     assignments: data.project_assignments
       .map((projection) => ({
         state: projection.state,
         availableAt: projection.available_at,
-        assignment: projection.assignment,
+        assignment: {
+          position: projection.assignment.position,
+          slug: projection.assignment.slug,
+          title: projection.assignment.title,
+          proofPromptMarkdown: projection.assignment.proof_prompt_md,
+          stage: projection.assignment.stage,
+        },
       }))
       .toSorted((left, right) => left.assignment.position - right.assignment.position),
     scopeAssessment,

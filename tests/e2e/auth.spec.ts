@@ -51,6 +51,8 @@ test("authenticated outsider receives neutral pending access and can sign out", 
 });
 
 test("onboarding state guards direct learner navigation", async ({ page, request }, testInfo) => {
+  test.setTimeout(60_000);
+
   test.skip(testInfo.project.name === "reduced-motion", "Desktop and mobile cover this stateful email flow.");
 
   const supabaseUrl = process.env.E2E_SUPABASE_URL;
@@ -122,8 +124,12 @@ test("onboarding state guards direct learner navigation", async ({ page, request
 
     await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
     await page.getByRole("button", { name: "Започни го проектот" }).click();
-    await expect(page.getByText("Проектот е започнат")).toBeVisible();
-    await expect(page.getByText("1 од 10 задачи е достапна")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Дефинирај еден корисник и еден болен проблем" })).toBeVisible();
+    await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
+    await expect(page.getByText("0 од 10 задачи се одобрени")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Потребен доказ" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Последна повратна информација" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Точен услов за следниот чекор" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     const { data: startedProjects, error: startedProjectsError } = await admin
@@ -145,9 +151,51 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     ]);
     expect(projections!.filter((projection) => projection.state === "locked")).toHaveLength(9);
 
+    await page.goto("/app/assignments/target-user-and-problem");
+    await expect(page.getByRole("heading", { name: "Дефинирај еден корисник и еден болен проблем" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Критериуми за прифаќање" })).toBeVisible();
+    await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
+    await expect(page.getByRole("list").filter({ hasText: "Опишан е еден специфичен корисник" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+    await page.goto("/app/assignments/research-observations");
+    await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
+    await expect(page.getByText("Заклучено", { exact: true })).toBeVisible();
+
+    if (testInfo.project.name === "desktop") {
+      const curriculumSlugs = [
+        "target-user-and-problem",
+        "research-observations",
+        "one-page-mvp-brief",
+        "main-flow-wireframe",
+        "repository-architecture-preview",
+        "core-feature-end-to-end",
+        "mobile-critical-flow-qa",
+        "real-user-testing",
+        "public-launch-outreach",
+        "reflection-case-study",
+      ];
+
+      for (const slug of curriculumSlugs) {
+        await page.goto(`/app/assignments/${slug}`);
+        await expect(page.locator("h1")).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Критериуми за прифаќање" })).toBeVisible();
+      }
+    }
+
+    await page.goto("/app/assignments/not-a-curriculum-assignment");
+    await expect(page.getByRole("heading", { name: "Нема задача на оваа адреса" })).toBeVisible();
+
     await page.goto("/app/project");
     await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Сè уште нема проценка" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Од идеја до јавен производ" })).toBeVisible();
+    await expect(page.getByRole("list", { name: "Шест фази на проектната патека" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByText("Тековна задача · Подготвено за работа")).toBeVisible();
+    await expect(page.getByText("0 од 10 задачи се одобрени")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Јавен URL на проектот" })).toBeVisible();
+    await expect(page.getByLabel("Јавен URL на проектот").getByText("Се отклучува кога „Објави јавен URL и контактирај три лица“ ќе биде одобрено.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Собери три интервјуа или набљудувања" })).toHaveAttribute("href", "/app/assignments/research-observations");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     await page.getByRole("button", { name: "Одјави се" }).click();
