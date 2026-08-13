@@ -24,6 +24,8 @@
 
   --shadow-overlay: 0 16px 40px rgb(17 17 17 / 0.16);
 
+  --shadow-artifact: 0.5rem 0.5rem 0 var(--color-ink);
+
   --animate-checkpoint: checkpoint-lock 220ms
     cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -35,6 +37,8 @@
   --surface-card: var(--color-white);
   --surface-subtle: var(--color-stone-100);
   --surface-inverse: var(--color-ink);
+  --surface-paper: var(--color-canvas);
+  --surface-reading: var(--color-white);
 
   --text-primary: var(--color-ink);
   --text-secondary: var(--color-stone-700);
@@ -55,6 +59,7 @@
   --container-public: 80rem;
   --container-product: 72rem;
   --container-reading: 46rem;
+  --container-artifact: 34rem;
   --gutter-mobile: 1rem;
   --gutter-tablet: 1.5rem;
   --gutter-desktop: 2rem;
@@ -63,8 +68,9 @@
   --duration-fast: 160ms;
   --duration-base: 220ms;
   --duration-stage: 520ms;
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --stagger-step: 60ms;
+  --ease-standard: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   --z-base: 0;
   --z-sticky: 20;
@@ -86,11 +92,22 @@
   }
 }
 
+@keyframes artifact-lock {
+  from {
+    opacity: 0.6;
+    transform: translate(0.5rem, -0.5rem) rotate(1deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
 @layer base {
   html {
     background: var(--surface-page);
     color: var(--text-primary);
-    scroll-behavior: smooth;
   }
 
   body {
@@ -99,6 +116,11 @@
     color: var(--text-primary);
     font-family: var(--font-sans);
     line-height: 1.55;
+  }
+
+  ::selection {
+    background: var(--action-primary);
+    color: var(--text-primary);
   }
 
   h1,
@@ -119,12 +141,84 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+
+  button,
+  [role="button"],
+  a[class*="border"] {
+    transition-duration: var(--duration-fast);
+    transition-property: transform, background-color, border-color, color;
+    transition-timing-function: var(--ease-out);
+  }
+
+  button:active,
+  [role="button"]:active,
+  a[class*="border"]:active {
+    transform: scale(0.97);
+  }
+
   p,
   li,
   dd,
   a {
     overflow-wrap: anywhere;
   }
+}
+
+@utility paper-grid {
+  background-color: var(--surface-paper);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--border-default) 36%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border-default) 36%, transparent) 1px, transparent 1px);
+  background-size: 1rem 1rem;
+}
+
+@utility editorial-rule {
+  border-block-start: 2px solid var(--border-strong);
+}
+
+@utility proof-shadow {
+  box-shadow: var(--shadow-artifact);
+}
+
+@utility reveal-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-stage) var(--ease-out),
+    transform var(--duration-stage) var(--ease-out);
+}
+
+[data-reveal="pending"] .reveal-item {
+  opacity: 0;
+  transform: translateY(1.25rem);
+}
+
+[data-reveal="visible"] .reveal-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--reveal-index, 0) * var(--stagger-step));
+}
+
+@utility evidence-row-motion {
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .evidence-row-motion {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+.evidence-row-motion[data-removing="true"] {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+
+@utility artifact-lock {
+  animation: artifact-lock var(--duration-stage) var(--ease-standard) both;
 }
 
 @utility container-public {
@@ -161,5 +255,18 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+
+  [data-reveal] .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pressable:hover {
+    transform: translateY(-0.125rem);
   }
 }

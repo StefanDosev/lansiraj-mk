@@ -31,6 +31,8 @@ Use a small neutral set derived for product clarity:
   --surface-card: #ffffff;
   --surface-subtle: #eee8dc;
   --surface-inverse: #111111;
+  --surface-paper: #f6f0e4;
+  --surface-reading: #ffffff;
 
   --text-primary: #111111;
   --text-secondary: #4e4b45;
@@ -80,6 +82,7 @@ Do not use `acid`, `coral`, or `launch` as body-text colours. Use Ink text on th
   --radius-lg: 1rem;
 
   --shadow-overlay: 0 16px 40px rgb(17 17 17 / 0.16);
+  --shadow-artifact: 0.5rem 0.5rem 0 var(--color-ink);
 
   --animate-checkpoint: checkpoint-lock 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -140,6 +143,7 @@ Do not create arbitrary spacing values when an existing scale value is within 2 
   --container-public: 80rem;
   --container-product: 72rem;
   --container-reading: 46rem;
+  --container-artifact: 34rem;
   --gutter-mobile: 1rem;
   --gutter-tablet: 1.5rem;
   --gutter-desktop: 2rem;
@@ -250,13 +254,17 @@ aria-invalid:border-coral aria-invalid:ring-coral/20
   --duration-fast: 160ms;
   --duration-base: 220ms;
   --duration-stage: 520ms;
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --stagger-step: 60ms;
+  --ease-standard: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 ```
 
-- Microinteraction: `fast` or `base`.
-- State/rail transition: `stage`, only when it explains the change.
+- Button press feedback: `fast`, transform only; hover lift is gated to fine pointers.
+- Evidence row add/remove and checkpoint state: `base`, opacity and transform only.
+- Marketing artifact/story reveal: `stage`, one time, with `stagger-step`; interaction is never delayed.
+- `Reveal` defaults content to visible so missing JavaScript or IntersectionObserver cannot hide it.
+- Reduced motion removes transforms, long transitions, and stagger while preserving immediate state feedback.
 - No infinite ambient animations in product UI.
 
 ## Accessibility Invariants

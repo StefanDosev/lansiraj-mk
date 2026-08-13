@@ -12,7 +12,7 @@ export default async function ReviewerLayout({
   return (
     <div className="flex min-h-dvh flex-col bg-ink text-white">
       <SkipLink />
-      <header className="border-b border-stone-700">
+      <header className="border-b border-stone-700 bg-ink">
         <div className="container-product flex min-h-16 items-center justify-between gap-4">
           <BrandSignature inverse />
           <nav aria-label="Reviewer навигација" className="flex items-center gap-3">
@@ -23,8 +23,8 @@ export default async function ReviewerLayout({
           </nav>
         </div>
       </header>
-      <main id="main-content" tabIndex={-1} className="container-product flex-1 py-8 md:py-12">
-        {children}
+      <main id="main-content" tabIndex={-1} className="container-product flex-1 py-5 md:py-8">
+        <div className="min-h-[calc(100dvh-7rem)] bg-canvas p-4 text-ink md:p-8">{children}</div>
       </main>
     </div>
   );

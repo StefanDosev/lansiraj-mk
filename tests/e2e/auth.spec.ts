@@ -160,6 +160,9 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByRole("button", { name: "Зачувај draft" })).toBeVisible();
     await page.getByLabel("Текстуален доказ").fill("Три кратки разговори со конкретни корисници.");
     await page.getByRole("button", { name: "Додај линк" }).click();
+    await page.getByRole("button", { name: "Отстрани линк 1" }).click();
+    await expect(page.getByRole("button", { name: "Отстрани линк 1" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Додај линк" }).click();
     await page.getByLabel("Ознака").fill("Белешки од разговорите");
     await page.getByLabel("HTTPS URL").fill("http://example.com/notes");
     await page.getByRole("button", { name: "Зачувај draft" }).click();

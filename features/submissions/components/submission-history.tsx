@@ -9,7 +9,7 @@ function SubmissionVersionEvidence({ submission }: { submission: SubmissionHisto
   const status = submissionStatusPresentation[submission.status];
 
   return (
-    <div className="border-t border-stone-200 px-4 py-5 md:px-5">
+    <div className="border-t border-stone-300 px-4 py-5 md:px-5">
       <p className="text-sm leading-relaxed text-stone-700">{status.description}</p>
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -47,7 +47,7 @@ function SubmissionVersionEvidence({ submission }: { submission: SubmissionHisto
         {submission.links.length > 0 ? (
           <ul className="mt-3 space-y-3" aria-label={`Линкови од верзија ${submission.version}`}>
             {submission.links.map((link) => (
-              <li key={link.id} className="min-w-0 rounded-md border border-stone-300 bg-white p-4">
+              <li key={link.id} className="min-w-0 border-l-4 border-cobalt bg-stone-100 p-4">
                 <p className="text-xs font-semibold uppercase tracking-widest text-stone-700">
                   {getEvidenceLinkTypeLabel(link.type)}
                 </p>
@@ -88,7 +88,7 @@ function SubmissionVersionHeader({
         <p className="font-display text-lg font-semibold text-ink">Верзија {submission.version}</p>
         {latest ? <p className="mt-1 text-sm font-semibold text-cobalt">Најнова верзија</p> : null}
       </div>
-      <span className={`w-fit rounded-sm border px-3 py-2 text-sm font-semibold ${status.className}`}>
+      <span className={`w-fit border px-3 py-2 text-sm font-semibold ${status.className}`}>
         {status.label}
       </span>
     </div>
@@ -99,7 +99,7 @@ export function SubmissionHistory({ history }: { history: SubmissionHistoryEntry
   if (history.length === 0) return null;
 
   return (
-    <section className="mt-8 border-t border-stone-200 pt-6" aria-labelledby="submission-history-heading">
+    <section className="mt-10 border-t-2 border-ink pt-7" aria-labelledby="submission-history-heading">
       <h2 id="submission-history-heading" className="font-display text-2xl font-semibold text-ink">
         Историја на испраќања
       </h2>
@@ -107,16 +107,16 @@ export function SubmissionHistory({ history }: { history: SubmissionHistoryEntry
         Секоја верзија е замрзната копија од доказот што бил испратен на човечка проверка.
       </p>
 
-      <ol className="mt-5 space-y-4 border-l-2 border-stone-300 pl-4" aria-label="Верзии на доказот">
+      <ol className="mt-6 space-y-5 border-l-2 border-stone-300 pl-4" aria-label="Верзии на доказот">
         {history.map((submission, index) => (
           <li key={submission.id}>
             {index === 0 ? (
-              <article className="rounded-md border-2 border-cobalt bg-white" aria-label={`Верзија ${submission.version}, најнова`}>
+              <article className="border-2 border-cobalt bg-white" aria-label={`Верзија ${submission.version}, најнова`}>
                 <SubmissionVersionHeader submission={submission} latest />
                 <SubmissionVersionEvidence submission={submission} />
               </article>
             ) : (
-              <details className="rounded-md border border-stone-300 bg-white">
+              <details className="border border-stone-300 bg-white">
                 <summary className="min-h-11 cursor-pointer marker:text-cobalt focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-cobalt">
                   <SubmissionVersionHeader submission={submission} latest={false} />
                 </summary>

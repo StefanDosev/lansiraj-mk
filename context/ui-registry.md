@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-13 during Phase 17 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, journey, draft-evidence, submission, and history patterns are registered below.
+Last reviewed: 2026-08-13 during the whole-product editorial proof-system redesign. Marketing, auth, onboarding, learner, evidence, history, and current reviewer surfaces are registered below.
 
 ## How to Use
 
@@ -25,6 +25,23 @@ After building, add:
 ## Reference Images
 
 No approved Lansiraj application screenshots are registered yet. Do not use unrelated template screenshots as visual references. New screenshots may be added under `context/designs/` only after they represent accepted Lansiraj UI.
+
+## Editorial proof-system override — established 2026-08-13
+
+This baseline supersedes pre-redesign surface and radius recipes in older entries while preserving their semantic, state, and accessibility rules.
+
+| Property | Correct pattern |
+| --- | --- |
+| Marketing composition | Asymmetric `container-public`, oversized Unbounded headings, paper grid, tactile proof artifacts |
+| Product composition | Left-aligned `container-product`, open sections, grouped records, light reading surfaces |
+| Reviewer composition | Ink navigation shell around a light operational workspace |
+| Primary structure | `border-y-2 border-ink`, grouped rows, or `border-l-4` annotations before adding a card |
+| Standalone artifact | `border-2 border-ink`, square corners, optional `proof-shadow` |
+| Form controls | White `rounded-md` inputs with Stone border; `rounded-sm` actions and 44 px minimum targets |
+| Status | `StatusMarker` with text plus semantic tone; never colour alone |
+| Motion | `pressable`, `Reveal`, and `evidence-row-motion` only; all values come from global motion tokens |
+
+**Pattern notes:** Saturated colours identify brand or state, not generic containers. Decorative imagery stays outside work areas. Earlier entries that call a whole workflow a rounded card should now be read as an open reading surface unless the component is a true standalone checkpoint.
 
 ## Components
 
@@ -246,10 +263,10 @@ Last updated: 2026-08-12
 | --- | --- |
 | Background | main article `bg-white`; state/context rail `bg-stone-100` |
 | Border | article/criteria/rail `border-stone-300`; section dividers `border-stone-200` |
-| Border radius | article, criteria, and rail `rounded-md`; status `rounded-sm` |
+| Border radius | no radius on reading surfaces or grouped criteria; status `rounded-sm` |
 | Text — primary | titles/numbers `text-ink`; supporting content `text-stone-700` |
 | Typography | page title `font-display text-3xl md:text-4xl font-semibold`; section titles `font-display text-2xl font-semibold` |
-| Spacing | panels `p-5 md:p-6`; sections `mt-8 pt-6`; criteria `space-y-3 p-4` |
+| Spacing | article `p-5 md:p-7`; sections `mt-10 pt-7`; criteria use divided `py-4` rows |
 | Interactive state | back link uses underlined Cobalt treatment and the global focus outline |
 | Shadow | none |
 | Accent usage | Cobalt identifies curriculum context; status colours remain state-specific |
@@ -265,7 +282,7 @@ Last updated: 2026-08-12
 | --- | --- |
 | Background | task `bg-white`; feedback/context `bg-stone-100` |
 | Border | panels `border-stone-300`; section dividers `border-stone-200`; state badge uses its semantic border |
-| Border radius | panels `rounded-md`; state badge `rounded-sm` |
+| Border radius | no radius on reading/annotation surfaces; state marker `rounded-sm` |
 | Text — primary | headings/status `text-ink`; supporting copy `text-stone-700` |
 | Typography | task title `font-display text-3xl md:text-4xl font-semibold`; panel headings `font-display text-lg` or `text-xl font-semibold` |
 | Spacing | task `p-5 md:p-6`; feedback `p-4`; sections `mt-8 pt-6` |
@@ -282,9 +299,9 @@ Last updated: 2026-08-12
 
 | Property | Class |
 | --- | --- |
-| Background | journey `bg-white`; locked endpoint `bg-stone-100` |
+| Background | open journey `bg-white`; locked endpoint `bg-stone-100` |
 | Border | container/checkpoints `border-stone-300`; task dividers `border-stone-200`; semantic checkpoint borders use Ink, Cobalt, or Coral |
-| Border radius | container/endpoint `rounded-md`; checkpoints `rounded-full` |
+| Border radius | no radius on journey/endpoint; checkpoints are square editorial markers |
 | Text — primary | headings/links `text-ink`; supporting state copy `text-stone-700` |
 | Typography | section title `font-display text-2xl md:text-3xl font-semibold`; task links/states `font-semibold` |
 | Spacing | container `p-5 md:p-6`; task rows `py-4`; major sections `mt-8 pt-6` |
@@ -301,13 +318,13 @@ Last updated: 2026-08-13
 
 | Property | Class |
 | --- | --- |
-| Background | editor inherits White article; link rows `bg-white`; empty state `bg-stone-100`; submit panel `bg-canvas` |
-| Border | sections `border-stone-200`; fields/link rows `border-stone-300`; submit panel `border-2 border-cobalt`; error `border-coral`; success `border-cobalt` |
-| Border radius | fields/panels `rounded-md`; actions `rounded-sm` |
+| Background | editor inherits White article; grouped link rows are open; empty/status states `bg-stone-100`; submit panel `bg-canvas` |
+| Border | strong section rules; grouped link dividers `border-stone-300`; submit panel `border-2 border-cobalt`; error/success use semantic left rules |
+| Border radius | controls `rounded-md`; actions `rounded-sm`; no radius on workflow panels |
 | Text — primary | headings/labels/actions `text-ink`; supporting copy `text-stone-700` |
 | Typography | section title `font-display text-2xl font-semibold`; link legend `text-sm font-semibold`; help/error `text-sm leading-relaxed` |
-| Spacing | form `space-y-6`; link rows `p-4`; submit panel `p-5`; controls `px-3.5 py-3`; field groups `gap-4` |
-| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; explicit confirmation checkbox; disabled opacity; reduced-motion-safe primary lift |
+| Spacing | form `space-y-6`; link rows `py-5`; submit panel `p-5 md:p-6`; controls `px-3.5 py-3`; field groups `gap-4` |
+| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; explicit confirmation checkbox; `evidence-row-motion` add/remove; disabled opacity; semantic press feedback |
 | Shadow | none |
 | Accent usage | Launch Yellow marks explicit save; Cobalt marks submit/pending review; Coral structures validation/conflict errors |
 
@@ -320,9 +337,9 @@ Last updated: 2026-08-13
 
 | Property | Class |
 | --- | --- |
-| Background | version/link cards `bg-white` |
+| Background | version records `bg-white`; evidence links `bg-stone-100` |
 | Border | latest `border-2 border-cobalt`; older/link cards `border-stone-300`; timeline `border-l-2 border-stone-300`; internal dividers `border-stone-200` |
-| Border radius | cards `rounded-md`; status badges `rounded-sm` |
+| Border radius | no radius on version/link records; status badges `rounded-sm` |
 | Text — primary | headings/labels `text-ink`; supporting copy and URLs `text-stone-700` |
 | Typography | section heading `font-display text-2xl font-semibold`; version heading `font-display text-lg font-semibold`; metadata `text-sm`; link type `text-xs font-semibold uppercase tracking-widest` |
 | Spacing | timeline `space-y-4 pl-4`; version headers/content `px-4 md:px-5`; link cards `p-4` |
@@ -331,6 +348,89 @@ Last updated: 2026-08-13
 | Accent usage | Cobalt marks newest/pending evidence; Coral marks revision-required; Acid marks approved |
 
 **Pattern notes:** Submission history is a server-rendered, newest-first ordered list of immutable evidence versions. The newest version stays fully expanded; older versions use native disclosures without duplicating content or adding client JavaScript. Each version keeps its status and timestamps adjacent to the exact frozen text and ordered labelled links. Empty text or link sections remain explicit because a valid submission may contain either proof form. The timeline is omitted entirely before the first submission, follows the editor during revision work, and otherwise appears directly after the proof requirement.
+
+### Proof Artifact
+
+File: `components/ui/proof-artifact.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | semantic variants `bg-white`, `bg-launch`, `bg-cobalt`, `bg-acid` |
+| Border | `border-2 border-ink` |
+| Border radius | none |
+| Text | Ink except the inverse Cobalt variant, which uses White |
+| Spacing | `p-5`; label `mb-4` |
+| Shadow | optional `proof-shadow` at the composition level |
+| Accent usage | variant communicates artifact role, never feature-local colour |
+
+**Pattern notes:** Use for scope notes, evidence snapshots, reviewer annotations, browser previews, and URL receipts. It is a semantic article, exposes `data-proof-variant` for stable tests, and must not replace ordinary layout sections.
+
+### Section Heading
+
+File: `components/ui/section-heading.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | inherited |
+| Border | none |
+| Border radius | none |
+| Text | Cobalt uppercase eyebrow; Ink display heading; Stone 700 description |
+| Typography | `font-display text-3xl md:text-5xl font-semibold leading-tight` |
+| Spacing | title `mt-3`; description `mt-4` |
+| Accent usage | Cobalt only for compact section identity |
+
+**Pattern notes:** Marketing narrative sections use one addressable heading and optional description. Product screens may use the same hierarchy at smaller local sizes but remain task-focused.
+
+### Status Marker
+
+File: `components/ui/status-marker.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | White, Acid, or Ink according to semantic tone |
+| Border | `border`; semantic Cobalt, Coral, Ink, or Stone token |
+| Border radius | `rounded-sm` |
+| Text | always includes a readable Macedonian label |
+| Spacing | `px-3 py-2`; `w-fit` |
+| Accent usage | neutral, active, revision, approved, and inverse variants only |
+
+**Pattern notes:** Status meaning is exposed through text and `data-status-tone`, never colour alone. Reuse this component in learner and reviewer records instead of composing feature-specific badges.
+
+### Illustration Frame
+
+File: `components/ui/illustration-frame.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | `bg-white`, with optional semantic composition override |
+| Border | `border-2 border-ink`; caption repeats the strong top rule |
+| Border radius | none |
+| Text | Ink uppercase caption |
+| Spacing | caption `px-4 py-3` |
+| Shadow | none |
+| Accent usage | supplied artwork must already fit Lansiraj tokens |
+
+**Pattern notes:** Only approved local assets from `context/design/illustration-manifest.md` may use this frame. Informative scenes require Macedonian alt text. Keep the frame out of evidence, assignment, and reviewer forms.
+
+### Viewport Reveal
+
+File: `components/ui/reveal.tsx`
+Last updated: 2026-08-13
+
+| Property | Pattern |
+| --- | --- |
+| Properties | opacity and transform only |
+| Duration | `--duration-stage` with `--stagger-step` |
+| Easing | `--ease-out` |
+| Trigger | one-time viewport intersection |
+| Reduced motion | transforms and stagger removed; content remains immediately visible |
+| Fallback | initial content is visible when JavaScript or IntersectionObserver is unavailable |
+
+**Pattern notes:** Restrict to occasional marketing story sections. Never wrap navigation, product forms, dense rows, or frequently used controls.
 
 ## Foundations
 

@@ -1,4 +1,5 @@
 import type { CurrentProject } from "@/features/projects/projects.types";
+import { StatusMarker } from "@/components/ui/status-marker";
 
 type Props = { project: CurrentProject; audience: "learner" | "reviewer" };
 
@@ -18,22 +19,22 @@ export function ProjectScopeSummary({ project, audience }: Props) {
   const assessment = project.scopeAssessment;
   return (
     <div className="space-y-6">
-      <section className="rounded-md border border-stone-300 bg-white p-5 text-ink md:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-200 pb-5">
-          <div><p className="text-sm font-semibold uppercase tracking-widest text-cobalt">Опсег на проектот</p><h1 className="mt-3 font-display text-3xl font-semibold leading-tight">{project.title}</h1></div>
-          <span className="rounded-sm border border-stone-300 bg-stone-100 px-3 py-1.5 text-sm font-semibold text-ink">{statusLabels[project.status]}</span>
+      <section className="bg-white text-ink">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-ink pb-6">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-cobalt">Scope note · замрзната насока</p><h1 className="mt-4 font-display text-4xl font-semibold leading-tight md:text-5xl">{project.title}</h1></div>
+          <StatusMarker label={statusLabels[project.status]} tone={project.status === "completed" ? "approved" : project.status === "active" ? "active" : "neutral"} />
         </div>
-        <dl className="mt-6 grid gap-6 md:grid-cols-2">
-          <ScopeField label="За кого е проектот?">{project.targetUser}</ScopeField>
-          <ScopeField label="Кој проблем го решава?">{project.problemStatement}</ScopeField>
-          <ScopeField label="Една главна акција">{project.coreAction}</ScopeField>
-          <ScopeField label="Што нема да се гради?"><ul className="list-disc space-y-1 pl-5">{project.nonFeatures.map((item) => <li key={item}>{item}</li>)}</ul></ScopeField>
-          <ScopeField label="Време неделно">{project.weeklyHours} часа</ScopeField>
-          <ScopeField label="Целен датум">{formatDate(project.targetLaunchDate)}</ScopeField>
+        <dl className="grid gap-0 md:grid-cols-2">
+          <div className="border-b border-stone-300 p-5 md:border-r"><ScopeField label="За кого е проектот?">{project.targetUser}</ScopeField></div>
+          <div className="border-b border-stone-300 p-5"><ScopeField label="Кој проблем го решава?">{project.problemStatement}</ScopeField></div>
+          <div className="border-b border-stone-300 p-5 md:border-r"><ScopeField label="Една главна акција">{project.coreAction}</ScopeField></div>
+          <div className="border-b border-stone-300 p-5"><ScopeField label="Што нема да се гради?"><ul className="list-disc space-y-1 pl-5">{project.nonFeatures.map((item) => <li key={item}>{item}</li>)}</ul></ScopeField></div>
+          <div className="p-5 md:border-r"><ScopeField label="Време неделно">{project.weeklyHours} часа</ScopeField></div>
+          <div className="p-5"><ScopeField label="Целен датум">{formatDate(project.targetLaunchDate)}</ScopeField></div>
         </dl>
       </section>
-      <aside className="rounded-md border border-stone-300 bg-stone-100 p-5 text-ink md:p-6" aria-labelledby="scope-readiness-heading">
-        <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">Рачна проверка</p>
+      <aside className="border-l-4 border-cobalt bg-stone-100 p-5 text-ink md:p-6" aria-labelledby="scope-readiness-heading">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cobalt">Reviewer annotation</p>
         <div className="mt-3 flex items-center gap-3">
           <span aria-hidden="true" className={`h-3 w-3 shrink-0 rounded-full border border-ink ${assessment?.readiness === "ready" ? "bg-acid" : assessment?.readiness === "needs_reduction" ? "bg-coral" : "bg-white"}`} />
           <h2 id="scope-readiness-heading" className="font-display text-xl font-semibold">{!assessment ? "Сè уште нема проценка" : assessment.readiness === "ready" ? "Подготвен опсег" : "Потребно е намалување"}</h2>

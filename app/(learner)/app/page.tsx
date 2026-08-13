@@ -17,15 +17,15 @@ export default async function LearnerFoundationPage() {
   }
 
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,46rem)_minmax(18rem,1fr)]">
-      <section className="rounded-md border border-stone-300 bg-white p-5 md:p-6">
-        <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">Подготвено за почеток</p>
-        <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">{project.title}</h1>
+    <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,46rem)_minmax(18rem,1fr)]">
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cobalt">Подготвено за почеток</p>
+        <h1 className="mt-4 font-display text-4xl font-semibold leading-tight text-ink md:text-5xl">{project.title}</h1>
         <p className="mt-4 text-lg leading-relaxed text-stone-700">
           Провери ја насоката што ја зачува. Кога ќе го започнеш проектот, ќе се подготват десетте задачи и ќе се отклучи првата.
         </p>
 
-        <dl className="mt-8 space-y-6 border-y border-stone-200 py-6">
+        <dl className="mt-8 space-y-6 border-y-2 border-ink bg-white px-5 py-6 md:px-6">
           <div>
             <dt className="text-sm font-semibold text-ink">Корисник</dt>
             <dd className="mt-1 leading-relaxed text-stone-700">{project.targetUser}</dd>
@@ -44,10 +44,10 @@ export default async function LearnerFoundationPage() {
           <StartProjectForm />
         </div>
       </section>
-      <aside className="rounded-md border border-stone-300 bg-stone-100 p-5 lg:sticky lg:top-8">
-        <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">Што следува</p>
+      <aside className="border-2 border-ink bg-launch p-5 proof-shadow lg:sticky lg:top-24">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink">Што следува</p>
         <h2 className="mt-3 font-display text-xl font-semibold text-ink">Десет докази до јавен тест</h2>
-        <ul className="mt-4 space-y-3 text-sm leading-relaxed text-stone-700">
+        <ul className="mt-4 space-y-3 text-sm leading-relaxed text-ink">
           <li>Само Задача 01 ќе биде достапна.</li>
           <li>Следниот чекор се отклучува по одобрен доказ.</li>
           <li>Започнувањето не го менува зачуваниот scope.</li>

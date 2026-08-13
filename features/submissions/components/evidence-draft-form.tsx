@@ -49,6 +49,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
   const [links, setLinks] = useState<DraftLinkRow[]>(() =>
     draft.links.map((link, index) => ({ ...link, key: index })),
   );
+  const [removingLinks, setRemovingLinks] = useState<Set<number>>(() => new Set());
   const statusRef = useRef<HTMLDivElement>(null);
   const submissionStatusRef = useRef<HTMLDivElement>(null);
   const [dirty, setDirty] = useState(false);
@@ -83,12 +84,31 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
     ]);
   };
 
+  const removeLink = (key: number) => {
+    setDirty(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setLinks((current) => current.filter((item) => item.key !== key));
+      return;
+    }
+
+    setRemovingLinks((current) => new Set(current).add(key));
+  };
+
+  const finishRemovingLink = (key: number) => {
+    setLinks((current) => current.filter((item) => item.key !== key));
+    setRemovingLinks((current) => {
+      const next = new Set(current);
+      next.delete(key);
+      return next;
+    });
+  };
+
   const hasSavedProof = state.values.evidenceText.trim().length > 0
     || state.values.links.length > 0;
   const readyToConfirm = Boolean(state.values.expectedUpdatedAt) && hasSavedProof && !dirty;
 
   return (
-    <section className="mt-8 border-t border-stone-200 pt-6" aria-labelledby="evidence-draft-title">
+    <section className="mt-10 border-t-2 border-ink pt-7" aria-labelledby="evidence-draft-title">
       <h2 id="evidence-draft-title" className="font-display text-2xl font-semibold text-ink">
         Draft за доказ
       </h2>
@@ -105,7 +125,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
             ref={statusRef}
             role={state.status === "error" ? "alert" : "status"}
             tabIndex={-1}
-            className={`rounded-md border bg-white p-4 text-ink ${state.status === "error" ? "border-coral" : "border-cobalt"}`}
+            className={`border-l-4 bg-stone-100 p-4 text-ink ${state.status === "error" ? "border-coral" : "border-cobalt"}`}
           >
             <p className="font-semibold">{state.status === "error" ? "Draft-от не е зачуван" : "Зачувано"}</p>
             <p className="mt-1 text-sm leading-relaxed">{state.message}</p>
@@ -133,14 +153,14 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
           ) : null}
         </div>
 
-        <fieldset className="space-y-4 border-t border-stone-200 pt-6">
+        <fieldset className="space-y-4 border-t border-stone-300 pt-7">
           <legend className="font-display text-xl font-semibold text-ink">Линкови за доказ</legend>
           <p className="text-sm leading-relaxed text-stone-700">
             Додај до 10 јавни или безбедно споделени HTTPS линкови. Секој ред мора да има вид, ознака и URL.
           </p>
 
           {links.length === 0 ? (
-            <p className="rounded-md border border-stone-300 bg-stone-100 p-4 text-sm leading-relaxed text-stone-700">
+            <p className="border-l-4 border-stone-300 bg-stone-100 p-4 text-sm leading-relaxed text-stone-700">
               Сè уште нема додадени линкови. Линковите се изборни за draft.
             </p>
           ) : null}
@@ -149,7 +169,17 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
             const errors = state.status === "error" ? state.fieldErrors?.links?.[index] : undefined;
             const prefix = `evidence-link-${index}`;
             return (
-              <fieldset key={link.key} className="rounded-md border border-stone-300 p-4">
+              <fieldset
+                key={link.key}
+                className="evidence-row-motion border-t border-stone-300 py-5 first:border-t-2 first:border-ink"
+                data-removing={removingLinks.has(link.key)}
+                disabled={removingLinks.has(link.key)}
+                onTransitionEnd={(event) => {
+                  if (event.propertyName === "opacity" && removingLinks.has(link.key)) {
+                    finishRemovingLink(link.key);
+                  }
+                }}
+              >
                 <legend className="px-1 text-sm font-semibold text-ink">Линк {index + 1}</legend>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
@@ -170,20 +200,20 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
                   <input id={`${prefix}-url`} name="linkUrl" type="url" inputMode="url" value={link.url} onChange={(event) => updateLink(link.key, "url", event.target.value)} maxLength={2048} aria-invalid={Boolean(errors?.url)} aria-describedby={errors?.url ? `${prefix}-url-error` : undefined} className={inputClass} placeholder="https://…" />
                   {errors?.url ? <p id={`${prefix}-url-error`} className="mt-2 text-sm font-medium text-ink">{errors.url[0]}</p> : null}
                 </div>
-                <button type="button" onClick={() => { setDirty(true); setLinks((current) => current.filter((item) => item.key !== link.key)); }} className="mt-4 inline-flex min-h-11 items-center rounded-sm border-2 border-ink px-4 py-2 font-semibold text-ink hover:bg-stone-100">
+                <button type="button" onClick={() => removeLink(link.key)} className="pressable mt-4 inline-flex min-h-11 items-center rounded-sm border-2 border-ink px-4 py-2 font-semibold text-ink hover:bg-stone-100">
                   Отстрани линк {index + 1}
                 </button>
               </fieldset>
             );
           })}
 
-          <button type="button" onClick={addLink} disabled={links.length >= 10} className="inline-flex min-h-11 items-center rounded-sm border-2 border-ink px-4 py-2 font-semibold text-ink hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="button" onClick={addLink} disabled={links.length >= 10} className="pressable inline-flex min-h-11 items-center rounded-sm border-2 border-ink px-4 py-2 font-semibold text-ink hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50">
             Додај линк
           </button>
         </fieldset>
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
-          <button type="submit" disabled={savePending || submitPending} className="inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-ink bg-launch px-5 py-2.5 font-semibold text-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none md:w-auto">
+          <button type="submit" disabled={savePending || submitPending} className="pressable inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-ink bg-launch px-5 py-2.5 font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50 md:w-auto">
             {savePending ? "Зачувуваме…" : "Зачувај draft"}
           </button>
           {dirty ? (
@@ -192,7 +222,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
         </div>
       </form>
 
-      <section className="mt-8 rounded-md border-2 border-cobalt bg-canvas p-5" aria-labelledby="submit-evidence-title">
+      <section className="mt-10 border-2 border-cobalt bg-canvas p-5 md:p-6" aria-labelledby="submit-evidence-title">
         <h3 id="submit-evidence-title" className="font-display text-xl font-semibold text-ink">
           Испрати на проверка
         </h3>
@@ -205,7 +235,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
             ref={submissionStatusRef}
             role={submissionState.status === "error" ? "alert" : "status"}
             tabIndex={-1}
-            className={`mt-4 rounded-md border bg-canvas p-4 text-ink ${submissionState.status === "error" ? "border-coral" : "border-cobalt"}`}
+            className={`mt-4 border-l-4 bg-stone-100 p-4 text-ink ${submissionState.status === "error" ? "border-coral" : "border-cobalt"}`}
           >
             <p className="font-semibold">{submissionState.status === "error" ? "Доказот не е испратен" : "Испратено"}</p>
             <p className="mt-1 text-sm leading-relaxed">{submissionState.message}</p>
@@ -238,7 +268,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
           <button
             type="submit"
             disabled={!readyToConfirm || !confirmed || savePending || submitPending}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-ink bg-cobalt px-5 py-2.5 font-semibold text-canvas transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none md:w-auto"
+            className="pressable inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-ink bg-cobalt px-5 py-2.5 font-semibold text-canvas disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
           >
             {submitPending ? "Испраќаме…" : "Испрати доказ"}
           </button>
