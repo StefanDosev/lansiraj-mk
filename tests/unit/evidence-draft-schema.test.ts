@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { evidenceDraftSchema } from "@/features/submissions/submissions.schema";
+import {
+  evidenceDraftSchema,
+  evidenceSubmissionSchema,
+} from "@/features/submissions/submissions.schema";
 
 const baseDraft = {
   projectAssignmentId: "84000000-0000-4000-8000-000000000001",
@@ -60,5 +63,31 @@ describe("evidenceDraftSchema", () => {
       expect(result.error.issues.map((issue) => issue.path.join("."))).toContain("evidenceText");
       expect(result.error.issues.map((issue) => issue.path.join("."))).toContain("links");
     }
+  });
+});
+
+describe("evidenceSubmissionSchema", () => {
+  const submission = {
+    projectAssignmentId: "84000000-0000-4000-8000-000000000001",
+    expectedUpdatedAt: "2026-08-13T08:30:00.000Z",
+    confirmation: "confirmed",
+  };
+
+  it("accepts a saved draft timestamp with explicit confirmation", () => {
+    expect(evidenceSubmissionSchema.safeParse(submission).success).toBe(true);
+  });
+
+  it("rejects a missing saved draft timestamp", () => {
+    expect(evidenceSubmissionSchema.safeParse({
+      ...submission,
+      expectedUpdatedAt: "",
+    }).success).toBe(false);
+  });
+
+  it("rejects submission without explicit confirmation", () => {
+    expect(evidenceSubmissionSchema.safeParse({
+      ...submission,
+      confirmation: "",
+    }).success).toBe(false);
   });
 });

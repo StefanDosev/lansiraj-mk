@@ -547,6 +547,95 @@ export type Database = {
           },
         ]
       }
+      submission_links: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          link_type: string
+          position: number
+          submission_id: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          link_type: string
+          position: number
+          submission_id: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          link_type?: string
+          position?: number
+          submission_id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_links_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          evidence_text: string
+          id: string
+          project_assignment_id: string
+          reviewed_at: string | null
+          status: string
+          submitted_at: string
+          supersedes_submission_id: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          evidence_text: string
+          id?: string
+          project_assignment_id: string
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string
+          supersedes_submission_id?: string | null
+          version: number
+        }
+        Update: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id?: string
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string
+          supersedes_submission_id?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_project_assignment_id_fkey"
+            columns: ["project_assignment_id"]
+            isOneToOne: false
+            referencedRelation: "project_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_supersedes_submission_id_fkey"
+            columns: ["supersedes_submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -591,6 +680,17 @@ export type Database = {
         }[]
       }
       start_project: { Args: never; Returns: string }
+      submit_assignment: {
+        Args: {
+          p_expected_draft_updated_at: string
+          p_project_assignment_id: string
+        }
+        Returns: {
+          submission_id: string
+          submitted_at: string
+          version: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

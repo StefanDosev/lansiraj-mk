@@ -2,12 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 
-import { evidenceDraftSchema } from "@/features/submissions/submissions.schema";
+import {
+  evidenceDraftSchema,
+  evidenceSubmissionSchema,
+} from "@/features/submissions/submissions.schema";
 import type {
   EvidenceDraftFieldErrors,
   EvidenceDraftState,
   EvidenceDraftValues,
   EvidenceLinkType,
+  EvidenceSubmissionState,
+  EvidenceSubmissionValues,
 } from "@/features/submissions/submissions.types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -100,4 +105,79 @@ export async function saveEvidenceDraft(
   const nextValues = { ...parsed.data, expectedUpdatedAt: saved.updated_at };
   revalidatePath("/app/assignments/[slug]", "page");
   return { status: "success", values: nextValues, message: "Draft-от е зачуван." };
+}
+
+function submissionValuesFromFormData(formData: FormData): EvidenceSubmissionValues {
+  return {
+    projectAssignmentId: String(formData.get("projectAssignmentId") ?? ""),
+    expectedUpdatedAt: String(formData.get("expectedUpdatedAt") ?? ""),
+    confirmation: String(formData.get("confirmation") ?? ""),
+  };
+}
+
+export async function submitEvidence(
+  _previousState: EvidenceSubmissionState,
+  formData: FormData,
+): Promise<EvidenceSubmissionState> {
+  const values = submissionValuesFromFormData(formData);
+  const parsed = evidenceSubmissionSchema.safeParse(values);
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      values,
+      message: parsed.error.issues[0]?.message
+        ?? "Провери ја потврдата и обиди се повторно.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+  if (claimsError || !claimsData?.claims?.sub) {
+    return {
+      status: "error",
+      values,
+      message: "Сесијата истече. Најави се повторно.",
+    };
+  }
+
+  const { data, error } = await supabase.rpc("submit_assignment", {
+    p_project_assignment_id: parsed.data.projectAssignmentId,
+    p_expected_draft_updated_at: parsed.data.expectedUpdatedAt,
+  });
+
+  if (error) {
+    console.error("assignment_submit_failed", { code: error.code });
+    const conflict = error.code === "PT409" && error.message === "draft_conflict";
+    let message = "Доказот не е испратен. Обиди се повторно без да ја затвориш страницата.";
+
+    if (conflict) {
+      message = "Draft-от е променет во друг tab. Освежи ја страницата и провери ја најновата зачувана верзија.";
+    } else if (error.code === "PT409" && error.message === "submission_already_pending") {
+      message = "Овој доказ веќе е испратен на проверка. Освежи ја страницата за да ја видиш тековната состојба.";
+    } else if (error.code === "PT409") {
+      message = "Оваа задача повеќе не може да се испрати. Освежи ја страницата за да ја видиш тековната состојба.";
+    } else if (error.code === "22023" && error.message === "proof_required") {
+      message = "Пред испраќање зачувај текстуален доказ, барем еден линк, или и двете.";
+    }
+
+    return { status: "error", values, message, conflict };
+  }
+
+  const submitted = data?.[0];
+  if (!submitted) {
+    return {
+      status: "error",
+      values,
+      message: "Доказот не е испратен. Обиди се повторно.",
+    };
+  }
+
+  revalidatePath("/app");
+  revalidatePath("/app/assignments/[slug]", "page");
+  return {
+    status: "success",
+    values: { ...parsed.data, confirmation: "" },
+    message: `Верзија ${submitted.version} е испратена на човечка проверка.`,
+  };
 }

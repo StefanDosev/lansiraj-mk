@@ -171,7 +171,43 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByLabel("Текстуален доказ")).toHaveValue("Три кратки разговори со конкретни корисници.");
     await expect(page.getByLabel("Ознака")).toHaveValue("Белешки од разговорите");
     await expect(page.getByLabel("HTTPS URL")).toHaveValue("https://example.com/notes");
+    const confirmation = page.getByRole("checkbox", { name: /Разбирам дека доказот ќе се замрзне/ });
+    const submitButton = page.getByRole("button", { name: "Испрати доказ" });
+    await expect(confirmation).toBeEnabled();
+    await expect(submitButton).toBeDisabled();
+    await confirmation.check();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.click();
+    await expect(page.getByText("На проверка", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Draft за доказ" })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+    const { data: submittedProjection, error: submittedProjectionError } = await admin
+      .from("project_assignments")
+      .select("id,state,assignment:assignments!inner(position)")
+      .eq("project_id", startedProjects!.id)
+      .eq("assignments.position", 1)
+      .single();
+    expect(submittedProjectionError).toBeNull();
+    expect(submittedProjection?.state).toBe("submitted");
+
+    const { data: immutableSubmission, error: immutableSubmissionError } = await admin
+      .from("submissions")
+      .select("version,evidence_text,status,submission_links(link_type,label,url,position)")
+      .eq("project_assignment_id", submittedProjection!.id)
+      .single();
+    expect(immutableSubmissionError).toBeNull();
+    expect(immutableSubmission).toEqual({
+      version: 1,
+      evidence_text: "Три кратки разговори со конкретни корисници.",
+      status: "submitted",
+      submission_links: [{
+        link_type: "research",
+        label: "Белешки од разговорите",
+        url: "https://example.com/notes",
+        position: 1,
+      }],
+    });
 
     await page.goto("/app/assignments/research-observations");
     await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
@@ -207,7 +243,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByRole("heading", { name: "Сè уште нема проценка" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Од идеја до јавен производ" })).toBeVisible();
     await expect(page.getByRole("list", { name: "Шест фази на проектната патека" }).getByRole("listitem")).toHaveCount(6);
-    await expect(page.getByText("Тековна задача · Подготвено за работа")).toBeVisible();
+    await expect(page.getByText("Тековна задача · На проверка")).toBeVisible();
     await expect(page.getByText("0 од 10 задачи се одобрени")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Јавен URL на проектот" })).toBeVisible();
     await expect(page.getByLabel("Јавен URL на проектот").getByText("Се отклучува кога „Објави јавен URL и контактирај три лица“ ќе биде одобрено.")).toBeVisible();

@@ -43,3 +43,19 @@ export type EvidenceDraftState =
       fieldErrors?: EvidenceDraftFieldErrors;
       conflict?: boolean;
     };
+
+export type EvidenceSubmissionValues = {
+  projectAssignmentId: string;
+  expectedUpdatedAt: string;
+  confirmation: string;
+};
+
+export type EvidenceSubmissionState =
+  | { status: "idle"; values: EvidenceSubmissionValues }
+  | { status: "success"; values: EvidenceSubmissionValues; message: string }
+  | {
+      status: "error";
+      values: EvidenceSubmissionValues;
+      message: string;
+      conflict?: boolean;
+    };

@@ -294,24 +294,24 @@ Last updated: 2026-08-12
 
 **Pattern notes:** Six stages and ten assignments share one semantic DOM order: the stage rail adapts from a mobile vertical stepper to a desktop horizontal rail without duplicating content. Number, explicit state text, and exact locked prerequisite carry all meaning without colour or motion. Every assignment remains a readable link even while locked. The final endpoint is named while locked, becomes an external live URL only after launch evidence is approved, and exposes missing approved-project data as an error rather than false completion.
 
-### Evidence Draft Form
+### Evidence Draft and Submit Form
 
 File: `features/submissions/components/evidence-draft-form.tsx`
 Last updated: 2026-08-13
 
 | Property | Class |
 | --- | --- |
-| Background | editor inherits White article; link rows `bg-white`; empty state `bg-stone-100` |
-| Border | sections `border-stone-200`; fields/link rows `border-stone-300`; error `border-coral`; success `border-cobalt` |
+| Background | editor inherits White article; link rows `bg-white`; empty state `bg-stone-100`; submit panel `bg-canvas` |
+| Border | sections `border-stone-200`; fields/link rows `border-stone-300`; submit panel `border-2 border-cobalt`; error `border-coral`; success `border-cobalt` |
 | Border radius | fields/panels `rounded-md`; actions `rounded-sm` |
 | Text — primary | headings/labels/actions `text-ink`; supporting copy `text-stone-700` |
 | Typography | section title `font-display text-2xl font-semibold`; link legend `text-sm font-semibold`; help/error `text-sm leading-relaxed` |
-| Spacing | form `space-y-6`; link rows `p-4`; controls `px-3.5 py-3`; field groups `gap-4` |
-| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; disabled opacity; reduced-motion-safe primary lift |
+| Spacing | form `space-y-6`; link rows `p-4`; submit panel `p-5`; controls `px-3.5 py-3`; field groups `gap-4` |
+| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; explicit confirmation checkbox; disabled opacity; reduced-motion-safe primary lift |
 | Shadow | none |
-| Accent usage | Launch Yellow marks explicit save; Cobalt confirms save; Coral structures validation/conflict errors |
+| Accent usage | Launch Yellow marks explicit save; Cobalt marks submit/pending review; Coral structures validation/conflict errors |
 
-**Pattern notes:** Mutable evidence uses explicit save and remains visually subordinate to the assignment criteria and proof prompt. Repeatable links are semantic fieldsets with visible type, label, URL, and a 44 px labelled remove action. Empty drafts are valid; added link rows must be complete. Validation preserves entered values, focuses the result summary, and never clears evidence after a recoverable failure. The editor renders only for available or revision-required assignments; locked, submitted, and approved curriculum stays read-only.
+**Pattern notes:** Mutable evidence uses explicit save and remains visually subordinate to the assignment criteria and proof prompt. Repeatable links are semantic fieldsets with visible type, label, URL, and a 44 px labelled remove action. Empty drafts are valid; added link rows must be complete. Validation preserves entered values, focuses the result summary, and never clears evidence after a recoverable failure. Submission is a separate Cobalt review-state panel: it accepts only the last successfully saved non-empty proof, disables while changes are unsaved, and requires a labelled confirmation checkbox before the irreversible submit action. The editor renders only for available or revision-required assignments; locked, submitted, and approved curriculum stays read-only.
 
 ## Foundations
 

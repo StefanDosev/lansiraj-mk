@@ -19,3 +19,11 @@ export const evidenceDraftSchema = z.object({
   links: z.array(evidenceDraftLinkSchema).max(10, "Може да додадеш најмногу 10 линкови."),
   expectedUpdatedAt: z.union([z.literal(""), z.string().datetime({ offset: true })]),
 });
+
+export const evidenceSubmissionSchema = z.object({
+  projectAssignmentId: z.string().uuid(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }),
+  confirmation: z.literal("confirmed", {
+    error: "Потврди дека доказот е подготвен за човечка проверка.",
+  }),
+});
