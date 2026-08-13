@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 4 — Proof Submission
-**Last completed:** 15 draft text and typed-link evidence form
-**In progress:** None
-**Next:** Begin 16 transactional immutable submission
+**Last completed:** 14 six-stage journey rail and project overview
+**In progress:** 15 draft text and typed-link evidence form — Preview manual authenticated UI check pending
+**Next:** Complete Phase 15 Preview verification, then begin 16 transactional immutable submission
 **Blockers:** None
 
 ## Progress
@@ -41,7 +41,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ### Phase 4 — Proof Submission
 
-- [x] 15 Build draft text and typed-link evidence form
+- [ ] 15 Build draft text and typed-link evidence form
 - [ ] 16 Implement transactional immutable submission
 - [ ] 17 Build submission history and submitted-state UI
 
@@ -74,7 +74,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
-- 2026-08-13 — Completed Phase 15 with one owner-editable draft per project assignment, plain text evidence, up to ten ordered typed HTTPS links, explicit save, and optimistic stale-write protection. Draft text and links persist atomically through a narrowly granted database function only while an assignment is available or revision-required; mutable drafts remain separate from future immutable submissions. Owner-only RLS, state gates, constraints, conflict handling, accessible field errors, refresh persistence, and locked-task read-only behavior are covered. A clean reset, all 204 database assertions, 55 unit tests, targeted desktop and 360 px browser flows, lint, strict typecheck, production build, and diff checks pass. The Evidence Draft Form pattern is registered in the UI registry.
+- 2026-08-13 — Phase 15 implementation is complete locally with one owner-editable draft per project assignment, plain text evidence, up to ten ordered typed HTTPS links, explicit save, and optimistic stale-write protection. Draft text and links persist atomically through a narrowly granted database function only while an assignment is available or revision-required; mutable drafts remain separate from future immutable submissions. Owner-only RLS, state gates, constraints, conflict handling, accessible field errors, refresh persistence, and locked-task read-only behavior are covered. A clean reset, all 204 database assertions, 55 unit tests, targeted desktop and 360 px local browser flows, lint, strict typecheck, production build, and diff checks pass. The linked development migrations are current, commit `d39ea10` reached a Ready Vercel Preview, and public/protected route smoke checks pass. The final authenticated desktop/mobile manual Preview check remains pending because no controllable browser was available in the verification session.
 - 2026-08-12 — Completed Phase 14 with a pure journey derivation model, six-stage responsive rail, ten ordered linked tasks, explicit text states, exact locked prerequisites, and a guarded public endpoint that appears only after launch evidence approval. Later inconsistent states normalize to locked, approved launch data without a URL surfaces an explicit error, and one semantic DOM order adapts from the mobile stepper to the desktop rail. The journey pattern is registered in the UI registry. All 178 database assertions, 51 unit tests, 42 browser checks with 3 intentional skips, lint, typecheck, production build, and diff checks pass.
 - 2026-08-12 — Completed Phase 13 with a pure ordered current-assignment derivation model, database-derived approved/total progress, required-proof preview, intentional feedback placeholder, state-specific primary actions, and exact unlock messaging. Available, submitted, revision-required, locked inconsistency, empty projection, and completed-path states are explicit without adding submission/review schema early. The richer active-project query includes stage and proof context, and the dashboard pattern is registered in the UI registry. All 178 database assertions, 45 unit tests, targeted mobile/desktop learner flow, lint, typecheck, and production build pass.
 - 2026-08-12 — Completed Phase 12 with active-project and pinned-version assignment queries, safe Server Component Markdown rendering, ordered semantic acceptance criteria, readable available/locked assignment states, and an intentional not-found boundary. The learner dashboard now links to the current assignment. Raw HTML is skipped, unsafe URL protocols are rejected, all ten seeded assignments render from the database, and the shared curriculum patterns are registered in the UI registry. All 178 database assertions, 39 unit tests, targeted mobile/desktop learner flow, lint, typecheck, and production build pass.
