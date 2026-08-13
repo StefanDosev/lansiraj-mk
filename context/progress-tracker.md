@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 4 — Proof Submission
-**Last completed:** 15 draft text and typed-link evidence form
-**In progress:** 16 transactional immutable submission — local exit gate passed; linked migration, Preview deployment, and authenticated Preview verification pending
-**Next:** Ship and verify Phase 16 Preview
+**Last completed:** 16 transactional immutable submission
+**In progress:** None
+**Next:** Begin 17 submission history and submitted-state UI
 **Blockers:** None
 
 ## Progress
@@ -42,7 +42,7 @@ Update this file after every completed feature. An agent reading it must know wh
 ### Phase 4 — Proof Submission
 
 - [x] 15 Build draft text and typed-link evidence form
-- [ ] 16 Implement transactional immutable submission
+- [x] 16 Implement transactional immutable submission
 - [ ] 17 Build submission history and submitted-state UI
 
 ### Phase 5 — Human Review and Unlock
@@ -74,7 +74,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
-- 2026-08-13 — Phase 16 implementation is locally complete pending linked-environment shipment and Preview verification. `submit_assignment(...)` now row-locks the owned assignment, verifies editable state and the exact saved-draft timestamp, requires non-empty text or at least one saved HTTPS link, rejects duplicate pending submission, freezes sequential immutable text/link snapshots, moves the assignment to `submitted`, and appends an activity event atomically. The retained draft is locked by assignment state until a future revision. The UI separates save from submit, blocks stale/unsaved evidence, and requires explicit confirmation. A clean reset, all 245 database assertions, 58 unit tests, database lint/advisors, lint, strict typecheck, production build, and targeted authenticated desktop and 360 px submission flows pass.
+- 2026-08-13 — Completed Phase 16 with transactional immutable assignment submission. `submit_assignment(...)` row-locks the owned assignment, verifies editable state and the exact saved-draft timestamp, requires non-empty text or at least one saved HTTPS link, rejects duplicate pending submission, freezes sequential immutable text/link snapshots, moves the assignment to `submitted`, and appends an activity event atomically. The retained draft is locked by assignment state until a future revision. The UI separates save from submit, blocks stale/unsaved evidence, and requires explicit confirmation. A clean reset, all 245 database assertions, 58 unit tests, database lint/advisors, lint, strict typecheck, production build, and targeted authenticated desktop and 360 px submission flows pass. The linked migration is applied, the Vercel Preview is Ready, and authenticated live verification confirmed dirty-draft gating, explicit confirmation, version 1 snapshot integrity, assignment state, activity event, submitted-state UI, and no horizontal overflow at 360 px.
 - 2026-08-13 — Completed Phase 15 with one owner-editable draft per project assignment, plain text evidence, up to ten ordered typed HTTPS links, explicit save, and optimistic stale-write protection. Draft text and links persist atomically through a narrowly granted database function only while an assignment is available or revision-required; mutable drafts remain separate from future immutable submissions. Owner-only RLS, state gates, constraints, conflict handling, accessible field errors, refresh persistence, and locked-task read-only behavior are covered. A clean reset, all 204 database assertions, 55 unit tests, targeted desktop and 360 px local browser flows, lint, strict typecheck, production build, and diff checks pass. The linked development migrations are current and the Ready Vercel Preview passed authenticated desktop and 360 px manual checks: HTTP link validation and `aria-describedby`, HTTPS save and reload persistence, locked-task read-only state, no horizontal overflow, 44 px controls, and no browser warnings/errors.
 - 2026-08-12 — Completed Phase 14 with a pure journey derivation model, six-stage responsive rail, ten ordered linked tasks, explicit text states, exact locked prerequisites, and a guarded public endpoint that appears only after launch evidence approval. Later inconsistent states normalize to locked, approved launch data without a URL surfaces an explicit error, and one semantic DOM order adapts from the mobile stepper to the desktop rail. The journey pattern is registered in the UI registry. All 178 database assertions, 51 unit tests, 42 browser checks with 3 intentional skips, lint, typecheck, production build, and diff checks pass.
 - 2026-08-12 — Completed Phase 13 with a pure ordered current-assignment derivation model, database-derived approved/total progress, required-proof preview, intentional feedback placeholder, state-specific primary actions, and exact unlock messaging. Available, submitted, revision-required, locked inconsistency, empty projection, and completed-path states are explicit without adding submission/review schema early. The richer active-project query includes stage and proof context, and the dashboard pattern is registered in the UI registry. All 178 database assertions, 45 unit tests, targeted mobile/desktop learner flow, lint, typecheck, and production build pass.
