@@ -178,8 +178,18 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await confirmation.check();
     await expect(submitButton).toBeEnabled();
     await submitButton.click();
-    await expect(page.getByText("На проверка", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("complementary").getByText("На проверка", { exact: true }),
+    ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Draft за доказ" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Историја на испраќања" })).toBeVisible();
+    await expect(page.getByText("Верзија 1", { exact: true })).toBeVisible();
+    await expect(page.getByText("Најнова верзија", { exact: true })).toBeVisible();
+    await expect(page.getByText("Три кратки разговори со конкретни корисници.", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Белешки од разговорите" })).toHaveAttribute(
+      "href",
+      "https://example.com/notes",
+    );
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     const { data: submittedProjection, error: submittedProjectionError } = await admin

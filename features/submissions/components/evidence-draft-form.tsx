@@ -6,24 +6,15 @@ import {
   saveEvidenceDraft,
   submitEvidence,
 } from "@/features/submissions/submissions.actions";
-import type {
-  EvidenceDraft,
-  EvidenceDraftLink,
-  EvidenceDraftState,
-  EvidenceSubmissionState,
+import {
+  evidenceLinkTypeOptions,
+  type EvidenceDraft,
+  type EvidenceDraftLink,
+  type EvidenceDraftState,
+  type EvidenceSubmissionState,
 } from "@/features/submissions/submissions.types";
 
 const inputClass = "mt-2 w-full rounded-md border border-stone-300 bg-white px-3.5 py-3 text-ink placeholder:text-stone-600 focus:border-cobalt focus:outline-none focus:ring-3 focus:ring-cobalt/20 aria-invalid:border-coral aria-invalid:ring-coral/20";
-
-const linkTypeOptions = [
-  ["research", "Истражување"],
-  ["figma", "Figma"],
-  ["repository", "Repository"],
-  ["preview", "Preview"],
-  ["live", "Live проект"],
-  ["testing", "Тестирање"],
-  ["other", "Друго"],
-] as const;
 
 type DraftLinkRow = EvidenceDraftLink & { key: number };
 
@@ -164,7 +155,7 @@ export function EvidenceDraftForm({ draft }: { draft: EvidenceDraft }) {
                   <div>
                     <label htmlFor={`${prefix}-type`} className="text-sm font-semibold text-ink">Вид</label>
                     <select id={`${prefix}-type`} name="linkType" value={link.type} onChange={(event) => updateLink(link.key, "type", event.target.value)} aria-invalid={Boolean(errors?.type)} aria-describedby={errors?.type ? `${prefix}-type-error` : undefined} className={inputClass}>
-                      {linkTypeOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                      {evidenceLinkTypeOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                     </select>
                     {errors?.type ? <p id={`${prefix}-type-error`} className="mt-2 text-sm font-medium text-ink">{errors.type[0]}</p> : null}
                   </div>

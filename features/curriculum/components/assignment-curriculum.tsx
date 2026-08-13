@@ -38,9 +38,14 @@ const statePresentation: Record<
 type AssignmentCurriculumProps = {
   assignment: CurriculumAssignment;
   evidenceEditor?: ReactNode;
+  submissionHistory?: ReactNode;
 };
 
-export function AssignmentCurriculum({ assignment, evidenceEditor }: AssignmentCurriculumProps) {
+export function AssignmentCurriculum({
+  assignment,
+  evidenceEditor,
+  submissionHistory,
+}: AssignmentCurriculumProps) {
   const state = statePresentation[assignment.state];
 
   return (
@@ -97,6 +102,7 @@ export function AssignmentCurriculum({ assignment, evidenceEditor }: AssignmentC
         </section>
 
         {evidenceEditor}
+        {submissionHistory}
       </article>
 
       <aside className="rounded-md border border-stone-300 bg-stone-100 p-5 lg:sticky lg:top-8">

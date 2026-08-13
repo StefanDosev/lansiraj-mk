@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-13 during Phase 15 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, journey, and draft-evidence patterns are registered below.
+Last reviewed: 2026-08-13 during Phase 17 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, journey, draft-evidence, submission, and history patterns are registered below.
 
 ## How to Use
 
@@ -312,6 +312,25 @@ Last updated: 2026-08-13
 | Accent usage | Launch Yellow marks explicit save; Cobalt marks submit/pending review; Coral structures validation/conflict errors |
 
 **Pattern notes:** Mutable evidence uses explicit save and remains visually subordinate to the assignment criteria and proof prompt. Repeatable links are semantic fieldsets with visible type, label, URL, and a 44 px labelled remove action. Empty drafts are valid; added link rows must be complete. Validation preserves entered values, focuses the result summary, and never clears evidence after a recoverable failure. Submission is a separate Cobalt review-state panel: it accepts only the last successfully saved non-empty proof, disables while changes are unsaved, and requires a labelled confirmation checkbox before the irreversible submit action. The editor renders only for available or revision-required assignments; locked, submitted, and approved curriculum stays read-only.
+
+### Submission History
+
+File: `features/submissions/components/submission-history.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | version/link cards `bg-white` |
+| Border | latest `border-2 border-cobalt`; older/link cards `border-stone-300`; timeline `border-l-2 border-stone-300`; internal dividers `border-stone-200` |
+| Border radius | cards `rounded-md`; status badges `rounded-sm` |
+| Text — primary | headings/labels `text-ink`; supporting copy and URLs `text-stone-700` |
+| Typography | section heading `font-display text-2xl font-semibold`; version heading `font-display text-lg font-semibold`; metadata `text-sm`; link type `text-xs font-semibold uppercase tracking-widest` |
+| Spacing | timeline `space-y-4 pl-4`; version headers/content `px-4 md:px-5`; link cards `p-4` |
+| Interactive state | older versions use native `details`/`summary` with a 44 px minimum target and Cobalt focus outline; evidence links use the registered underlined Cobalt treatment |
+| Shadow | none |
+| Accent usage | Cobalt marks newest/pending evidence; Coral marks revision-required; Acid marks approved |
+
+**Pattern notes:** Submission history is a server-rendered, newest-first ordered list of immutable evidence versions. The newest version stays fully expanded; older versions use native disclosures without duplicating content or adding client JavaScript. Each version keeps its status and timestamps adjacent to the exact frozen text and ordered labelled links. Empty text or link sections remain explicit because a valid submission may contain either proof form. The timeline is omitted entirely before the first submission, follows the editor during revision work, and otherwise appears directly after the proof requirement.
 
 ## Foundations
 

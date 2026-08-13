@@ -1,6 +1,6 @@
 begin;
 
-select plan(41);
+select plan(42);
 
 select has_table('public', 'submissions', 'submissions table exists');
 select has_table('public', 'submission_links', 'submission links table exists');
@@ -171,6 +171,7 @@ select is((select evidence_text from public.submissions where version = 1),'Vers
 
 select set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000003',true);
 select is((select count(*) from public.submissions),0::bigint,'other learner cannot read submissions');
+select is((select count(*) from public.submission_links),0::bigint,'other learner cannot read submission history links');
 select throws_ok(
   $$select public.submit_assignment('94000000-0000-4000-8000-000000000001','2000-01-01T00:00:00Z')$$,
   'PT404','assignment_not_found','other learner cannot submit owner assignment'
