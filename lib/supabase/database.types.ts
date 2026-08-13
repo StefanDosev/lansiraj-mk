@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -97,6 +97,76 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_draft_links: {
+        Row: {
+          created_at: string
+          draft_id: string
+          id: string
+          label: string
+          link_type: string
+          position: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          draft_id: string
+          id?: string
+          label: string
+          link_type: string
+          position: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          draft_id?: string
+          id?: string
+          label?: string
+          link_type?: string
+          position?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_draft_links_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "assignment_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_drafts: {
+        Row: {
+          created_at: string
+          evidence_text: string
+          id: string
+          project_assignment_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_drafts_project_assignment_id_fkey"
+            columns: ["project_assignment_id"]
+            isOneToOne: true
+            referencedRelation: "project_assignments"
             referencedColumns: ["id"]
           },
         ]
@@ -506,6 +576,18 @@ export type Database = {
           has_active_membership: boolean
           is_reviewer: boolean
           onboarding_completed: boolean
+        }[]
+      }
+      save_assignment_draft: {
+        Args: {
+          p_evidence_text: string
+          p_expected_updated_at?: string
+          p_links: Json
+          p_project_assignment_id: string
+        }
+        Returns: {
+          draft_id: string
+          updated_at: string
         }[]
       }
       start_project: { Args: never; Returns: string }

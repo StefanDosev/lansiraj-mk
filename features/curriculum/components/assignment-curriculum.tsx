@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { CurriculumMarkdown } from "@/features/curriculum/components/curriculum-markdown";
 import type { CurriculumAssignment } from "@/features/curriculum/curriculum.types";
@@ -15,7 +16,7 @@ const statePresentation: Record<
   available: {
     label: "Подготвено за работа",
     className: "border-ink bg-white text-ink",
-    description: "Ова е тековната задача. Формата за доказ ќе биде додадена во следната фаза.",
+    description: "Ова е тековната задача. Подготви го и зачувај го draft-от за доказ подолу.",
   },
   submitted: {
     label: "На проверка",
@@ -36,9 +37,10 @@ const statePresentation: Record<
 
 type AssignmentCurriculumProps = {
   assignment: CurriculumAssignment;
+  evidenceEditor?: ReactNode;
 };
 
-export function AssignmentCurriculum({ assignment }: AssignmentCurriculumProps) {
+export function AssignmentCurriculum({ assignment, evidenceEditor }: AssignmentCurriculumProps) {
   const state = statePresentation[assignment.state];
 
   return (
@@ -93,6 +95,8 @@ export function AssignmentCurriculum({ assignment }: AssignmentCurriculumProps) 
             Не внесувај API клучеви, лозинки, приватни токени или лични податоци од интервјуирани лица.
           </p>
         </section>
+
+        {evidenceEditor}
       </article>
 
       <aside className="rounded-md border border-stone-300 bg-stone-100 p-5 lg:sticky lg:top-8">

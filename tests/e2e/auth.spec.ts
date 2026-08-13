@@ -156,11 +156,27 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByRole("heading", { name: "Критериуми за прифаќање" })).toBeVisible();
     await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
     await expect(page.getByRole("list").filter({ hasText: "Опишан е еден специфичен корисник" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Draft за доказ" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Зачувај draft" })).toBeVisible();
+    await page.getByLabel("Текстуален доказ").fill("Три кратки разговори со конкретни корисници.");
+    await page.getByRole("button", { name: "Додај линк" }).click();
+    await page.getByLabel("Ознака").fill("Белешки од разговорите");
+    await page.getByLabel("HTTPS URL").fill("http://example.com/notes");
+    await page.getByRole("button", { name: "Зачувај draft" }).click();
+    await expect(page.getByText("Користи безбеден https линк.")).toBeVisible();
+    await page.getByLabel("HTTPS URL").fill("https://example.com/notes");
+    await page.getByRole("button", { name: "Зачувај draft" }).click();
+    await expect(page.getByText("Draft-от е зачуван.")).toBeVisible();
+    await page.reload();
+    await expect(page.getByLabel("Текстуален доказ")).toHaveValue("Три кратки разговори со конкретни корисници.");
+    await expect(page.getByLabel("Ознака")).toHaveValue("Белешки од разговорите");
+    await expect(page.getByLabel("HTTPS URL")).toHaveValue("https://example.com/notes");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     await page.goto("/app/assignments/research-observations");
     await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
     await expect(page.getByText("Заклучено", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Draft за доказ" })).toHaveCount(0);
 
     if (testInfo.project.name === "desktop") {
       const curriculumSlugs = [

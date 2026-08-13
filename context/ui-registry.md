@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-12 during Phase 14 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, and journey patterns are registered below.
+Last reviewed: 2026-08-13 during Phase 15 implementation. Authentication, onboarding, project-start, scope-readiness, curriculum-rendering, dashboard, journey, and draft-evidence patterns are registered below.
 
 ## How to Use
 
@@ -293,6 +293,25 @@ Last updated: 2026-08-12
 | Accent usage | Cobalt identifies journey context/submitted checkpoints; Coral marks revision/error; Acid fills approved checkpoints |
 
 **Pattern notes:** Six stages and ten assignments share one semantic DOM order: the stage rail adapts from a mobile vertical stepper to a desktop horizontal rail without duplicating content. Number, explicit state text, and exact locked prerequisite carry all meaning without colour or motion. Every assignment remains a readable link even while locked. The final endpoint is named while locked, becomes an external live URL only after launch evidence is approved, and exposes missing approved-project data as an error rather than false completion.
+
+### Evidence Draft Form
+
+File: `features/submissions/components/evidence-draft-form.tsx`
+Last updated: 2026-08-13
+
+| Property | Class |
+| --- | --- |
+| Background | editor inherits White article; link rows `bg-white`; empty state `bg-stone-100` |
+| Border | sections `border-stone-200`; fields/link rows `border-stone-300`; error `border-coral`; success `border-cobalt` |
+| Border radius | fields/panels `rounded-md`; actions `rounded-sm` |
+| Text — primary | headings/labels/actions `text-ink`; supporting copy `text-stone-700` |
+| Typography | section title `font-display text-2xl font-semibold`; link legend `text-sm font-semibold`; help/error `text-sm leading-relaxed` |
+| Spacing | form `space-y-6`; link rows `p-4`; controls `px-3.5 py-3`; field groups `gap-4` |
+| Interactive state | Cobalt focus border/ring; Coral invalid border/ring; disabled opacity; reduced-motion-safe primary lift |
+| Shadow | none |
+| Accent usage | Launch Yellow marks explicit save; Cobalt confirms save; Coral structures validation/conflict errors |
+
+**Pattern notes:** Mutable evidence uses explicit save and remains visually subordinate to the assignment criteria and proof prompt. Repeatable links are semantic fieldsets with visible type, label, URL, and a 44 px labelled remove action. Empty drafts are valid; added link rows must be complete. Validation preserves entered values, focuses the result summary, and never clears evidence after a recoverable failure. The editor renders only for available or revision-required assignments; locked, submitted, and approved curriculum stays read-only.
 
 ## Foundations
 
