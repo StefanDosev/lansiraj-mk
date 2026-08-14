@@ -13,6 +13,7 @@ const FRAME_CROP_TOP = 84;
 const FRAME_CROP_BOTTOM = 105;
 const FRAME_FOCAL_X = 0.39;
 const HERO_TEXT_PHASE = 1 / 3;
+const MOBILE_FRAME_STEP = 3;
 
 const processSteps = [
   ["01", "Намали", "Еден корисник. Еден болен проблем. Една главна акција."],
@@ -56,9 +57,24 @@ export function LandingExperience() {
     let settledFrames = 0;
     let cancelled = false;
     const frames: Array<HTMLImageElement | undefined> = new Array(FRAME_COUNT);
-    const frameIndexes = animatedMedia.matches && !reducedMotion.matches
-      ? Array.from({ length: FRAME_COUNT }, (_, index) => index)
-      : [initialFrame];
+    const frameIndexes = reducedMotion.matches
+      ? [initialFrame]
+      : animatedMedia.matches
+        ? Array.from({ length: FRAME_COUNT }, (_, index) => index)
+        : Array.from(
+            new Set([
+              ...Array.from(
+                { length: Math.ceil(FRAME_COUNT / MOBILE_FRAME_STEP) },
+                (_, index) => Math.min(index * MOBILE_FRAME_STEP, FRAME_COUNT - 1),
+              ),
+              FRAME_COUNT - 1,
+            ]),
+          );
+
+    const frameAtProgress = (progress: number) => (
+      frameIndexes[Math.round(Math.max(0, Math.min(1, progress)) * (frameIndexes.length - 1))]
+      ?? initialFrame
+    );
 
     const drawFrame = (canvas: HTMLCanvasElement, index: number) => {
       const image = frames[index];
@@ -131,13 +147,6 @@ export function LandingExperience() {
       image.src = `/media/hero-animation/ezgif-frame-${String(index + 1).padStart(3, "0")}.jpg`;
     });
 
-    if (!animatedMedia.matches) {
-      return () => {
-        cancelled = true;
-        resizeObserver.disconnect();
-      };
-    }
-
     const pointerCleanups: Array<() => void> = [];
     const mm = gsap.matchMedia();
 
@@ -173,7 +182,7 @@ export function LandingExperience() {
                 0,
                 Math.min(1, (self.progress - HERO_TEXT_PHASE) / (1 - HERO_TEXT_PHASE)),
               );
-              const nextFrame = Math.round(sequenceProgress * (FRAME_COUNT - 1));
+              const nextFrame = frameAtProgress(sequenceProgress);
               if (nextFrame !== heroFrame) {
                 heroFrame = nextFrame;
                 drawFrame(heroCanvas, heroFrame);
@@ -200,7 +209,7 @@ export function LandingExperience() {
               end: "bottom bottom",
               scrub: 0.75,
               onUpdate: (self) => {
-                processFrame = Math.round(self.progress * (FRAME_COUNT - 1));
+                processFrame = frameAtProgress(self.progress);
                 drawFrame(processCanvas, processFrame);
               },
             },
@@ -217,7 +226,7 @@ export function LandingExperience() {
             start: "top bottom",
             end: "bottom top",
             onUpdate: (self) => {
-              processFrame = Math.round(self.progress * (FRAME_COUNT - 1));
+              processFrame = frameAtProgress(self.progress);
               drawFrame(processCanvas, processFrame);
             },
           });
@@ -345,7 +354,7 @@ export function LandingExperience() {
               </canvas>
             </div>
             <p className={styles.frameStatus} data-ready={framesReady && !framesFailed} aria-live="polite">
-              {framesFailed ? "Дел од секвенцата не се вчита" : framesReady ? "77 рамки подготвени" : "Се вчитува секвенцата…"}
+              {framesFailed ? "Дел од секвенцата не се вчита" : framesReady ? "Секвенцата е подготвена" : "Се вчитува секвенцата…"}
             </p>
             <div className={styles.mediaLabel}><span>Систем 01</span><span>Доказ → ревизија</span></div>
           </div>
