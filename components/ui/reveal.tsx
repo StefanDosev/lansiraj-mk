@@ -13,8 +13,7 @@ export function Reveal({ children, className }: RevealProps) {
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) return;
-    if (typeof IntersectionObserver === "undefined") return;
+    if (!node || typeof IntersectionObserver === "undefined") return;
 
     const bounds = node.getBoundingClientRect();
     if (bounds.top < window.innerHeight * 0.9 && bounds.bottom > 0) {
@@ -24,7 +23,6 @@ export function Reveal({ children, className }: RevealProps) {
     }
 
     setState("pending");
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
@@ -38,9 +36,5 @@ export function Reveal({ children, className }: RevealProps) {
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <div ref={ref} data-reveal={state} className={className}>
-      {children}
-    </div>
-  );
+  return <div ref={ref} data-reveal={state} className={className}>{children}</div>;
 }

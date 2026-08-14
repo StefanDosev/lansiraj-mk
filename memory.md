@@ -1,48 +1,74 @@
-# Memory — Phase 14 journey rail and project overview
+# Memory — Phase 17 submission history shipped
 
-Last updated: 2026-08-12 16:29 +02:00
+Last updated: 2026-08-13 14:06 +02:00
 
 ## What was built
 
-- Completed Phases 12–14 after the previous Phase 11 handoff.
-- Phase 12 adds authenticated assignment routes at `/app/assignments/[slug]`, safe migration-owned curriculum Markdown rendering, ordered acceptance criteria, proof prompts, readable locked assignments, and an intentional not-found state under `features/curriculum/` and `app/(learner)/app/assignments/`.
-- Phase 13 replaces the active-project placeholder at `/app` with a server-rendered current-assignment dashboard under `features/progress/`. It derives the earliest non-approved task, approved/total progress, state-specific copy/actions, required proof, feedback placeholder, and exact unlock condition.
-- Phase 14 extends `/app/project` with `features/journey/`: a pure journey derivation model, six-stage responsive rail, ten linked assignment rows, explicit state labels, exact locked prerequisites, and a guarded live-project endpoint.
-- Extended the current-project projection and types with assignment proof/stage context and the nullable project live URL.
-- Added unit coverage in `tests/unit/curriculum-markdown.test.tsx`, `tests/unit/current-assignment-dashboard.test.ts`, and `tests/unit/project-journey.test.ts`; expanded `tests/e2e/auth.spec.ts` across the learner curriculum, dashboard, and journey.
-- Registered Curriculum Markdown, Assignment Curriculum, Current Assignment Dashboard, and Project Journey patterns in `context/ui-registry.md`; marked Phase 14 complete in `context/progress-tracker.md`.
+- Completed Phases 15–17 and shipped them on branch `phase-08-auth-preview`.
+- Phase 17 adds an RLS-scoped immutable submission timeline through `features/submissions/submissions.queries.ts`, `submissions.types.ts`, `submissions.validation.ts`, `submissions.presentation.ts`, and `components/submission-history.tsx`.
+- Integrated the timeline into `app/(learner)/app/assignments/[slug]/page.tsx` and `features/curriculum/components/assignment-curriculum.tsx`; the revision editor renders before history, while submitted/approved states show history after the proof requirement.
+- Added component coverage in `tests/unit/submission-history.test.tsx`, expanded authenticated submission-history E2E coverage in `tests/e2e/auth.spec.ts`, strengthened database isolation coverage, and corrected `vitest.config.mts` so TSX unit tests are discovered.
+- Registered the Submission History pattern in `context/ui-registry.md` and marked Phase 17 complete in `context/progress-tracker.md`.
 
 ## Decisions made
 
-- Curriculum Markdown is migration-managed trusted content rendered in a Server Component with raw HTML skipped, an explicit element allowlist, safe URL transformation, and safe external-link attributes. Learner-authored evidence must remain plain text and typed URLs.
-- The current assignment is the earliest ordered non-approved assignment. An earlier locked inconsistency takes precedence over a later available task; progression never skips ahead.
-- Progress is derived from approved assignments over total assignments and is never stored or manually edited as a percentage.
-- All ten assignment titles remain navigable, including locked tasks, because curriculum stays readable for preparation while submission remains state-gated.
-- A stage is approved only when all its tasks are approved. The stage containing the earliest non-approved task adopts that task’s state; all later tasks/stages normalize to locked.
-- The final endpoint stays named and locked until the `public-launch-outreach` assignment is approved. It then exposes the HTTPS live URL; approved launch evidence without a URL is an explicit data error.
-- The journey uses one semantic DOM order that adapts from a mobile vertical stepper to a desktop horizontal rail without duplicating accessible content or relying on colour/motion.
+- Submission history consists only of immutable snapshots for the current assignment, newest first. The newest version is expanded and older versions use native disclosure panels.
+- Available assignments with no submissions omit the timeline. Submitted and approved assignments show it; revision-required assignments keep the editable draft before history; locked assignments show history only when snapshots exist.
+- History timestamps are absolute Macedonian dates in the `Europe/Skopje` time zone.
+- Phase 17 does not invent review records, reviewer placeholders, or review schema. Phase 19 will attach real criterion-level review data.
 
 ## Problems solved
 
-- The expanded curriculum browser flow exceeded the generic Playwright scenario timeout; `/recover` identified accumulated navigation time rather than an application hang, and the stateful scenario now has a 60-second timeout.
-- A Phase 14 endpoint assertion matched identical prerequisite copy in both Task 09 and the endpoint. The locator is now scoped to the labelled endpoint region, preserving strict semantic browser assertions.
-- PowerShell blocks the `npm.ps1`/`npx.ps1` shims on this workstation. Use `npm.cmd`, `npx.cmd`, or repository scripts.
+- Vitest previously excluded existing `.tsx` component tests because its include glob matched only `.ts`; it now discovers both `.ts` and `.tsx` unit tests.
+- Submission history database values are narrowed at runtime so unsupported status or link-type values fail explicitly instead of rendering misleading UI.
+- Authenticated Preview verification confirmed that submitted assignments hide the draft editor while preserving the frozen evidence snapshot and typed links.
 
 ## Current state
 
-- Phases 00–14 are marked complete. Phase 15 is next: draft text and repeatable typed-link evidence inputs.
-- Verification passes: ESLint, strict TypeScript, Next.js production build, `git diff --check`, 51 unit tests, 178 database assertions, and 45 Playwright cases with 42 passing and 3 intentional skips across desktop, 360 px mobile, and reduced motion.
-- `/review` found no plan-alignment, architecture, design-system, accessibility, or production-readiness issues in Phase 14.
-- Phase 09–14 changes remain together in the shared dirty worktree and are not committed, pushed, deployed, or Preview-verified. Preserve all existing changes and do not overwrite unrelated work.
-- The pinned Markdown dependency is `react-markdown` 10.1.0. A prior audit noted four high-severity transitive advisories in existing build-tool chains; no forced dependency upgrade was made.
-- No credentials, tokens, environment values, participant data, or project secrets are stored here.
+- Phases 00–17 are complete. There is no active implementation and no known blocker.
+- Branch `phase-08-auth-preview` is clean, matches its remote, and ends at `fe0b2a0`; feature commit `b7bd147` contains Phase 17.
+- The stable Vercel Preview is Ready at `https://lansiraj-git-phase-08-auth-preview-stefandosevs-projects.vercel.app`.
+- Verification passed: 64 unit tests, 246 database assertions, database lint/advisors, ESLint, strict TypeScript, Next.js production build, authenticated desktop flow, and authenticated 360 px flow. Live Preview checks confirmed the submitted status, immutable version content, Macedonian timestamp, evidence link, hidden draft editor, and no horizontal overflow.
+- No database migration was needed for Phase 17. Existing Supabase RLS/grants scope the history query.
 
 ## Next session starts with
 
-Run `/remember restore`, confirm this handoff, read `AGENTS.md` and all context files in its required order, then use `/architect` before Phase 15. Design the draft evidence contract around owner-editable drafts for available/revision assignments, plain text evidence, repeatable labelled HTTPS links, explicit save unless autosave can be proven reliable, Zod validation, and database/RLS enforcement.
+Run `/remember restore`, confirm this handoff, then read `AGENTS.md` and all context files in its required order. Begin Phase 18, “reviewer queue and cohort snapshot,” with `/architect` before implementation. Read the installed Next.js 16 documentation before changing Next.js code, and load the Supabase and Postgres best-practice skills before any database work.
 
 ## Open questions
 
-- Whether to commit/deploy and Preview-verify the accumulated Phase 09–14 changes before beginning Phase 15.
-- Phase 15 must decide draft persistence boundaries, link types/limits, save conflict behavior, and whether a new evidence schema should be introduced wholly in Phase 15 or split with immutable submission in Phase 16.
-- When production needs a separate Supabase project and custom SMTP/branded authentication email templates.
+- Phase 18 still needs its reviewer-queue ordering, cohort-summary fields, filtering scope, and empty/error states defined during architecture.
+- Criterion-level review detail and decisions remain Phase 19; revision/resubmission remains Phase 20; approval/unlock remains Phase 21.
+- Production Supabase separation and custom SMTP/branded authentication email templates remain deferred.
+
+## Session update — Whole-product design upgrade
+
+Last updated: 2026-08-13 17:00 +02:00
+
+### What was built
+
+- Completed the pre-Phase 18 whole-product editorial proof-system redesign across marketing, auth, onboarding, learner, assignment/evidence/history, and current reviewer surfaces without changing schema, RLS, routes, or product state models.
+- Added shared `ProofArtifact`, `SectionHeading`, `StatusMarker`, `IllustrationFrame`, and one-time `Reveal` primitives, centralized artifact/layout/motion tokens, focused semantic component tests, and evidence-link add/remove interaction coverage.
+- Used only two relevant user-supplied SVG scenes on the landing page. Their slots and unresolved production license verification are documented in `context/design/illustration-manifest.md`; the rest of the illustration pack remains local and untracked.
+- Updated `context/ui-registry.md`, `context/ui-tokens.md`, and `context/progress-tracker.md` for the accepted redesign foundation.
+
+### Decisions and problems solved
+
+- Lansiraj now uses workflow/proof artifacts as its primary illustration language: expressive marketing, calm evidence-first product screens, and inverse reviewer navigation with light operational reading surfaces.
+- Motion remains dependency-free and purposeful, with centralized durations/easing and reduced-motion behavior. Dense reviewer rows, long-form evidence, and navigation are not animated decoratively.
+- Local sign-in failed because the dev server ran on port `3017` while the approved auth callback origin is port `3000`. The server now runs at `http://127.0.0.1:3000`; authenticated learner navigation works again.
+
+### Current state
+
+- The redesign is committed as `c92f479` (`feat: upgrade whole-product design`) and pushed to `origin/phase-08-auth-preview`; the branch matches its remote and draft PR #1 remains open.
+- Fresh ESLint, strict TypeScript, and all 67 unit tests pass. The same redesign diff also passed the production build, 246 database assertions, and the full Playwright suite (42 passed, 3 intentionally skipped).
+- `memory.md` and unused user-supplied illustration sources remain intentionally outside the redesign commit. No deployment or production-data change was made in this session.
+
+### Next session starts with
+
+- Run `/remember restore`, confirm this handoff, then begin Phase 18 reviewer queue and cohort snapshot with `/architect`. Use the redesigned inverse-shell/light-workspace reviewer language and preserve the existing behavior and data contracts.
+
+### Open questions
+
+- Phase 18 still needs reviewer-queue ordering, cohort snapshot fields, filtering scope, and empty/error states defined during architecture.
+- Confirm commercial/export rights for the two shipped illustration assets before any production deployment.

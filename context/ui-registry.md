@@ -399,38 +399,60 @@ Last updated: 2026-08-13
 
 **Pattern notes:** Status meaning is exposed through text and `data-status-tone`, never colour alone. Reuse this component in learner and reviewer records instead of composing feature-specific badges.
 
-### Illustration Frame
+### Scroll Narrative Landing
 
-File: `components/ui/illustration-frame.tsx`
-Last updated: 2026-08-13
+File: `components/marketing/landing-experience.tsx` and `components/marketing/landing-experience.module.css`
+Last updated: 2026-08-14
 
-| Property | Class |
+| Property | Pattern |
 | --- | --- |
-| Background | `bg-white`, with optional semantic composition override |
-| Border | `border-2 border-ink`; caption repeats the strong top rule |
-| Border radius | none |
-| Text | Ink uppercase caption |
-| Spacing | caption `px-4 py-3` |
-| Shadow | none |
-| Accent usage | supplied artwork must already fit Lansiraj tokens |
+| Background | Canvas graph-paper field; White reading sections; Cobalt manifesto; Launch review section |
+| Border | 2 px Ink frames and section rules; 1 px semantic neutral dividers |
+| Border radius | none; film mask may ease to square corners during scroll |
+| Text — primary | Ink on Canvas/White/Launch/Acid; White on Cobalt |
+| Text — secondary | Stone 700 supporting copy |
+| Typography | oversized Unbounded statements with tight leading; Onest for explanatory copy; compact uppercase indexed labels |
+| Spacing | full-viewport story scenes; content uses public-container gutters and generous section rhythm |
+| Interactive state | floating White navigation, Launch CTA, native FAQ disclosures, semantic loading status for the frame sequence |
+| Shadow | token-based Cobalt nav offset and Ink CTA/review offsets only |
+| Accent usage | Cobalt carries motion/digital emphasis; Launch carries action; Acid appears only on accepted proof |
 
-**Pattern notes:** Only approved local assets from `context/design/illustration-manifest.md` may use this frame. Informative scenes require Macedonian alt text. Keep the frame out of evidence, assignment, and reviewer forms.
+**Pattern notes:** Marketing motion is a continuous spatial narrative, not a collection of reveal cards. At rest, the hero headline must finish above the 64% lower-media reveal with a deliberate clear gap; copy and media never overlap. The hero then has two exclusive scroll phases: during the first third, the headline travels upward while the media reveals from beneath it, with frame 1 and canvas scale 1 locked; only after the media is fully revealed may the remaining two thirds apply the 1 → 1.04 canvas scale and map progress to the 77 JPEG frames. Every render path crops the encoded 84 px top and 105 px bottom letterbox before cover sizing, then biases horizontal placement to the subject at 39% of source width; mobile uses the same Canvas crop instead of compensating with CSS zoom. The Canvas backing store changes only when its rendered size changes, never on every sequence frame. Hero clip-path tweens keep four explicit inset values at both endpoints so interpolation cannot mask the side and bottom edges. Never render the full sequence as DOM images or expose the black bands. Fine-pointer hover may pan the over-scaled media plane by no more than 8 px horizontally and 6 px vertically. The later 340svh wide-screen process scene advances the six proof stages beside the pinned visual with only a 1 → 1.04 canvas scale; narrow fine-pointer windows keep the process unpinned but continue advancing frames. Coarse-pointer touch devices load one subject-focused still image and neither preload the sequence nor create ScrollTriggers. Do not use viewport width alone to decide whether motion is available. Reduced motion draws one representative frame and removes scrubbed transforms. Ordinary sections—including the application-fit argument—continue to use `Reveal`.
+
+### Application Fit Section
+
+File: `components/marketing/landing-experience.tsx` and `components/marketing/landing-experience.module.css`
+Last updated: 2026-08-14
+
+| Property | Pattern |
+| --- | --- |
+| Background | Canvas section; paired White and Cobalt decision panels; Launch action strip |
+| Border | 2 px Ink frames; 1 px current-color list dividers |
+| Border radius | none |
+| Text — primary | Ink on Canvas/White/Launch; White on Cobalt |
+| Typography | oversized Unbounded decision headline; compact Unbounded panel leads; Onest evidence lists |
+| Spacing | generous section rhythm; 1.5rem panel padding; three-item evidence lists |
+| Interactive state | full-width Launch application link with Ink offset shadow |
+| Shadow | Ink offset on the application strip only |
+| Accent usage | Cobalt identifies participant commitment; Launch identifies the next action |
+
+**Pattern notes:** A high-intent marketing CTA must earn the action before repeating it: state who should join, state the concrete outcome, then present one direct application link. Use paired positive/outcome panels rather than generic feature cards, and repeat timing, workload, and human-review facts beside the final application action.
 
 ### Viewport Reveal
 
 File: `components/ui/reveal.tsx`
-Last updated: 2026-08-13
+Last updated: 2026-08-14
 
 | Property | Pattern |
 | --- | --- |
-| Properties | opacity and transform only |
+| Properties | opacity and translateY only |
 | Duration | `--duration-stage` with `--stagger-step` |
 | Easing | `--ease-out` |
 | Trigger | one-time viewport intersection |
 | Reduced motion | transforms and stagger removed; content remains immediately visible |
 | Fallback | initial content is visible when JavaScript or IntersectionObserver is unavailable |
 
-**Pattern notes:** Restrict to occasional marketing story sections. Never wrap navigation, product forms, dense rows, or frequently used controls.
+**Pattern notes:** Use this lightweight IntersectionObserver pattern for ordinary one-time entrances in marketing reading sections. GSAP remains reserved for scroll-linked story sequences. Never wrap navigation, product forms, dense rows, or every paragraph independently.
 
 ## Foundations
 
