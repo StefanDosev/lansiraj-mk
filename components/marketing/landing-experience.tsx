@@ -154,12 +154,14 @@ export function LandingExperience() {
       {
         desktop: "(min-width: 64rem)",
         sequenceMotion: "(hover: hover) and (pointer: fine)",
+        standardMotion: "(prefers-reduced-motion: no-preference)",
         reduceMotion: "(prefers-reduced-motion: reduce)",
       },
       (context) => {
         const { desktop, sequenceMotion, reduceMotion } = context.conditions as {
           desktop: boolean;
           sequenceMotion: boolean;
+          standardMotion: boolean;
           reduceMotion: boolean;
         };
 
