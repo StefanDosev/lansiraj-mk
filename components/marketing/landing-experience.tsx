@@ -8,12 +8,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Reveal } from "@/components/ui/reveal";
 import styles from "./landing-experience.module.css";
 
-const FRAME_COUNT = 77;
-const FRAME_CROP_TOP = 84;
-const FRAME_CROP_BOTTOM = 105;
+const FRAME_COUNT = 102;
+const FRAME_CROP_TOP = 0;
+const FRAME_CROP_BOTTOM = 0;
 const FRAME_FOCAL_X = 0.39;
 const HERO_TEXT_PHASE = 1 / 3;
-const MOBILE_FRAME_STEP = 3;
+const MOBILE_FRAME_STEP = 4;
 
 const processSteps = [
   ["01", "Намали", "Еден корисник. Еден болен проблем. Една главна акција."],
@@ -329,7 +329,7 @@ export function LandingExperience() {
             <div data-hover-plane className={styles.mediaPlane}>
               <canvas data-hero-canvas role="img" aria-label="Анимирана секвенца од идеја до лансиран проект" />
             </div>
-            <div className={styles.heroMediaLabel}><span>Скролувај за целата слика</span><span>77 рамки ↘</span></div>
+            <div className={styles.heroMediaLabel}><span>Скролувај за целата слика</span><span>102 рамки ↘</span></div>
           </div>
           <div className={styles.heroMobileMedia}>
             <canvas data-mobile-canvas role="img" aria-label="Работно биро со проект во развој">

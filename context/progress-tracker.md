@@ -74,6 +74,8 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Notes
 
+- 2026-08-16 — Replaced every landing animation render path with the new `hero2` sequence: 102 clean 3840×1770 frames with no encoded top/bottom letterbox. Desktop and fine-pointer process motion now use all 102 frames; coarse-pointer mobile samples every fourth frame plus the final frame, preserving the existing 27-frame mobile memory budget. Removed the obsolete 84/105 px source crop and updated the visible frame count.
+
 - 2026-08-14 — Recovered the mobile hero after Chrome device emulation exposed a GSAP `matchMedia` activation gap. The mobile CSS and sparse frames were present, but narrow coarse-pointer devices with normal motion matched none of the registered GSAP conditions, so the callback containing the hero timeline never ran. Added an explicit `prefers-reduced-motion: no-preference` activation condition; reduced-motion remains handled by its separate static branch.
 
 - 2026-08-14 — Added the missing mobile hero motion without transferring the full desktop workload to phones. Coarse-pointer devices now preload 27 evenly spaced frames (every third source frame plus frame 77), run the same simultaneous copy-exit/media-reveal first phase, and begin sparse frame playback only after the reveal is complete. Touch still skips hover motion and the process sequence; reduced-motion devices retain one representative static frame. At 390×844, live Browser checkpoints at 0/225/450/700 px confirmed clip progress 64% → 32.1% → 0% → 0%, canvas scale 1 until reveal completion then 1.011, and zero horizontal overflow.
