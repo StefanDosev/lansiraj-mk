@@ -18,6 +18,7 @@ export type CurrentAssignmentDashboard =
   | {
       kind: "current";
       progress: DashboardProgress;
+      projectAssignmentId: string;
       assignment: ProjectAssignmentSummary["assignment"];
       state: Exclude<ProjectAssignmentSummary["state"], "locked" | "approved">;
       statusLabel: string;

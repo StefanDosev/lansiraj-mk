@@ -51,7 +51,7 @@ test("authenticated outsider receives neutral pending access and can sign out", 
 });
 
 test("onboarding state guards direct learner navigation", async ({ page, request }, testInfo) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
 
   test.skip(testInfo.project.name === "reduced-motion", "Desktop and mobile cover this stateful email flow.");
 
@@ -206,11 +206,12 @@ test("onboarding state guards direct learner navigation", async ({ page, request
 
     const { data: immutableSubmission, error: immutableSubmissionError } = await admin
       .from("submissions")
-      .select("version,evidence_text,status,submission_links(link_type,label,url,position)")
+      .select("id,version,evidence_text,status,submission_links(link_type,label,url,position)")
       .eq("project_assignment_id", submittedProjection!.id)
       .single();
     expect(immutableSubmissionError).toBeNull();
     expect(immutableSubmission).toEqual({
+      id: expect.any(String),
       version: 1,
       evidence_text: "Три кратки разговори со конкретни корисници.",
       status: "submitted",
@@ -264,9 +265,161 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     await page.getByRole("button", { name: "Одјави се" }).click();
+    await expect(page).toHaveURL(/\/auth\/sign-in$/);
     runLocalSql(`insert into private.reviewer_roles (user_id) values ('${reviewer.user!.id}')`);
     await openLatestMagicLink(page, request, reviewerEmail);
     await expect(page).toHaveURL(/\/admin$/);
+
+    await expect(page.getByRole("heading", { name: "Ред за човечки преглед" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Докази што чекаат" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Напредок на учениците" })).toBeVisible();
+    const reviewLink = page.locator(`a[href="/admin/reviews/${immutableSubmission!.id}"]`);
+    const queueRow = reviewLink.locator("xpath=ancestor::tr");
+    await expect(queueRow).toContainText("Мал планер");
+    await expect(queueRow).toContainText("Дефинирај еден корисник и еден болен проблем");
+    await expect(reviewLink).toHaveText("Отвори доказ");
+    await expect(reviewLink).toHaveAttribute("href", `/admin/reviews/${immutableSubmission!.id}`);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath("reviewer-queue.png"), fullPage: true });
+    await reviewLink.click();
+    await expect(page).toHaveURL(new RegExp(`/admin/reviews/${immutableSubmission!.id}$`));
+    await expect(page.getByRole("heading", { name: "Дефинирај еден корисник и еден болен проблем" })).toBeVisible();
+    await expect(page.getByText("Три кратки разговори со конкретни корисници.", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Белешки од разговорите" })).toHaveAttribute("href", "https://example.com/notes");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath("reviewer-submission.png"), fullPage: true });
+
+    const passingCriteria = page.locator('input[type="radio"][value="pass"]');
+    const criterionCount = await passingCriteria.count();
+    expect(criterionCount).toBeGreaterThan(0);
+    for (let index = 0; index < criterionCount; index += 1) {
+      await passingCriteria.nth(index).check();
+    }
+    await page.locator('input[type="radio"][value="revise"]').last().check();
+    await page.getByLabel("Белешка за критериумот").last().fill("Недостига една конкретна сегашна алтернатива.");
+    await page.getByRole("radio", { name: /^Побарај ревизија/ }).check();
+    await page.getByLabel("Резиме за ученикот").fill("Два критериуми се исполнети, но доказот не ја именува сегашната алтернатива.");
+    await page.getByLabel("Најважна корекција").fill("Именувај една конкретна сегашна алтернатива.");
+    await page.getByLabel(/Потврдувам дека одлуката е конечна/).check();
+    await page.getByRole("button", { name: "Зачувај конечна одлука" }).click();
+
+    await expect(page).toHaveURL(/\/admin\?reviewed=revision_required$/);
+    await expect(page.getByRole("status")).toContainText("Побарана е ревизија");
+    await expect(page.locator(`a[href="/admin/reviews/${immutableSubmission!.id}"]`)).toHaveCount(0);
+
+    const { data: savedRevision, error: savedRevisionError } = await admin
+      .from("reviews")
+      .select("decision,summary,priority_correction,review_criteria(outcome,note)")
+      .eq("submission_id", immutableSubmission!.id)
+      .single();
+    expect(savedRevisionError).toBeNull();
+    expect(savedRevision?.decision).toBe("revision_required");
+    expect(savedRevision?.summary).toBe("Два критериуми се исполнети, но доказот не ја именува сегашната алтернатива.");
+    expect(savedRevision?.priority_correction).toBe("Именувај една конкретна сегашна алтернатива.");
+    expect(savedRevision?.review_criteria).toHaveLength(criterionCount);
+    expect(savedRevision?.review_criteria.filter((criterion) => criterion.outcome === "revise")).toEqual([
+      { outcome: "revise", note: "Недостига една конкретна сегашна алтернатива." },
+    ]);
+
+    const { data: lockedAfterRevision, error: lockedAfterRevisionError } = await admin
+      .from("project_assignments")
+      .select("state")
+      .eq("project_id", startedProjects!.id)
+      .eq("assignment_id", "20000000-0000-4000-8000-000000000002")
+      .single();
+    expect(lockedAfterRevisionError).toBeNull();
+    expect(lockedAfterRevision?.state).toBe("locked");
+
+    await page.getByRole("button", { name: "Одјави се" }).click();
+    await expect(page).toHaveURL(/\/auth\/sign-in$/);
+    await openLatestMagicLink(page, request, learnerEmail);
+    await expect(page).toHaveURL(/\/app$/);
+    await expect(page.getByRole("heading", { name: "Поправи ја верзија 1" })).toBeVisible();
+    await expect(page.getByText("Именувај една конкретна сегашна алтернатива.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Два критериуми се исполнети, но доказот не ја именува сегашната алтернатива.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Недостига една конкретна сегашна алтернатива.", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Поправи го доказот" })).toHaveAttribute("href", "/app/assignments/target-user-and-problem");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath("learner-revision-dashboard.png"), fullPage: true });
+
+    await page.getByRole("link", { name: "Поправи го доказот" }).click();
+    await expect(page).toHaveURL(/\/app\/assignments\/target-user-and-problem$/);
+    await expect(page.getByRole("heading", { name: "Поправи ја верзија 1" })).toBeVisible();
+    await expect(page.getByLabel("Текстуален доказ")).toHaveValue("Три кратки разговори со конкретни корисници.");
+    await expect(page.getByLabel("Ознака")).toHaveValue("Белешки од разговорите");
+    await expect(page.getByLabel("HTTPS URL")).toHaveValue("https://example.com/notes");
+    await expect(page.getByText("Именувај една конкретна сегашна алтернатива.", { exact: true })).toHaveCount(2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath("learner-revision-assignment.png"), fullPage: true });
+
+    await page.getByLabel("Текстуален доказ").fill("Три кратки разговори со конкретни корисници и една именувана сегашна алтернатива.");
+    await page.getByRole("button", { name: "Зачувај draft" }).click();
+    await expect(page.getByText("Draft-от е зачуван.")).toBeVisible();
+    await confirmation.check();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.click();
+    await expect(page.getByRole("complementary").getByText("На проверка", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Draft за доказ" })).toHaveCount(0);
+    await expect(page.getByText("Верзија 2", { exact: true })).toBeVisible();
+    await expect(page.getByText("Верзија 1", { exact: true })).toBeVisible();
+    await page.locator("details").filter({ hasText: "Верзија 1" }).locator("summary").click();
+    await expect(page.getByText("Именувај една конкретна сегашна алтернатива.", { exact: true })).toBeVisible();
+
+    const { data: revisedSubmissions, error: revisedSubmissionsError } = await admin
+      .from("submissions")
+      .select("id,version,evidence_text,status,supersedes_submission_id")
+      .eq("project_assignment_id", submittedProjection!.id)
+      .order("version");
+    expect(revisedSubmissionsError).toBeNull();
+    expect(revisedSubmissions).toHaveLength(2);
+    expect(revisedSubmissions?.[0]).toMatchObject({
+      id: immutableSubmission!.id,
+      version: 1,
+      evidence_text: "Три кратки разговори со конкретни корисници.",
+      status: "revision_required",
+      supersedes_submission_id: null,
+    });
+    expect(revisedSubmissions?.[1]).toMatchObject({
+      id: expect.any(String),
+      version: 2,
+      evidence_text: "Три кратки разговори со конкретни корисници и една именувана сегашна алтернатива.",
+      status: "submitted",
+      supersedes_submission_id: immutableSubmission!.id,
+    });
+
+    await page.getByRole("button", { name: "Одјави се" }).click();
+    await expect(page).toHaveURL(/\/auth\/sign-in$/);
+    await openLatestMagicLink(page, request, reviewerEmail);
+    const revisedSubmissionId = revisedSubmissions![1].id;
+    const revisedReviewLink = page.locator(`a[href="/admin/reviews/${revisedSubmissionId}"]`);
+    await expect(revisedReviewLink).toBeVisible();
+    await revisedReviewLink.click();
+    const revisedPassingCriteria = page.locator('input[type="radio"][value="pass"]');
+    await expect(revisedPassingCriteria.first()).toBeVisible();
+    for (let index = 0; index < await revisedPassingCriteria.count(); index += 1) {
+      await revisedPassingCriteria.nth(index).check();
+    }
+    await page.getByRole("radio", { name: /^Одобри/ }).check();
+    await page.getByLabel("Резиме за ученикот").fill("Ревидираната верзија ги исполнува сите критериуми.");
+    await page.getByLabel(/Потврдувам дека одлуката е конечна/).check();
+    await page.getByRole("button", { name: "Зачувај конечна одлука" }).click();
+    await expect(page).toHaveURL(/\/admin\?reviewed=approved$/);
+    await expect(page.getByRole("status")).toContainText("Задачата е одобрена");
+
+    const [reviewedAssignmentResult, unlockedAssignmentResult] = await Promise.all([
+      admin.from("project_assignments").select("state").eq("id", submittedProjection!.id).single(),
+      admin
+        .from("project_assignments")
+        .select("state")
+        .eq("project_id", startedProjects!.id)
+        .eq("assignment_id", "20000000-0000-4000-8000-000000000002")
+        .single(),
+    ]);
+    expect(reviewedAssignmentResult.error).toBeNull();
+    expect(unlockedAssignmentResult.error).toBeNull();
+    expect(reviewedAssignmentResult.data?.state).toBe("approved");
+    expect(unlockedAssignmentResult.data?.state).toBe("available");
+
     await page.goto(`/admin/projects/${startedProjects!.id}`);
     await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
     await page.getByLabel("Потребно е намалување").check();
@@ -289,6 +442,46 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await page.goto("/app/onboarding");
     await expect(page).toHaveURL(/\/admin$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+
+    await page.getByRole("button", { name: "Одјави се" }).click();
+    await expect(page).toHaveURL(/\/auth\/sign-in$/);
+    await openLatestMagicLink(page, request, learnerEmail);
+    await expect(page).toHaveURL(/\/app$/);
+    await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
+
+    await page.goto("/app/assignments/target-user-and-problem");
+    const approvalCheckpoint = page.getByRole("region", { name: "Одобрено — доказот е доволен" });
+    await expect(approvalCheckpoint).toBeVisible();
+    await expect(approvalCheckpoint).toContainText("Човечки преглед · Верзија 2");
+    await expect(approvalCheckpoint).toContainText("Ревидираната верзија ги исполнува сите критериуми.");
+    await expect(approvalCheckpoint.getByText("Исполнето", { exact: true })).toHaveCount(3);
+    const continueLink = approvalCheckpoint.getByRole("link", { name: "Продолжи кон Задача 02" });
+    await expect(continueLink).toHaveAttribute("href", "/app/assignments/research-observations");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath("learner-approved-checkpoint.png"), fullPage: true });
+    await continueLink.click();
+    await expect(page).toHaveURL(/\/app\/assignments\/research-observations$/);
+    await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
+
+    const completedAt = new Date().toISOString();
+    runLocalSql(
+      `update public.project_assignments set state = 'approved', available_at = coalesce(available_at, '${completedAt}'), submitted_at = coalesce(submitted_at, '${completedAt}'), approved_at = '${completedAt}' where project_id = '${startedProjects!.id}'`,
+    );
+    runLocalSql(
+      `update public.projects set status = 'completed' where id = '${startedProjects!.id}'`,
+    );
+
+    await page.goto("/app");
+    await expect(page.getByRole("heading", { name: "Сите задачи се одобрени" })).toBeVisible();
+    await page.goto("/app/project");
+    await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
+    await expect(page.getByText("10 од 10 задачи се одобрени")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+    await page.goto("/app/assignments/target-user-and-problem");
+    await expect(
+      page.getByRole("region", { name: "Одобрено — доказот е доволен" }),
+    ).toBeVisible();
   } finally {
     runLocalSql(`delete from public.projects where cohort_id = '${cohortId}'`);
     runLocalSql(`delete from public.cohort_invites where cohort_id = '${cohortId}'`);

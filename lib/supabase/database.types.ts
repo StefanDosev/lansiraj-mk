@@ -547,6 +547,86 @@ export type Database = {
           },
         ]
       }
+      review_criteria: {
+        Row: {
+          acceptance_criterion_id: string
+          created_at: string
+          id: string
+          note: string | null
+          outcome: string
+          review_id: string
+        }
+        Insert: {
+          acceptance_criterion_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          outcome: string
+          review_id: string
+        }
+        Update: {
+          acceptance_criterion_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          outcome?: string
+          review_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_criteria_acceptance_criterion_id_fkey"
+            columns: ["acceptance_criterion_id"]
+            isOneToOne: false
+            referencedRelation: "acceptance_criteria"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_criteria_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          created_at: string
+          decision: string
+          id: string
+          priority_correction: string | null
+          reviewer_id: string
+          submission_id: string
+          summary: string
+        }
+        Insert: {
+          created_at?: string
+          decision: string
+          id?: string
+          priority_correction?: string | null
+          reviewer_id: string
+          submission_id: string
+          summary: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          id?: string
+          priority_correction?: string | null
+          reviewer_id?: string
+          submission_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submission_links: {
         Row: {
           created_at: string
@@ -677,6 +757,20 @@ export type Database = {
         Returns: {
           draft_id: string
           updated_at: string
+        }[]
+      }
+      review_submission: {
+        Args: {
+          p_criteria: Json
+          p_decision: string
+          p_priority_correction: string
+          p_submission_id: string
+          p_summary: string
+        }
+        Returns: {
+          decision: string
+          review_id: string
+          reviewed_at: string
         }[]
       }
       start_project: { Args: never; Returns: string }
@@ -826,4 +920,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

@@ -3,6 +3,7 @@ import {
   getEvidenceLinkTypeLabel,
   submissionStatusPresentation,
 } from "@/features/submissions/submissions.presentation";
+import { HistoricalReviewFeedback } from "@/features/reviews/components/learner-review-feedback";
 import type { SubmissionHistoryEntry } from "@/features/submissions/submissions.types";
 
 function SubmissionVersionEvidence({ submission }: { submission: SubmissionHistoryEntry }) {
@@ -69,6 +70,8 @@ function SubmissionVersionEvidence({ submission }: { submission: SubmissionHisto
           </p>
         )}
       </div>
+
+      {submission.review ? <HistoricalReviewFeedback review={submission.review} /> : null}
     </div>
   );
 }

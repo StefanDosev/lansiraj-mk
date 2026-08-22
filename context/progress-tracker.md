@@ -4,10 +4,10 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Current Status
 
-**Phase:** 4 — Proof Submission
-**Last completed:** Illoca-inspired canvas-sequence marketing redesign (pre-Phase 18)
+**Phase:** 5 — Human Review and Unlock
+**Last completed:** 21 Atomic approval and next-assignment unlock
 **In progress:** None
-**Next:** Begin Phase 18 reviewer queue and cohort snapshot
+**Next:** Begin Phase 22 responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
 **Blockers:** None
 
 ## Progress
@@ -47,10 +47,10 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ### Phase 5 — Human Review and Unlock
 
-- [ ] 18 Build reviewer queue and cohort snapshot
-- [ ] 19 Build criterion-level review detail and decision form
-- [ ] 20 Implement revision-required flow and resubmission
-- [ ] 21 Implement atomic approval and next-assignment unlock
+- [x] 18 Build reviewer queue and cohort snapshot
+- [x] 19 Build criterion-level review detail and decision form
+- [x] 20 Implement revision-required flow and resubmission
+- [x] 21 Implement atomic approval and next-assignment unlock
 
 ### Phase 6 — Beta Hardening
 
@@ -73,6 +73,14 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-22 — Completed Phase 21 with a durable learner approval checkpoint that keeps the final human summary and every passed criterion visible on the exact assignment, then provides one direct action to the newly unlocked assignment or the completed project after terminal approval. Approved assignments and completed projects remain readable, the dashboard advances to the next available assignment, and inconsistent locked-next projections surface an explicit recovery state. The existing row-locked `review_submission(...)` transaction was exercised more deeply: double review is rejected without duplicate reviews or events, non-terminal approval unlocks exactly one next assignment, and terminal approval completes the project without emitting an unlock event. All 85 unit tests, 298 database assertions, 42 browser checks with 3 intentional skips across desktop, 360 px, and reduced-motion projects, application-schema lint, a clean migration-to-local schema diff, lint, strict typecheck, and the production build pass. The learner checkpoint has no horizontal overflow and its approved-state hierarchy is registered in the UI registry.
+
+- 2026-08-22 — Completed Phase 20 with learner-visible revision feedback on both the current-assignment dashboard and exact assignment page. Active revision work leads with one priority correction, explains why revision was requested, and lists only criteria that need changes; the retained draft reopens unchanged without a duplicate mutable record. Resubmission creates immutable version N+1 linked to the reviewed version, keeps the next assignment locked, removes active feedback while the new version is pending, and preserves the complete prior decision and every criterion outcome inside immutable version history. Successful submissions now invalidate the reviewer queue, and stateful browser coverage explicitly waits for streamed review controls and completed sign-out transitions. The final review removed a type-only circular feature dependency by separating the neutral immutable-submission version from learner-enriched history. All 80 unit tests, 294 database assertions, serial authenticated desktop and 360 px revision-to-resubmission-to-approval browser flows, lint, strict typecheck, and the production build pass; captured learner screens have no horizontal overflow and follow the registered feedback hierarchy.
+
+- 2026-08-20 — Completed Phase 19 with an exact-version reviewer surface that keeps the immutable evidence dominant, exposes all other frozen versions as secondary context, and requires pass/revise outcomes for every ordered acceptance criterion. Final reviews include a required summary, criterion notes for every revise outcome, a revision-only priority correction, and explicit irreversible confirmation. `review_submission(...)` revalidates the complete criterion set and decision consistency under row locks, persists the review and criterion outcomes once, rejects unauthorized/concurrent/double review, and atomically applies revision, approval, next-assignment unlock, or terminal project completion transitions; Phase 20 still owns learner-visible revision feedback and resubmission UI. Owner/reviewer RLS exposes finalized feedback without direct mutation grants. A clean local reset, all 285 database assertions, schema lint, 78 unit tests, lint, strict typecheck, production build, and serial authenticated desktop and 360 px submit-to-approve browser flows pass with no horizontal overflow. The full parallel browser run recorded one unrelated navigation abort and demonstrated why shared global queue emptiness is not a valid concurrent assertion; the Phase 19 flow was rerun serially and passed twice.
+
+- 2026-08-19 — Completed Phase 18 with a reviewer-only, globally oldest-first queue of pending immutable submissions and an operational snapshot of every non-archived cohort. Queue rows show learner, project, assignment/version, submitted time, derived waiting duration, and link to the exact frozen submission. Cohort sections show active membership and project counts plus each learner's current assignment, approved progress, and pending-review state without exposing email addresses. Added a read-only submission preview for evidence verification; criterion decisions remain Phase 19. A partial pending-queue index supports the ordering path. A clean local reset, all 247 database assertions, 73 unit tests, lint, strict typecheck, production build, and authenticated desktop and 360 px reviewer flows pass with no horizontal overflow.
 
 - 2026-08-16 — Replaced every landing animation render path with the new `hero2` sequence: 102 clean 3840×1770 frames with no encoded top/bottom letterbox. Desktop and fine-pointer process motion now use all 102 frames; coarse-pointer mobile samples every fourth frame plus the final frame, preserving the existing 27-frame mobile memory budget. Removed the obsolete 84/105 px source crop and updated the visible frame count.
 

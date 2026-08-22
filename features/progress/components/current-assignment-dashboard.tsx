@@ -3,17 +3,21 @@ import Link from "next/link";
 import { StatusMarker } from "@/components/ui/status-marker";
 import { CurriculumMarkdown } from "@/features/curriculum/components/curriculum-markdown";
 import type { CurrentAssignmentDashboard as DashboardModel } from "@/features/progress/dashboard.types";
+import { ActiveRevisionFeedback } from "@/features/reviews/components/learner-review-feedback";
+import type { LearnerReviewFeedback } from "@/features/reviews/review-feedback.types";
 
 type CurrentAssignmentDashboardProps = {
   projectTitle: string;
   curriculumVersion: string;
   dashboard: DashboardModel;
+  revisionFeedback?: LearnerReviewFeedback | null;
 };
 
 export function CurrentAssignmentDashboard({
   projectTitle,
   curriculumVersion,
   dashboard,
+  revisionFeedback,
 }: CurrentAssignmentDashboardProps) {
   if (dashboard.kind === "empty") {
     return <DashboardTerminal title="Патеката не е подготвена" message="Во активниот проект нема задачи. Обиди се повторно или побарај помош." />;
@@ -58,10 +62,14 @@ export function CurrentAssignmentDashboard({
           <div className="mt-4"><CurriculumMarkdown>{dashboard.assignment.proofPromptMarkdown}</CurriculumMarkdown></div>
         </section>
 
-        <section className="mt-6 border-l-4 border-cobalt bg-stone-100 p-5" aria-labelledby="dashboard-feedback">
-          <h2 id="dashboard-feedback" className="font-display text-lg font-semibold text-ink">Последна повратна информација</h2>
-          <p className="mt-2 text-sm leading-relaxed text-stone-700">{dashboard.feedbackMessage}</p>
-        </section>
+        {dashboard.state === "revision_required" ? (
+          <ActiveRevisionFeedback feedback={revisionFeedback ?? null} />
+        ) : (
+          <section className="mt-6 border-l-4 border-cobalt bg-stone-100 p-5" aria-labelledby="dashboard-feedback">
+            <h2 id="dashboard-feedback" className="font-display text-lg font-semibold text-ink">Последна повратна информација</h2>
+            <p className="mt-2 text-sm leading-relaxed text-stone-700">{dashboard.feedbackMessage}</p>
+          </section>
+        )}
 
         <Link className="pressable mt-6 inline-flex min-h-12 items-center justify-center border-2 border-ink bg-launch px-6 py-3 font-semibold text-ink" href={`/app/assignments/${dashboard.assignment.slug}`}>
           {dashboard.actionLabel}

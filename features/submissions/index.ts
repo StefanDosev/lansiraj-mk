@@ -2,6 +2,7 @@ export { EvidenceDraftForm } from "@/features/submissions/components/evidence-dr
 export { SubmissionHistory } from "@/features/submissions/components/submission-history";
 export {
   getEvidenceDraft,
+  getLatestRevisionFeedback,
   getSubmissionHistory,
 } from "@/features/submissions/submissions.queries";
 export type {

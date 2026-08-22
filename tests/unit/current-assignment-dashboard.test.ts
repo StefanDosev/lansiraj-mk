@@ -5,6 +5,7 @@ import { deriveCurrentAssignmentDashboard } from "@/features/progress/dashboard"
 
 function assignment(position: number, state: ProjectAssignmentSummary["state"]): ProjectAssignmentSummary {
   return {
+    projectAssignmentId: `94000000-0000-4000-8000-${String(position).padStart(12, "0")}`,
     state,
     availableAt: state === "available" ? "2026-08-12T12:00:00Z" : null,
     assignment: {
@@ -30,6 +31,7 @@ describe("deriveCurrentAssignmentDashboard", () => {
       expect(result.kind).toBe("current");
       if (result.kind !== "current") return;
       expect(result.assignment.position).toBe(2);
+      expect(result.projectAssignmentId).toBe("94000000-0000-4000-8000-000000000002");
       expect(result.state).toBe(state);
       expect(result.progress).toEqual({ approved: 1, total: 3 });
       expect(result.unlockCondition.length).toBeGreaterThan(20);

@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-13 during the whole-product editorial proof-system redesign. Marketing, auth, onboarding, learner, evidence, history, and current reviewer surfaces are registered below.
+Last reviewed: 2026-08-20 after the Phase 20 learner revision loop. Marketing, auth, onboarding, learner, evidence, history, and reviewer surfaces are registered below.
 
 ## How to Use
 
@@ -453,6 +453,158 @@ Last updated: 2026-08-14
 | Fallback | initial content is visible when JavaScript or IntersectionObserver is unavailable |
 
 **Pattern notes:** Use this lightweight IntersectionObserver pattern for ordinary one-time entrances in marketing reading sections. GSAP remains reserved for scroll-linked story sequences. Never wrap navigation, product forms, dense rows, or every paragraph independently.
+
+### Reviewer Queue
+
+File: `features/reviews/components/reviewer-queue.tsx`
+Last updated: 2026-08-19
+
+| Property | Class |
+| --- | --- |
+| Background | inherited `bg-canvas` workspace |
+| Border | section and table rules use `border-ink`, `border-stone-300`, and `border-stone-200` |
+| Border radius | none |
+| Text — primary | `text-ink`; metadata `text-stone-700` and `text-stone-600` |
+| Text size and weight | display section heading; uppercase `text-xs` labels; semibold row anchors |
+| Spacing | section header `pb-5`; cells `py-3 md:py-4`; action `px-4 py-2` |
+| Interactive state | square 44 px `bg-launch` action with `border-2 border-ink` |
+| Shadow | none |
+| Accent usage | Cobalt identifies the operational section and pending count |
+
+**Pattern notes:** Operational queues use one semantic table. At narrow widths, the same table rows become labelled record blocks instead of creating a second mobile DOM. Rows stay oldest-first, expose the exact immutable record action, and use text plus timestamps rather than colour to communicate priority.
+
+### Reviewer Cohort Snapshot
+
+File: `features/reviews/components/cohort-snapshot.tsx`
+Last updated: 2026-08-19
+
+| Property | Class |
+| --- | --- |
+| Background | inherited `bg-canvas` workspace |
+| Border | cohort boundaries `border-b-2 border-ink`; metrics and rows use Stone rules |
+| Border radius | none |
+| Text — primary | `text-ink`; explanatory copy `text-stone-700`; labels `text-stone-600` |
+| Text size and weight | display headings and metric values; uppercase `text-xs` metric labels |
+| Spacing | cohorts `pt-6 pb-8`; metrics and learner rows `py-4` to `py-5` |
+| Interactive state | project links use semibold Cobalt underline treatment |
+| Shadow | none |
+| Accent usage | `StatusMarker` owns cohort and assignment state; Cobalt marks pending review |
+
+**Pattern notes:** Reviewer summaries are operational, not analytical dashboards. Use ruled definition lists for compact counts and open grouped rows for learner context. Show only active memberships, preserve explicit empty states, and keep project, current assignment, approved count, and pending-review state readable without relying on colour.
+
+### Submission Review Preview
+
+File: `features/reviews/components/submission-review-preview.tsx`
+Last updated: 2026-08-20
+
+| Property | Class |
+| --- | --- |
+| Background | inherited `bg-canvas`; frozen evidence uses the shared white `ProofArtifact` |
+| Border | page and context rules `border-ink`; evidence groups use `border-stone-300` |
+| Border radius | none |
+| Text — primary | `text-ink`; body and timestamps `text-stone-700`; labels `text-stone-600` |
+| Text size and weight | display `text-3xl md:text-5xl` title; display `text-xl` evidence headings |
+| Spacing | header `pb-6`; content `mt-8 gap-8`; context rows `py-4` |
+| Interactive state | navigation and evidence links use semibold Cobalt underlines |
+| Shadow | shared `ProofArtifact` treatment only |
+| Accent usage | Cobalt for navigation/context; `StatusMarker` for submission state |
+
+**Pattern notes:** The review route renders the exact frozen submission version as the primary artifact, with learner/project/cohort metadata in a secondary ruled aside. External evidence links retain their type and visible URL. The criterion decision follows the artifact, never precedes it, and completed feedback replaces the editable form without changing the selected evidence.
+
+### Criterion Review Form
+
+File: `features/reviews/components/review-decision-form.tsx`
+Last updated: 2026-08-20
+
+| Property | Class |
+| --- | --- |
+| Background | inherited `bg-canvas`; choice cards and inputs use `bg-white`; errors use `bg-stone-100` |
+| Border | criterion groups use `border-y-2 border-ink`; choice cards and inputs use `border-stone-300`; final decision uses `border-2 border-cobalt` |
+| Border radius | choice cards remain square; text inputs use `rounded-md`; action uses `rounded-sm` |
+| Text — primary | `text-ink`; supporting and help copy `text-stone-700` |
+| Text size and weight | display section headings; semibold criteria, labels, and choices; uppercase `text-xs` eyebrow |
+| Spacing | section `pt-8`; criterion rows `py-6`; cards `p-4`; final decision `p-5 md:p-7` |
+| Interactive state | selected cards use `has-checked:border-cobalt` and a Cobalt token ring; controls use shared Cobalt focus and Coral invalid states |
+| Shadow | none |
+| Accent usage | Cobalt identifies review structure and selection; Launch identifies the single irreversible action; Coral identifies validation failure |
+
+**Pattern notes:** Irreversible operational forms place one native fieldset around each business decision, keep 44 px minimum targets, pair every outcome with explanatory text, and require an explicit confirmation adjacent to the final action. Criterion correction notes sit directly below their criterion. Server errors focus a persistent alert while preserving the submitted values. Approval and revision consistency is enforced in both the form schema and the atomic database function.
+
+### Completed Criterion Review
+
+File: `features/reviews/components/completed-review.tsx`
+Last updated: 2026-08-20
+
+| Property | Class |
+| --- | --- |
+| Background | inherited `bg-canvas`; summary uses `bg-stone-100` |
+| Border | section and criteria use `border-ink`; summary uses `border-l-4 border-cobalt`; internal rules use Stone tokens |
+| Border radius | none |
+| Text — primary | `text-ink`; review copy and timestamp `text-stone-700` |
+| Text size and weight | display decision heading; semibold criterion and feedback labels |
+| Spacing | section `pt-8`; summary `p-5`; criterion rows `py-5` |
+| Interactive state | none; finalized feedback is read-only |
+| Shadow | none |
+| Accent usage | shared `StatusMarker` communicates pass or revise outcomes with text and semantic tone |
+
+**Pattern notes:** A finalized review replaces all editable controls with a timestamped summary, optional priority correction, and criterion outcomes mapped back to the immutable acceptance-criterion copy. Never reconstruct criterion order from review rows; use curriculum order and join outcomes by criterion ID.
+
+### Learner Review Feedback
+
+File: `features/reviews/components/learner-review-feedback.tsx`
+Last updated: 2026-08-20
+
+| Property | Class |
+| --- | --- |
+| Background | active panel `bg-white`; priority annotation `bg-stone-100`; historical feedback inherits the immutable version record |
+| Border | active state `border-2 border-coral`; priority `border-l-4 border-coral`; historical section and criterion rules use Stone tokens |
+| Border radius | none |
+| Text — primary | headings, priority, and criterion copy `text-ink`; summary, notes, and timestamps `text-stone-700` |
+| Text size and weight | display `text-2xl` active heading; semibold labels and criteria; `text-lg` priority; `text-sm` notes and metadata |
+| Spacing | active panel `p-5 md:p-6`; major groups `mt-6`; priority `p-4 md:p-5`; criterion rows `py-4` |
+| Interactive state | none; the active panel precedes the existing draft editor and historical feedback follows native version disclosure behavior |
+| Shadow | none |
+| Accent usage | Coral identifies the correction boundary and single priority; `StatusMarker` owns all decision and criterion outcomes |
+
+**Pattern notes:** While an assignment is `revision_required`, show one active learner-facing panel before the reopened draft. Lead with one priority correction, then the review summary, then only criteria marked for revision. Do not duplicate passing criteria in the active task. After resubmission, remove the active panel and preserve the full decision—including every criterion outcome—inside the exact immutable submission version. Missing active feedback is an explicit recovery state, never an empty or generic placeholder.
+
+### Reviewer Version Context
+
+File: `features/reviews/components/review-version-history.tsx`
+Last updated: 2026-08-20
+
+| Property | Class |
+| --- | --- |
+| Background | disclosure records use `bg-white`; link artifacts use `bg-stone-100` |
+| Border | timeline `border-stone-300`; selected context separation `border-t-2 border-ink`; links use `border-l-4 border-cobalt` |
+| Border radius | none |
+| Text — primary | `text-ink`; timestamps and evidence `text-stone-700` |
+| Text size and weight | display `text-lg` version headings; uppercase `text-xs` link types |
+| Spacing | section `pt-8`; disclosure headers and content `p-4 md:p-5` |
+| Interactive state | native disclosure focus uses the Cobalt outline; exact-version links use the shared Cobalt underline treatment |
+| Shadow | none |
+| Accent usage | Cobalt identifies links and the timeline; submission status keeps its existing semantic presentation |
+
+**Pattern notes:** When one immutable version is selected, it remains fully expanded and visually dominant above the decision. Other versions appear afterward as native disclosures and link to their own exact review routes. Exclude the selected version from the context list instead of duplicating it.
+
+### Learner Approval Checkpoint
+
+File: `features/reviews/components/approved-assignment-checkpoint.tsx`
+Last updated: 2026-08-22
+
+| Property | Class |
+| --- | --- |
+| Background | checkpoint `bg-acid`; primary continuation action `bg-ink` |
+| Border | container, section rules, and criterion dividers use `border-ink`; container and major rules use `border-2` |
+| Border radius | none |
+| Text — primary | `text-ink`; inverse action copy uses `text-[var(--text-inverse)]` |
+| Text size and weight | display `text-2xl` decision heading; uppercase `text-xs` review metadata; semibold criteria and outcome labels |
+| Spacing | panel `p-5 md:p-6`; major groups `mt-6 pt-5`; criterion rows `py-4`; action `px-5 py-3` |
+| Interactive state | shared `pressable` action with a 48 px minimum target and global Cobalt focus outline |
+| Shadow | none |
+| Accent usage | Acid is reserved for the durable approved checkpoint; Ink gives the next-step action maximum contrast |
+
+**Pattern notes:** After approval, keep the human decision and every passed criterion visible between the proof request and immutable submission history. Approval is a durable checkpoint rather than a transient toast. Give it one direct action: the exact next assignment, or the completed project after the terminal approval. If the next assignment remains locked, replace the action with an explicit recovery alert instead of implying success.
 
 ## Foundations
 

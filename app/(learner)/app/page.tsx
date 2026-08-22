@@ -1,17 +1,24 @@
 import { requireCompletedLearnerAccess } from "@/features/auth";
 import { getCurrentProject, StartProjectForm } from "@/features/projects";
 import { CurrentAssignmentDashboard, deriveCurrentAssignmentDashboard } from "@/features/progress";
+import { getLatestRevisionFeedback } from "@/features/submissions";
 
 export default async function LearnerFoundationPage() {
   await requireCompletedLearnerAccess();
   const project = await getCurrentProject();
 
-  if (project.status === "active") {
+  if (project.status === "active" || project.status === "completed") {
+    const dashboard = deriveCurrentAssignmentDashboard(project.assignments);
+    const revisionFeedback = dashboard.kind === "current" && dashboard.state === "revision_required"
+      ? await getLatestRevisionFeedback(dashboard.projectAssignmentId)
+      : null;
+
     return (
       <CurrentAssignmentDashboard
         projectTitle={project.title}
         curriculumVersion={project.curriculumVersion ?? "—"}
-        dashboard={deriveCurrentAssignmentDashboard(project.assignments)}
+        dashboard={dashboard}
+        revisionFeedback={revisionFeedback}
       />
     );
   }

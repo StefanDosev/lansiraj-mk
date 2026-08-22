@@ -17,6 +17,7 @@ const projectProjection = `
   live_url,
   project_scope_assessments(readiness,note,reviewed_at),
   project_assignments(
+    id,
     state,
     available_at,
     assignment:assignments(
@@ -43,6 +44,7 @@ type ProjectProjection = {
   live_url: string | null;
   project_scope_assessments: { readiness: string; note: string | null; reviewed_at: string } | null;
   project_assignments: Array<{
+    id: string;
     state: ProjectAssignmentSummary["state"];
     available_at: string | null;
     assignment: {
@@ -79,6 +81,7 @@ function mapProject(data: ProjectProjection): CurrentProject {
     liveUrl: data.live_url,
     assignments: data.project_assignments
       .map((projection) => ({
+        projectAssignmentId: projection.id,
         state: projection.state,
         availableAt: projection.available_at,
         assignment: {
@@ -105,7 +108,7 @@ export async function getCurrentProject(): Promise<CurrentProject> {
     .from("projects")
     .select(projectProjection)
     .eq("owner_id", userId)
-    .in("status", ["draft", "active"])
+    .in("status", ["draft", "active", "completed"])
     .maybeSingle();
 
   if (error) throw new Error("Unable to load the learner project.", { cause: error });

@@ -1,4 +1,5 @@
 export type ProjectAssignmentSummary = {
+  projectAssignmentId: string;
   state: "locked" | "available" | "submitted" | "revision_required" | "approved";
   availableAt: string | null;
   assignment: {

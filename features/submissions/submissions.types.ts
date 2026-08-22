@@ -1,3 +1,5 @@
+import type { LearnerReviewFeedback } from "@/features/reviews/review-feedback.types";
+
 export const evidenceLinkTypes = [
   "research",
   "figma",
@@ -50,7 +52,7 @@ export type SubmissionHistoryLink = {
   position: number;
 };
 
-export type SubmissionHistoryEntry = {
+export type ImmutableSubmissionVersion = {
   id: string;
   version: number;
   evidenceText: string;
@@ -58,6 +60,10 @@ export type SubmissionHistoryEntry = {
   submittedAt: string;
   reviewedAt: string | null;
   links: SubmissionHistoryLink[];
+};
+
+export type SubmissionHistoryEntry = ImmutableSubmissionVersion & {
+  review: LearnerReviewFeedback | null;
 };
 
 export type EvidenceDraftFieldErrors = {

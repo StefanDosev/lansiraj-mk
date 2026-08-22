@@ -60,6 +60,7 @@ export function deriveCurrentAssignmentDashboard(
   return {
     kind: "current",
     progress,
+    projectAssignmentId: unresolved.projectAssignmentId,
     assignment: unresolved.assignment,
     state: unresolved.state,
     ...currentStateCopy[unresolved.state],

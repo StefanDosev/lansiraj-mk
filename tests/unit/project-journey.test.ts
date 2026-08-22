@@ -10,6 +10,7 @@ function assignment(
   slug = `assignment-${position}`,
 ): ProjectAssignmentSummary {
   return {
+    projectAssignmentId: `94000000-0000-4000-8000-${String(position).padStart(12, "0")}`,
     state,
     availableAt: null,
     assignment: {

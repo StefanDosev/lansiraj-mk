@@ -97,7 +97,7 @@ export async function getCurriculumAssignmentBySlug(
     .from("project_assignments")
     .select(assignmentDetailProjection)
     .eq("project.owner_id", userId)
-    .eq("project.status", "active")
+    .in("project.status", ["active", "completed"])
     .eq("assignment.slug", slug)
     .maybeSingle();
 
@@ -120,7 +120,7 @@ export async function getCurriculumAssignments(): Promise<CurriculumAssignmentSu
       "state,project:projects!inner(owner_id,status,curriculum_version),assignment:assignments!inner(curriculum_version,position,slug,title)",
     )
     .eq("project.owner_id", userId)
-    .eq("project.status", "active");
+    .in("project.status", ["active", "completed"]);
 
   if (error) throw new Error("Unable to load the curriculum assignments.", { cause: error });
 

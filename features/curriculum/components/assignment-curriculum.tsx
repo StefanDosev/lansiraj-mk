@@ -38,12 +38,16 @@ const statePresentation: Record<
 
 type AssignmentCurriculumProps = {
   assignment: CurriculumAssignment;
+  approvalCheckpoint?: ReactNode;
+  revisionFeedback?: ReactNode;
   evidenceEditor?: ReactNode;
   submissionHistory?: ReactNode;
 };
 
 export function AssignmentCurriculum({
   assignment,
+  approvalCheckpoint,
+  revisionFeedback,
   evidenceEditor,
   submissionHistory,
 }: AssignmentCurriculumProps) {
@@ -103,6 +107,8 @@ export function AssignmentCurriculum({
           </p>
         </section>
 
+        {approvalCheckpoint}
+        {revisionFeedback}
         {evidenceEditor}
         {submissionHistory}
       </article>

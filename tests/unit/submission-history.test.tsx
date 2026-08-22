@@ -20,6 +20,7 @@ const newest: SubmissionHistoryEntry = {
   status: "submitted",
   submittedAt: "2026-08-13T10:17:48Z",
   reviewedAt: null,
+  review: null,
   links: [
     {
       id: "72000000-0000-4000-8000-000000000002",
@@ -38,6 +39,24 @@ const older: SubmissionHistoryEntry = {
   status: "revision_required",
   submittedAt: "2026-08-12T08:00:00Z",
   reviewedAt: "2026-08-12T12:30:00Z",
+  review: {
+    id: "74000000-0000-4000-8000-000000000001",
+    submissionId: "71000000-0000-4000-8000-000000000001",
+    version: 1,
+    decision: "revision_required",
+    summary: "Потребна е појасна врска со истражувањето.",
+    priorityCorrection: "Додај еден конкретен цитат.",
+    createdAt: "2026-08-12T12:30:00Z",
+    criteria: [
+      {
+        criterionId: "73000000-0000-4000-8000-000000000001",
+        position: 1,
+        criterion: "Доказот содржи конкретен пример.",
+        outcome: "revise",
+        note: "Примерот не е поврзан со интервјуто.",
+      },
+    ],
+  },
   links: [],
 };
 
@@ -57,6 +76,8 @@ describe("submission history presentation", () => {
     expect(html).toContain('href="https://example.com/testing"');
     expect(html).toContain("Верзија 1");
     expect(html).toContain("Прва верзија на доказот.");
+    expect(html).toContain("Додај еден конкретен цитат.");
+    expect(html).toContain("Примерот не е поврзан со интервјуто.");
     expect(html.match(/<details/g)).toHaveLength(1);
     expect(html.indexOf("Верзија 2")).toBeLessThan(html.indexOf("Верзија 1"));
   });

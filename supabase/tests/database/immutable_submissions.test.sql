@@ -1,12 +1,16 @@
 begin;
 
-select plan(42);
+select plan(43);
 
 select has_table('public', 'submissions', 'submissions table exists');
 select has_table('public', 'submission_links', 'submission links table exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.submissions'::regclass), 'submissions has RLS enabled');
 select ok((select relrowsecurity from pg_class where oid = 'public.submission_links'::regclass), 'submission links has RLS enabled');
 select has_function('public', 'submit_assignment', array['uuid','timestamp with time zone'], 'submit assignment function exists');
+select ok(
+  to_regclass('public.submissions_pending_queue_idx') is not null,
+  'pending submission queue has an oldest-first partial index'
+);
 
 insert into auth.users (instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at) values
 ('00000000-0000-0000-0000-000000000000','91000000-0000-4000-8000-000000000001','authenticated','authenticated','submit-reviewer@example.test','',now(),'{}','{}',now(),now()),

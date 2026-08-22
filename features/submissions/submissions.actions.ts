@@ -175,6 +175,7 @@ export async function submitEvidence(
 
   revalidatePath("/app");
   revalidatePath("/app/assignments/[slug]", "page");
+  revalidatePath("/admin");
   return {
     status: "success",
     values: { ...parsed.data, confirmation: "" },
