@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
+
 import { ProofArtifact } from "@/components/ui/proof-artifact";
 import { requireLearnerOnboardingAccess } from "@/features/auth";
 import { getOnboardingDateLimits, OnboardingForm, type OnboardingValues } from "@/features/onboarding";
+
+export const metadata: Metadata = {
+  title: "Поставување проект",
+};
 
 export default async function OnboardingPage() {
   await requireLearnerOnboardingAccess();

@@ -4,10 +4,10 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ## Current Status
 
-**Phase:** 5 — Human Review and Unlock
-**Last completed:** 21 Atomic approval and next-assignment unlock
+**Phase:** 6 — Beta Hardening
+**Last completed:** 22 Responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
 **In progress:** None
-**Next:** Begin Phase 22 responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
+**Next:** Begin Phase 23 privacy, rate protection, activity events, and failure states
 **Blockers:** None
 
 ## Progress
@@ -54,7 +54,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 ### Phase 6 — Beta Hardening
 
-- [ ] 22 Complete responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
+- [x] 22 Complete responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
 - [ ] 23 Complete privacy, rate protection, activity events, and failure states
 - [ ] 24 Add unit, database, integration, and end-to-end release gates
 - [ ] 25 Write deployment, smoke-test, backup, and rollback runbook
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-25 — Completed Phase 22 with app-wide accessibility and responsive regression coverage across 360 px mobile, 768 px tablet, desktop, and reduced-motion projects. Public, authentication, learner, and reviewer shells now preserve 44 px interactive targets and verified keyboard order with visible focus treatment. Every primary route has a distinct Macedonian document title for the Next.js route announcer, including database-derived assignment, review, and project-scope titles without duplicate page queries. Font checks exercise Onest and Unbounded against Macedonian-specific glyphs, punctuation, and numerals; semantic token tests cover ten foreground/surface contrast pairs; reduced-motion checks verify final hero, reveal, transition, and animation states. The complete learner-to-reviewer revision, resubmission, approval, and unlock journey passes at mobile, tablet, and desktop widths, and representative tablet screenshots were inspected without clipping or horizontal overflow. All 85 unit tests, 298 database assertions, 64 browser checks with 4 intentional skips, application-schema lint, a clean migration-to-local schema diff, lint, strict typecheck, production build, and diff checks pass. No schema or architecture changes were required.
 
 - 2026-08-22 — Completed Phase 21 with a durable learner approval checkpoint that keeps the final human summary and every passed criterion visible on the exact assignment, then provides one direct action to the newly unlocked assignment or the completed project after terminal approval. Approved assignments and completed projects remain readable, the dashboard advances to the next available assignment, and inconsistent locked-next projections surface an explicit recovery state. The existing row-locked `review_submission(...)` transaction was exercised more deeply: double review is rejected without duplicate reviews or events, non-terminal approval unlocks exactly one next assignment, and terminal approval completes the project without emitting an unlock event. All 85 unit tests, 298 database assertions, 42 browser checks with 3 intentional skips across desktop, 360 px, and reduced-motion projects, application-schema lint, a clean migration-to-local schema diff, lint, strict typecheck, and the production build pass. The learner checkpoint has no horizontal overflow and its approved-state hierarchy is registered in the UI registry.
 

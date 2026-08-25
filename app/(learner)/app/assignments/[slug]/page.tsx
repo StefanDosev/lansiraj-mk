@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { requireCompletedLearnerAccess } from "@/features/auth";
 import {
@@ -16,14 +18,25 @@ import {
   SubmissionHistory,
 } from "@/features/submissions";
 
-export default async function AssignmentPage({
-  params,
-}: {
+type AssignmentPageProps = {
   params: Promise<{ slug: string }>;
-}) {
+};
+
+const getAssignment = cache(getCurriculumAssignmentBySlug);
+
+export async function generateMetadata({ params }: AssignmentPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const assignment = await getAssignment(slug);
+
+  return {
+    title: assignment?.title ?? "Задачата не е пронајдена",
+  };
+}
+
+export default async function AssignmentPage({ params }: AssignmentPageProps) {
   const { slug } = await params;
   await requireCompletedLearnerAccess();
-  const assignment = await getCurriculumAssignmentBySlug(slug);
+  const assignment = await getAssignment(slug);
 
   if (!assignment) notFound();
 

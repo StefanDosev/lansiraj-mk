@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { getAccessDestination, getAccessState, SignOutButton } from "@/features/auth";
+
+export const metadata: Metadata = {
+  title: "Пристап во исчекување",
+};
 
 export default async function AccessPendingPage() {
   const state = await getAccessState();

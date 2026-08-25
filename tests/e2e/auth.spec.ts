@@ -1,4 +1,4 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
@@ -36,6 +36,35 @@ async function openLatestMagicLink(page: Page, request: APIRequestContext, email
   const link = message.match(/href="([^"]+)"/)?.[1]?.replaceAll("&amp;", "&");
   expect(link).toBeTruthy();
   await page.goto(link!);
+}
+
+async function expectVisibleFocusRing(locator: Locator) {
+  const focusStyle = await locator.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      boxShadow: style.boxShadow,
+      outlineStyle: style.outlineStyle,
+      outlineWidth: Number.parseFloat(style.outlineWidth),
+    };
+  });
+
+  expect(
+    (focusStyle.outlineStyle !== "none" && focusStyle.outlineWidth >= 3)
+      || focusStyle.boxShadow !== "none",
+  ).toBe(true);
+}
+
+async function expectKeyboardOrder(page: Page, locators: Locator[]) {
+  for (const locator of locators) {
+    await page.keyboard.press("Tab");
+    await expect(locator).toBeFocused();
+    await expectVisibleFocusRing(locator);
+
+    const bounds = await locator.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.width).toBeGreaterThanOrEqual(44);
+    expect(bounds!.height).toBeGreaterThanOrEqual(44);
+  }
 }
 
 test("authenticated outsider receives neutral pending access and can sign out", async ({ page, request }, testInfo) => {
@@ -84,6 +113,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
 
     await openLatestMagicLink(page, request, learnerEmail);
     await expect(page).toHaveURL(/\/app\/onboarding$/);
+    await expect(page).toHaveTitle("Поставување проект | Лансирај");
 
     await page.goto("/app");
     await expect(page).toHaveURL(/\/app\/onboarding$/);
@@ -110,6 +140,16 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await page.getByLabel("Часови неделно").fill("5");
     await page.getByRole("button", { name: "Зачувај и продолжи" }).click();
     await expect(page).toHaveURL(/\/app$/);
+    await expect(page).toHaveTitle("Тековна задача | Лансирај");
+
+    await page.goto("/app");
+    await expectKeyboardOrder(page, [
+      page.getByRole("link", { name: "Скокни до содржината" }),
+      page.getByRole("link", { name: "Лансирај" }),
+      page.getByRole("link", { name: "Тековна задача" }),
+      page.getByRole("link", { name: "Проект" }),
+      page.getByRole("button", { name: "Одјави се" }),
+    ]);
 
     const { data: users, error: usersError } = await admin.auth.admin.listUsers();
     expect(usersError).toBeNull();
@@ -152,6 +192,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     expect(projections!.filter((projection) => projection.state === "locked")).toHaveLength(9);
 
     await page.goto("/app/assignments/target-user-and-problem");
+    await expect(page).toHaveTitle("Дефинирај еден корисник и еден болен проблем | Лансирај");
     await expect(page.getByRole("heading", { name: "Дефинирај еден корисник и еден болен проблем" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Критериуми за прифаќање" })).toBeVisible();
     await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
@@ -253,6 +294,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByRole("heading", { name: "Нема задача на оваа адреса" })).toBeVisible();
 
     await page.goto("/app/project");
+    await expect(page).toHaveTitle("Проект | Лансирај");
     await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Сè уште нема проценка" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Од идеја до јавен производ" })).toBeVisible();
@@ -269,6 +311,13 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     runLocalSql(`insert into private.reviewer_roles (user_id) values ('${reviewer.user!.id}')`);
     await openLatestMagicLink(page, request, reviewerEmail);
     await expect(page).toHaveURL(/\/admin$/);
+    await expect(page).toHaveTitle("Ред за преглед | Лансирај");
+    await expectKeyboardOrder(page, [
+      page.getByRole("link", { name: "Скокни до содржината" }),
+      page.getByRole("link", { name: "Лансирај" }),
+      page.getByRole("link", { name: "Преглед" }),
+      page.getByRole("button", { name: "Одјави се" }),
+    ]);
 
     await expect(page.getByRole("heading", { name: "Ред за човечки преглед" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Докази што чекаат" })).toBeVisible();
@@ -283,6 +332,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await page.screenshot({ path: testInfo.outputPath("reviewer-queue.png"), fullPage: true });
     await reviewLink.click();
     await expect(page).toHaveURL(new RegExp(`/admin/reviews/${immutableSubmission!.id}$`));
+    await expect(page).toHaveTitle("Дефинирај еден корисник и еден болен проблем — Преглед | Лансирај");
     await expect(page.getByRole("heading", { name: "Дефинирај еден корисник и еден болен проблем" })).toBeVisible();
     await expect(page.getByText("Три кратки разговори со конкретни корисници.", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Белешки од разговорите" })).toHaveAttribute("href", "https://example.com/notes");
@@ -421,6 +471,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     expect(unlockedAssignmentResult.data?.state).toBe("available");
 
     await page.goto(`/admin/projects/${startedProjects!.id}`);
+    await expect(page).toHaveTitle("Мал планер — Проверка на scope | Лансирај");
     await expect(page.getByRole("heading", { name: "Мал планер" })).toBeVisible();
     await page.getByLabel("Потребно е намалување").check();
     await page.getByLabel("Белешка").fill("Намали ја главната акција на еден јасен исход.");
@@ -447,9 +498,11 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page).toHaveURL(/\/auth\/sign-in$/);
     await openLatestMagicLink(page, request, learnerEmail);
     await expect(page).toHaveURL(/\/app$/);
+    await expect(page).toHaveTitle("Тековна задача | Лансирај");
     await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
 
     await page.goto("/app/assignments/target-user-and-problem");
+    await expect(page).toHaveTitle("Дефинирај еден корисник и еден болен проблем | Лансирај");
     const approvalCheckpoint = page.getByRole("region", { name: "Одобрено — доказот е доволен" });
     await expect(approvalCheckpoint).toBeVisible();
     await expect(approvalCheckpoint).toContainText("Човечки преглед · Верзија 2");

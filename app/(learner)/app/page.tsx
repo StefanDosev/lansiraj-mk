@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
+
 import { requireCompletedLearnerAccess } from "@/features/auth";
 import { getCurrentProject, StartProjectForm } from "@/features/projects";
 import { CurrentAssignmentDashboard, deriveCurrentAssignmentDashboard } from "@/features/progress";
 import { getLatestRevisionFeedback } from "@/features/submissions";
+
+export const metadata: Metadata = {
+  title: "Тековна задача",
+};
 
 export default async function LearnerFoundationPage() {
   await requireCompletedLearnerAccess();

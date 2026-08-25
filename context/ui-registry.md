@@ -86,7 +86,7 @@ Last updated: 2026-08-05
 ### Application Shells
 
 Files: `app/(marketing)/layout.tsx`, `app/(auth)/layout.tsx`, `app/(learner)/app/layout.tsx`, `app/admin/layout.tsx`
-Last updated: 2026-08-08
+Last updated: 2026-08-25
 
 | Property | Pattern |
 | --- | --- |
@@ -97,10 +97,11 @@ Last updated: 2026-08-08
 | Border radius | none on shell boundaries |
 | Text — primary | Ink on light surfaces; White on Ink |
 | Spacing | `min-h-16` header; `py-8 md:py-12` product main |
+| Interactive state | Cobalt focus outline; navigation and footer links use `min-h-11 min-w-11` with centred inline-flex alignment |
 | Shadow | none |
 | Accent usage | Cobalt for current product navigation; Acid only as reviewer proof-state metadata |
 
-**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Learner and reviewer shells enforce authorization before rendering and expose the compact sign-out action. Reviewer precedence is enforced at the learner-shell boundary. Post-onboarding learner pages additionally require completed onboarding, while `/app/onboarding` redirects completed learners to `/app`. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
+**Pattern notes:** All shells are Server Components, use semantic labelled navigation, include the shared skip link, and constrain content with `container-public` or `container-product`. Every interactive shell destination must preserve a 44 px target in both axes, including compact text links. Learner and reviewer shells enforce authorization before rendering and expose the compact sign-out action. Reviewer precedence is enforced at the learner-shell boundary. Post-onboarding learner pages additionally require completed onboarding, while `/app/onboarding` redirects completed learners to `/app`. Every primary route owns a distinct Macedonian document title so the Next.js route announcer communicates navigation context. Marketing may be expressive; learner/auth shells stay quiet; reviewer routes are deliberately inverse and distinct.
 
 ### Magic Link Form
 

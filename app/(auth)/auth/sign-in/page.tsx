@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { getAccessDestination, getAccessState, MagicLinkForm } from "@/features/auth";
+
+export const metadata: Metadata = {
+  title: "Најава",
+};
 
 export default async function SignInPage({
   searchParams,

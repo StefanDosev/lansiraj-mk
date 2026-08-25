@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
+
 import { CohortSnapshot } from "@/features/reviews/components/cohort-snapshot";
 import { ReviewerQueue } from "@/features/reviews/components/reviewer-queue";
 import { getReviewerWorkspace } from "@/features/reviews/reviews.queries";
+
+export const metadata: Metadata = {
+  title: "Ред за преглед",
+};
 
 type ReviewerWorkspacePageProps = {
   searchParams: Promise<{ reviewed?: string | string[] }>;
