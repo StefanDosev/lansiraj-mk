@@ -11,9 +11,9 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
         <div className="pointer-events-auto mx-auto flex min-h-14 max-w-4xl items-center justify-between gap-4 border-2 border-ink bg-white px-3 shadow-[0.3rem_0.3rem_0_var(--color-cobalt)] md:px-4">
           <BrandSignature />
           <nav aria-label="Главна навигација" className="flex items-center gap-1 text-sm font-semibold md:gap-4">
-            <a href="#process" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">Процес</a>
-            <a href="#stages" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">Патека</a>
-            <a href="#faq" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">FAQ</a>
+            <Link href="/#process" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">Процес</Link>
+            <Link href="/#stages" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">Патека</Link>
+            <Link href="/#faq" className="hidden min-h-11 min-w-11 items-center justify-center px-2 text-ink lg:inline-flex">FAQ</Link>
             <Link href="/auth/sign-in" className="inline-flex min-h-11 items-center border-2 border-ink bg-launch px-3 text-ink sm:border-0 sm:bg-transparent sm:px-2">
               <span className="sm:hidden">Пријави се</span><span className="hidden sm:inline">Најави се</span>
             </Link>

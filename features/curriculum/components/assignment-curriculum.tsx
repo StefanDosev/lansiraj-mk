@@ -103,7 +103,10 @@ export function AssignmentCurriculum({
             <CurriculumMarkdown>{assignment.proofPromptMarkdown}</CurriculumMarkdown>
           </div>
           <p className="mt-5 border-t border-ink pt-4 text-sm leading-relaxed text-ink">
-            Не внесувај API клучеви, лозинки, приватни токени или лични податоци од интервјуирани лица.
+            Не внесувај API клучеви, лозинки, приватни токени или лични податоци од интервјуирани лица.{" "}
+            <Link className="inline-flex min-h-11 items-center font-semibold text-cobalt underline decoration-2 underline-offset-4" href="/privacy">
+              Прочитај го известувањето за приватност
+            </Link>.
           </p>
         </section>
 

@@ -2,7 +2,7 @@
 
 import { RouteErrorState } from "@/components/ui/route-error-state";
 
-export default function ReviewerError({
+export default function AuthError({
   unstable_retry,
 }: Readonly<{
   error: Error & { digest?: string };
@@ -10,8 +10,8 @@ export default function ReviewerError({
 }>) {
   return (
     <RouteErrorState
-      title="Reviewer workspace не може да се вчита."
-      message="Обиди се повторно. Ниту еден доказ или статус не е променет."
+      title="Најавата не може да се вчита."
+      message="Обиди се повторно. За нов пристап секогаш можеш да побараш нов безбеден линк."
       onRetry={unstable_retry}
     />
   );

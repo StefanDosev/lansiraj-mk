@@ -1,6 +1,6 @@
 begin;
 
-select plan(51);
+select plan(56);
 
 select has_table('public', 'reviews', 'reviews table exists');
 select has_table('public', 'review_criteria', 'review criteria table exists');
@@ -35,7 +35,8 @@ insert into auth.users (
 ('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000002','authenticated','authenticated','review-flow-learner@example.test','',now(),'{}','{}',now(),now()),
 ('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000003','authenticated','authenticated','review-flow-other@example.test','',now(),'{}','{}',now(),now()),
 ('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000004','authenticated','authenticated','review-flow-outsider@example.test','',now(),'{}','{}',now(),now()),
-('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000005','authenticated','authenticated','review-flow-terminal@example.test','',now(),'{}','{}',now(),now());
+('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000005','authenticated','authenticated','review-flow-terminal@example.test','',now(),'{}','{}',now(),now()),
+('00000000-0000-0000-0000-000000000000','a1000000-0000-4000-8000-000000000006','authenticated','authenticated','review-flow-launch@example.test','',now(),'{}','{}',now(),now());
 
 insert into public.cohorts (id,name,status)
 values ('a2000000-0000-4000-8000-000000000001','Review flow cohort','active');
@@ -45,12 +46,14 @@ insert into public.profiles (user_id,display_name,onboarding_completed_at) value
 ('a1000000-0000-4000-8000-000000000002','Learner',now()),
 ('a1000000-0000-4000-8000-000000000003','Other learner',now()),
 ('a1000000-0000-4000-8000-000000000004','Outsider',now()),
-('a1000000-0000-4000-8000-000000000005','Terminal learner',now());
+('a1000000-0000-4000-8000-000000000005','Terminal learner',now()),
+('a1000000-0000-4000-8000-000000000006','Launch learner',now());
 
 insert into public.cohort_members (cohort_id,user_id) values
 ('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000002'),
 ('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000003'),
-('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000005');
+('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000005'),
+('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000006');
 
 insert into private.reviewer_roles (user_id)
 values ('a1000000-0000-4000-8000-000000000001');
@@ -61,7 +64,8 @@ insert into public.projects (
 ) values
 ('a3000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000002','a2000000-0000-4000-8000-000000000001','Revision project','A specific target user','A sufficiently detailed painful problem.','Complete one clear action',array['Chat'],5,current_date + 28,'active','v1'),
 ('a3000000-0000-4000-8000-000000000002','a1000000-0000-4000-8000-000000000003','a2000000-0000-4000-8000-000000000001','Approval project','A specific target user','A sufficiently detailed painful problem.','Complete one clear action',array['Payments'],5,current_date + 28,'active','v1'),
-('a3000000-0000-4000-8000-000000000003','a1000000-0000-4000-8000-000000000005','a2000000-0000-4000-8000-000000000001','Terminal project','A specific target user','A sufficiently detailed painful problem.','Complete one clear action',array['Accounts'],5,current_date + 28,'active','v1');
+('a3000000-0000-4000-8000-000000000003','a1000000-0000-4000-8000-000000000005','a2000000-0000-4000-8000-000000000001','Terminal project','A specific target user','A sufficiently detailed painful problem.','Complete one clear action',array['Accounts'],5,current_date + 28,'active','v1'),
+('a3000000-0000-4000-8000-000000000004','a1000000-0000-4000-8000-000000000006','a2000000-0000-4000-8000-000000000001','Launch project','A specific target user','A sufficiently detailed painful problem.','Complete one clear action',array['Billing'],5,current_date + 28,'active','v1');
 
 insert into public.project_assignments (
   id,project_id,assignment_id,state,available_at,submitted_at
@@ -70,7 +74,9 @@ insert into public.project_assignments (
 ('a4000000-0000-4000-8000-000000000005','a3000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000002','locked',null,null),
 ('a4000000-0000-4000-8000-000000000002','a3000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000001','submitted',now(),now()),
 ('a4000000-0000-4000-8000-000000000003','a3000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000002','locked',null,null),
-('a4000000-0000-4000-8000-000000000004','a3000000-0000-4000-8000-000000000003','20000000-0000-4000-8000-000000000010','submitted',now(),now());
+('a4000000-0000-4000-8000-000000000004','a3000000-0000-4000-8000-000000000003','20000000-0000-4000-8000-000000000010','submitted',now(),now()),
+('a4000000-0000-4000-8000-000000000006','a3000000-0000-4000-8000-000000000004','20000000-0000-4000-8000-000000000009','submitted',now(),now()),
+('a4000000-0000-4000-8000-000000000007','a3000000-0000-4000-8000-000000000004','20000000-0000-4000-8000-000000000010','locked',null,null);
 
 insert into public.project_assignments (
   project_id,assignment_id,state,available_at,submitted_at,approved_at
@@ -86,6 +92,20 @@ from public.assignments as assignment
 where assignment.curriculum_version = 'v1'
   and assignment.position < 10;
 
+insert into public.project_assignments (
+  project_id,assignment_id,state,available_at,submitted_at,approved_at
+)
+select
+  'a3000000-0000-4000-8000-000000000004',
+  assignment.id,
+  'approved',
+  now(),
+  now(),
+  now()
+from public.assignments as assignment
+where assignment.curriculum_version = 'v1'
+  and assignment.position < 9;
+
 insert into public.assignment_drafts (
   id,project_assignment_id,evidence_text,updated_at
 ) values (
@@ -100,7 +120,8 @@ insert into public.submissions (
 ) values
 ('a5000000-0000-4000-8000-000000000001','a4000000-0000-4000-8000-000000000001',1,'Revision evidence','submitted',now()),
 ('a5000000-0000-4000-8000-000000000002','a4000000-0000-4000-8000-000000000002',1,'Approval evidence','submitted',now()),
-('a5000000-0000-4000-8000-000000000003','a4000000-0000-4000-8000-000000000004',1,'Terminal evidence','submitted',now());
+('a5000000-0000-4000-8000-000000000003','a4000000-0000-4000-8000-000000000004',1,'Terminal evidence','submitted',now()),
+('a5000000-0000-4000-8000-000000000004','a4000000-0000-4000-8000-000000000006',1,'Launch evidence','submitted',now());
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000002',true);
@@ -312,6 +333,28 @@ select is(
 );
 select lives_ok(
   $$select public.review_submission(
+    'a5000000-0000-4000-8000-000000000004','approved','The public launch and outreach evidence pass.',null,
+    '[{"criterion_id":"30000000-0000-4000-8000-000000000025","outcome":"pass"},{"criterion_id":"30000000-0000-4000-8000-000000000026","outcome":"pass"},{"criterion_id":"30000000-0000-4000-8000-000000000027","outcome":"pass"}]'::jsonb
+  )$$,
+  'reviewer approval of Assignment 09 records the verified launch'
+);
+select is(
+  (select count(*) from public.activity_events where project_id = 'a3000000-0000-4000-8000-000000000004' and event_type = 'project_launched'),
+  1::bigint,
+  'launch approval appends one project launch event'
+);
+select results_eq(
+  $$select actor_id,metadata->>'assignment_id',metadata->>'submission_id',metadata->>'version',metadata - array['assignment_id','submission_id','review_id','version'] from public.activity_events where project_id = 'a3000000-0000-4000-8000-000000000004' and event_type = 'project_launched'$$,
+  $$values ('a1000000-0000-4000-8000-000000000001'::uuid,'20000000-0000-4000-8000-000000000009'::text,'a5000000-0000-4000-8000-000000000004'::text,'1'::text,'{}'::jsonb)$$,
+  'launch metadata contains only operational identifiers and version'
+);
+select results_eq(
+  $$select state,available_at is not null from public.project_assignments where id = 'a4000000-0000-4000-8000-000000000007'$$,
+  $$values ('available'::text,true)$$,
+  'launch approval still unlocks the final reflection assignment'
+);
+select lives_ok(
+  $$select public.review_submission(
     'a5000000-0000-4000-8000-000000000003','approved','The final reflection, case study, and next step all pass.',null,
     '[{"criterion_id":"30000000-0000-4000-8000-000000000028","outcome":"pass"},{"criterion_id":"30000000-0000-4000-8000-000000000029","outcome":"pass"},{"criterion_id":"30000000-0000-4000-8000-000000000030","outcome":"pass"}]'::jsonb
   )$$,
@@ -332,7 +375,12 @@ select is(
   0::bigint,
   'terminal approval appends no unlock event'
 );
-select is((select count(*) from public.reviews),3::bigint,'reviewer reads every completed review');
+select is(
+  (select count(*) from public.activity_events where project_id = 'a3000000-0000-4000-8000-000000000003' and event_type = 'project_launched'),
+  0::bigint,
+  'terminal completion does not create a second launch event'
+);
+select is((select count(*) from public.reviews),4::bigint,'reviewer reads every completed review');
 
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000004',true);
 select throws_ok(

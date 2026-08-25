@@ -114,6 +114,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await openLatestMagicLink(page, request, learnerEmail);
     await expect(page).toHaveURL(/\/app\/onboarding$/);
     await expect(page).toHaveTitle("Поставување проект | Лансирај");
+    await expect(page.getByRole("link", { name: "Како ги користиме и чуваме податоците" })).toHaveAttribute("href", "/privacy");
 
     await page.goto("/app");
     await expect(page).toHaveURL(/\/app\/onboarding$/);
@@ -197,6 +198,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     await expect(page.getByRole("heading", { name: "Критериуми за прифаќање" })).toBeVisible();
     await expect(page.getByText("Подготвено за работа", { exact: true })).toBeVisible();
     await expect(page.getByRole("list").filter({ hasText: "Опишан е еден специфичен корисник" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Прочитај го известувањето за приватност" })).toHaveAttribute("href", "/privacy");
     await expect(page.getByRole("heading", { name: "Draft за доказ" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Зачувај draft" })).toBeVisible();
     await page.getByLabel("Текстуален доказ").fill("Три кратки разговори со конкретни корисници.");
@@ -291,7 +293,7 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     }
 
     await page.goto("/app/assignments/not-a-curriculum-assignment");
-    await expect(page.getByRole("heading", { name: "Нема задача на оваа адреса" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Нема достапна задача на оваа адреса." })).toBeVisible();
 
     await page.goto("/app/project");
     await expect(page).toHaveTitle("Проект | Лансирај");

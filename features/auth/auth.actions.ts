@@ -3,11 +3,13 @@
 import { redirect } from "next/navigation";
 
 import { magicLinkSchema } from "@/features/auth/auth.schema";
+import { isAuthRateLimitFailure } from "@/features/auth/auth-rate-limit";
 import type { MagicLinkState } from "@/features/auth/auth.types";
 import { getAppOrigin } from "@/features/auth/auth-url";
 import { createClient } from "@/lib/supabase/server";
 
 const neutralSuccessMessage = "Ако адресата може да се најави, ќе добиеш безбеден линк по email.";
+const rateLimitMessage = "Барањето е примено. Почекај малку пред да побараш нов линк.";
 
 export async function requestMagicLink(
   _previousState: MagicLinkState,
@@ -32,7 +34,13 @@ export async function requestMagicLink(
     },
   });
 
-  if (error) console.error("auth_magic_link_request_failed", { code: error.code });
+  if (error) {
+    console.error("auth_magic_link_request_failed", { code: error.code });
+
+    if (isAuthRateLimitFailure(error)) {
+      return { status: "success", message: rateLimitMessage };
+    }
+  }
 
   return { status: "success", message: neutralSuccessMessage };
 }

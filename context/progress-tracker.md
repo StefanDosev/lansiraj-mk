@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** 22 Responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
+**Last completed:** 23 Privacy, rate protection, activity events, and failure states
 **In progress:** None
-**Next:** Begin Phase 23 privacy, rate protection, activity events, and failure states
+**Next:** Begin Phase 24 automated release gates
 **Blockers:** None
 
 ## Progress
@@ -55,7 +55,7 @@ Update this file after every completed feature. An agent reading it must know wh
 ### Phase 6 — Beta Hardening
 
 - [x] 22 Complete responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
-- [ ] 23 Complete privacy, rate protection, activity events, and failure states
+- [x] 23 Complete privacy, rate protection, activity events, and failure states
 - [ ] 24 Add unit, database, integration, and end-to-end release gates
 - [ ] 25 Write deployment, smoke-test, backup, and rollback runbook
 
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-25 — Completed Phase 23 with a public Macedonian privacy notice naming Stefan Dosev as controller and `privacy@lansiraj.mk` as the request channel. The notice explains data categories, human-review visibility, service and security purposes, recipients and potential international processing, the 90-day post-cohort deletion/anonymization window, participant rights, a 30-day response window, and AZLP escalation without claiming a compliance guarantee. Sign-in, onboarding, and assignment evidence surfaces link directly to it and repeat explicit guidance against secrets and third-party personal data. Supabase Auth retains its built-in abuse limits; HTTP 429 outcomes receive neutral retry-later copy without revealing enrollment, adding CAPTCHA, persisting IP addresses, or logging email addresses. Atomic `onboarding_completed` and Assignment 09 `project_launched` events now complete the seven-event activity model; event metadata contains only operational identifiers and version, and terminal completion cannot duplicate launch. Shared token-only error and not-found panels cover global, public, authentication, learner, and reviewer contexts while protected records remain context-neutral. A clean local reset, all 306 database assertions, local schema lint, all 87 unit tests, 60 responsive shell checks across four browser projects, the 5-test authenticated desktop journey, visual inspection at 360 px and desktop, lint, strict typecheck, production build, log/palette scans, and diff checks pass. No waitlist implementation existed to protect, so none was introduced; `context/library-docs.md` remains the source of truth over stale historical scope.
 
 - 2026-08-25 — Completed Phase 22 with app-wide accessibility and responsive regression coverage across 360 px mobile, 768 px tablet, desktop, and reduced-motion projects. Public, authentication, learner, and reviewer shells now preserve 44 px interactive targets and verified keyboard order with visible focus treatment. Every primary route has a distinct Macedonian document title for the Next.js route announcer, including database-derived assignment, review, and project-scope titles without duplicate page queries. Font checks exercise Onest and Unbounded against Macedonian-specific glyphs, punctuation, and numerals; semantic token tests cover ten foreground/surface contrast pairs; reduced-motion checks verify final hero, reveal, transition, and animation states. The complete learner-to-reviewer revision, resubmission, approval, and unlock journey passes at mobile, tablet, and desktop widths, and representative tablet screenshots were inspected without clipping or horizontal overflow. All 85 unit tests, 298 database assertions, 64 browser checks with 4 intentional skips, application-schema lint, a clean migration-to-local schema diff, lint, strict typecheck, production build, and diff checks pass. No schema or architecture changes were required.
 

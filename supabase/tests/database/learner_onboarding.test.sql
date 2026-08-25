@@ -1,6 +1,6 @@
 begin;
 
-select plan(16);
+select plan(19);
 select has_table('public', 'projects', 'projects table exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.projects'::regclass), 'projects has RLS enabled');
 select has_function('public', 'complete_onboarding', array['text', 'text', 'text', 'text', 'text', 'text[]', 'smallint', 'date'], 'atomic onboarding function exists');
@@ -20,8 +20,11 @@ select lives_ok($$select public.complete_onboarding('Ана','Мал плане�
 select is((select count(*) from public.projects),1::bigint,'learner reads their draft project');
 select is((select display_name from public.profiles where user_id = '61000000-0000-4000-8000-000000000002'),'Ана','profile name is saved');
 select ok((select onboarding_completed_at is not null from public.profiles where user_id = '61000000-0000-4000-8000-000000000002'),'onboarding completion is recorded');
+select is((select count(*) from public.activity_events where event_type = 'onboarding_completed'),1::bigint,'onboarding appends one activity event');
+select is((select metadata from public.activity_events where event_type = 'onboarding_completed'),'{}'::jsonb,'onboarding event stores no profile or project content');
 select results_eq($$select non_features from public.projects$$,$$values (array['Плаќања','Chat']::text[])$$,'normalized non-features persist');
 select throws_ok($$select public.complete_onboarding('Ана','Мал планер','Студенти што учат самостојно','Ги губат малите задачи и не знаат што е следно.','Да ја означат следната важна задача.',array['Плаќања'],'5',current_date + 28)$$,'PT409','onboarding_already_completed','retry cannot duplicate a project');
+select is((select count(*) from public.activity_events where event_type = 'onboarding_completed'),1::bigint,'rejected onboarding retry creates no duplicate event');
 select throws_ok($$insert into public.projects(owner_id,cohort_id,title,target_user,problem_statement,core_action,non_features,weekly_hours,target_launch_date) values ('61000000-0000-4000-8000-000000000002','62000000-0000-4000-8000-000000000001','Other','A specific target user here','A sufficiently detailed painful problem here','Complete one core action',array['Chat'],5,current_date + 28)$$,'42501',null,'learner cannot insert projects directly');
 
 select set_config('request.jwt.claim.sub','61000000-0000-4000-8000-000000000003',true);

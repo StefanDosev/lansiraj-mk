@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-20 after the Phase 20 learner revision loop. Marketing, auth, onboarding, learner, evidence, history, and reviewer surfaces are registered below.
+Last reviewed: 2026-08-25 after the Phase 23 privacy and failure-state work. Marketing, auth, onboarding, learner, evidence, history, reviewer, privacy, and route-state surfaces are registered below.
 
 ## How to Use
 
@@ -159,6 +159,44 @@ Last updated: 2026-08-07
 | Accent usage | Cobalt eyebrow text identifies the current access checkpoint |
 
 **Pattern notes:** Quiet product checkpoints use one bordered White panel and a short hierarchy: Cobalt eyebrow, display heading, explanatory copy, then an optional divided action. This pattern is suitable for pending, empty, and onboarding checkpoint states; it must not expose invite existence or internal authorization reasons.
+
+### Route State Panels
+
+Files: `components/ui/route-error-state.tsx`, `components/ui/route-not-found-state.tsx`
+Last updated: 2026-08-25
+
+| Property | Class |
+| --- | --- |
+| Background | inherits the current shell's Canvas workspace |
+| Border | `border-y-2 border-coral` for retry; `border-y-2 border-ink` for unavailable content |
+| Border radius | none |
+| Text — primary | heading and action `text-ink`; body `text-stone-700` |
+| Text size and weight | uppercase `text-xs` eyebrow; `font-display text-3xl font-semibold` heading; semibold action |
+| Spacing | panel `py-8`; heading `mt-3`; body `mt-4`; action `mt-6 px-5 py-2.5` |
+| Interactive state | shared `pressable` action with 44 px minimum height and global Cobalt focus outline |
+| Shadow | none |
+| Accent usage | Coral identifies retryable failure; Cobalt identifies unavailable content; Launch marks the recovery action |
+
+**Pattern notes:** Route failures reuse one context-safe hierarchy across public, authentication, learner, and reviewer shells. Copy names only the current surface, never exposes whether a protected record exists, and explicitly states when evidence or status was not changed. Next.js error boundaries remain thin Client Components that pass `unstable_retry` to the shared retry panel; not-found states remain Server Components with one safe return destination.
+
+### Privacy Notice
+
+File: `app/(marketing)/privacy/page.tsx`
+Last updated: 2026-08-25
+
+| Property | Class |
+| --- | --- |
+| Background | `bg-canvas`; sensitive-data warning `bg-stone-100` |
+| Border | reading sections `border-t-2 border-ink`; warning `border-l-4 border-coral` |
+| Border radius | none |
+| Text — primary | headings and warning `text-ink`; body `text-stone-700` |
+| Text size and weight | oversized display introduction; `font-display text-2xl font-semibold` section headings; relaxed body copy |
+| Spacing | article `gap-10`; reading column `space-y-12`; sections `pt-6`; warning `p-4` |
+| Interactive state | Cobalt underlined links with 44 px minimum height and global focus outline |
+| Shadow | none |
+| Accent usage | Cobalt identifies privacy context and destinations; Coral identifies prohibited sensitive evidence |
+
+**Pattern notes:** Operational policy pages use one asymmetric editorial article: a compact sticky introduction beside a reading-width ruled column on wide screens, then one linear column on mobile. Write concrete controller, purpose, retention, rights, and contact guidance in plain Macedonian. Keep evidence warnings adjacent to data categories and repeat a direct `/privacy` link at every product data-entry point; never turn required service processing into a consent checkbox.
 
 ### Learner Onboarding Form
 

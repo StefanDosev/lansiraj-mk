@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const routes = [
   { path: "/", title: "Лансирај" },
+  { path: "/privacy", title: "Приватност | Лансирај" },
   { path: "/auth/sign-in", title: "Најава | Лансирај" },
 ] as const;
 const macedonianGlyphs = "Ѓ ѓ Ќ ќ Ѕ ѕ Љ љ Њ њ Џ џ — „“ 0123456789";
@@ -84,6 +85,9 @@ test("public and sign-in controls keep 44px touch targets", async ({ page }) => 
   await page.goto("/");
   await expectMinimumInteractiveTargets(page);
 
+  await page.goto("/privacy");
+  await expectMinimumInteractiveTargets(page);
+
   await page.goto("/auth/sign-in");
   await expectMinimumInteractiveTargets(page);
 });
@@ -96,6 +100,7 @@ test("keyboard focus follows the sign-in reading order with a visible ring", asy
     page.getByRole("link", { name: "Лансирај — почетна страница" }),
     page.getByLabel("Email адреса"),
     page.getByRole("button", { name: "Испрати magic link" }),
+    page.getByRole("link", { name: "известувањето за приватност" }),
   ];
 
   for (const control of expectedOrder) {
@@ -103,6 +108,27 @@ test("keyboard focus follows the sign-in reading order with a visible ring", asy
     await expect(control).toBeFocused();
     await expectVisibleFocusRing(control);
   }
+});
+
+test("privacy notice exposes the controller, retention, rights, and contact", async ({ page }) => {
+  await page.goto("/privacy");
+
+  await expect(page.getByRole("heading", { name: "Кој ги контролира податоците" })).toBeVisible();
+  await expect(page.getByText("Стефан Досев е контролор", { exact: false })).toBeVisible();
+  await expect(page.getByText("90 дена", { exact: false })).toBeVisible();
+  await expect(page.getByRole("link", { name: "privacy@lansiraj.mk", exact: true }).first()).toHaveAttribute(
+    "href",
+    "mailto:privacy@lansiraj.mk",
+  );
+  await expect(page.getByRole("link", { name: /АЗЛП/ })).toHaveAttribute("href", "https://azlp.mk/");
+});
+
+test("unknown public routes show a branded context-neutral 404", async ({ page }) => {
+  await page.goto("/route-that-does-not-exist");
+
+  await expect(page).toHaveTitle("Страницата не е пронајдена | Лансирај");
+  await expect(page.getByRole("heading", { name: "Оваа адреса не води до достапна страница." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Кон почетната страница" })).toHaveAttribute("href", "/");
 });
 
 for (const route of ["/app", "/app/project", "/app/onboarding", "/admin", "/access-pending"]) {

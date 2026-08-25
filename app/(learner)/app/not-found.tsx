@@ -1,13 +1,13 @@
 import { RouteNotFoundState } from "@/components/ui/route-not-found-state";
 
-export default function AssignmentNotFound() {
+export default function LearnerNotFound() {
   return (
     <RouteNotFoundState
-      eyebrow="Задачата не е достапна"
-      title="Нема достапна задача на оваа адреса."
+      eyebrow="Нема работна содржина"
+      title="Оваа содржина не е достапна."
       message="Отвори ја тековната задача за да продолжиш од активниот чекор."
       href="/app"
-      linkLabel="Назад кон проектот"
+      linkLabel="Кон тековната задача"
     />
   );
 }

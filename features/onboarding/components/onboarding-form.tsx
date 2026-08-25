@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useRef, type ReactNode } from "react";
 import { completeOnboarding } from "@/features/onboarding/onboarding.actions";
 import type { OnboardingField, OnboardingState, OnboardingValues } from "@/features/onboarding/onboarding.types";
@@ -45,7 +46,7 @@ export function OnboardingForm({ initialValues, minimumDate, maximumDate }: Form
           <Field name="targetLaunchDate" label="Целен датум за лансирање" help="Избери реален датум во следните 12 недели." error={error("targetLaunchDate")}><input id="targetLaunchDate" name="targetLaunchDate" type="date" min={minimumDate} max={maximumDate} defaultValue={state.values.targetLaunchDate} aria-invalid={Boolean(error("targetLaunchDate"))} aria-describedby={describedBy("targetLaunchDate")} className={inputClass} /></Field>
         </div>
       </fieldset>
-      <aside className="border-l-4 border-cobalt bg-stone-100 p-4 text-sm leading-relaxed text-stone-700"><h2 className="font-semibold text-ink">Пред да продолжиш</h2><p className="mt-2">Овие податоци ќе ги гледа Стефан за рачен преглед. Не внесувај лозинки, API keys, приватни tokens или лични податоци од интервјуирани лица.</p></aside>
+      <aside className="border-l-4 border-cobalt bg-stone-100 p-4 text-sm leading-relaxed text-stone-700"><h2 className="font-semibold text-ink">Пред да продолжиш</h2><p className="mt-2">Овие податоци ќе ги гледа Стефан за рачен преглед. Не внесувај лозинки, API keys, приватни tokens или лични податоци од интервјуирани лица.</p><Link className="mt-2 inline-flex min-h-11 items-center font-semibold text-cobalt underline decoration-2 underline-offset-4" href="/privacy">Како ги користиме и чуваме податоците</Link></aside>
       <button type="submit" disabled={pending} className="pressable inline-flex min-h-11 w-full items-center justify-center rounded-sm border-2 border-ink bg-launch px-5 py-2.5 font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50 md:w-auto">{pending ? "Зачувуваме…" : "Зачувај и продолжи"}</button>
     </form>
   );

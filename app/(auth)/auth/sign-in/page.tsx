@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getAccessDestination, getAccessState, MagicLinkForm } from "@/features/auth";
@@ -30,6 +31,12 @@ export default async function SignInPage({
         </p>
       ) : null}
       <MagicLinkForm />
+      <p className="mt-4 border-t border-stone-200 pt-4 text-sm leading-relaxed text-stone-700">
+        Барањето линк користи податоци потребни за beta пристап. Прочитај како ги користиме и чуваме податоците во{" "}
+        <Link className="inline-flex min-h-11 items-center font-semibold text-cobalt underline decoration-2 underline-offset-4" href="/privacy">
+          известувањето за приватност
+        </Link>.
+      </p>
     </section>
   );
 }
