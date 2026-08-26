@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** Repository/local remediation for Codex Security scan `bd10a47e-d6aa-4f97-9426-cd72a19b4510`
-**In progress:** None
-**Next:** Begin Phase 25 deployment, smoke-test, backup, and rollback runbook
+**Last completed:** Cross-platform numeric Macedonian timestamp remediation
+**In progress:** Phase 25 release-gate verification
+**Next:** Push the timestamp fix, obtain green `verify` and `release` CI jobs, then activate and smoke-test Preview hosted Auth controls
 **Blockers:** None
 
 ## Progress
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-26 — Fixed the Linux-only Phase 25 release-gate failure without changing the established learner-facing date contract. `formatSubmissionDate(...)` now uses explicit `Europe/Skopje` numeric date/time parts with Latin digits and assembles the documented `day.month.year г., во HH:mm` string instead of accepting platform-dependent `dateStyle: "medium"` output. Focused coverage includes summer DST and a winter midnight rollover. All 94 unit tests, lint, strict typecheck, production build, and focused diff checks pass locally; GitHub `verify` and dependent `release` confirmation remain pending until the fix is pushed.
 
 - 2026-08-26 — Applied all four pending migrations through the Supabase CLI to the linked `lansiraj.mk APP` Preview database after a clean dry run. Local and remote migration histories now match through `20260825113618`; `public.reviews` and `public.review_criteria` are present, reviewer `SELECT` access is granted behind RLS, and a direct Data API probe no longer returns `PGRST205` while anonymous access remains denied. Preview hosted Auth activation and smoke tests plus the separate Production migration/configuration remain Phase 25 release work, so this branch is not yet ready to merge to `main`.
 

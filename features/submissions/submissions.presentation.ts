@@ -25,14 +25,28 @@ export const submissionStatusPresentation: Record<
   },
 };
 
-const submissionDateFormatter = new Intl.DateTimeFormat("mk-MK", {
-  dateStyle: "medium",
-  timeStyle: "short",
+const submissionDateFormatter = new Intl.DateTimeFormat("mk-MK-u-nu-latn", {
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
   timeZone: "Europe/Skopje",
 });
 
 export function formatSubmissionDate(value: string): string {
-  return submissionDateFormatter.format(new Date(value));
+  const parts = Object.fromEntries(
+    submissionDateFormatter
+      .formatToParts(new Date(value))
+      .map(({ type, value: partValue }) => [type, partValue]),
+  ) as Partial<Record<Intl.DateTimeFormatPartTypes, string>>;
+
+  if (!parts.day || !parts.month || !parts.year || !parts.hour || !parts.minute) {
+    throw new RangeError("Submission date could not be formatted.");
+  }
+
+  return `${parts.day}.${parts.month}.${parts.year} г., во ${parts.hour}:${parts.minute}`;
 }
 
 export function getEvidenceLinkTypeLabel(type: EvidenceLinkType): string {

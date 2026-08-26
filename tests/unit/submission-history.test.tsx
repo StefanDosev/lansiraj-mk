@@ -82,12 +82,18 @@ describe("submission history presentation", () => {
     expect(html.indexOf("Верзија 2")).toBeLessThan(html.indexOf("Верзија 1"));
   });
 
-  it("uses stable Macedonian status, link, and Skopje timestamp labels", () => {
+  it("uses stable Macedonian status and link labels", () => {
     expect(submissionStatusPresentation.submitted.label).toBe("На проверка");
     expect(submissionStatusPresentation.revision_required.label).toBe("Потребна е корекција");
     expect(submissionStatusPresentation.approved.label).toBe("Одобрено");
     expect(getEvidenceLinkTypeLabel("research")).toBe("Истражување");
-    expect(formatSubmissionDate("2026-08-13T10:17:48Z")).toBe("13.8.2026 г., во 12:17");
+  });
+
+  it.each([
+    ["2026-08-13T10:17:48Z", "13.8.2026 г., во 12:17"],
+    ["2026-01-01T23:05:00Z", "2.1.2026 г., во 00:05"],
+  ])("formats %s with a numeric cross-platform Skopje timestamp", (value, expected) => {
+    expect(formatSubmissionDate(value)).toBe(expected);
   });
 
   it("rejects unsupported database status and link values", () => {

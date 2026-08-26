@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-25 after the security-remediation work. The existing Magic Link Form now includes a provider-enforced Turnstile checkpoint, and removed-learner review detail uses the registered read-only decision state without introducing a second form or visual language.
+Last reviewed: 2026-08-26 after the cross-platform timestamp remediation. Submission and review timestamps retain the registered numeric Macedonian contract across ICU implementations while the existing Magic Link Form and removed-learner review states remain unchanged.
 
 ## How to Use
 
@@ -386,7 +386,7 @@ Last updated: 2026-08-13
 | Shadow | none |
 | Accent usage | Cobalt marks newest/pending evidence; Coral marks revision-required; Acid marks approved |
 
-**Pattern notes:** Submission history is a server-rendered, newest-first ordered list of immutable evidence versions. The newest version stays fully expanded; older versions use native disclosures without duplicating content or adding client JavaScript. Each version keeps its status and timestamps adjacent to the exact frozen text and ordered labelled links. Empty text or link sections remain explicit because a valid submission may contain either proof form. The timeline is omitted entirely before the first submission, follows the editor during revision work, and otherwise appears directly after the proof requirement.
+**Pattern notes:** Submission history is a server-rendered, newest-first ordered list of immutable evidence versions. The newest version stays fully expanded; older versions use native disclosures without duplicating content or adding client JavaScript. Each version keeps its status and timestamps adjacent to the exact frozen text and ordered labelled links. Timestamps use a fixed `day.month.year г., во HH:mm` presentation assembled from `Europe/Skopje` time-zone parts so operating-system ICU wording cannot change the UI contract. Empty text or link sections remain explicit because a valid submission may contain either proof form. The timeline is omitted entirely before the first submission, follows the editor during revision work, and otherwise appears directly after the proof requirement.
 
 ### Proof Artifact
 
