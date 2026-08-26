@@ -314,6 +314,7 @@ test("release journey: invite, onboard, submit, revise, resubmit, approve, and u
     await expect(page.getByRole("heading", { name: "Собери три интервјуа или набљудувања" })).toBeVisible();
     await expect(page.getByText("Заклучено", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Draft за доказ" })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
     if (testInfo.project.name === "desktop") {
       const curriculumSlugs = [

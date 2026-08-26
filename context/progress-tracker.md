@@ -7,7 +7,7 @@ Update this file after every completed feature. An agent reading it must know wh
 **Phase:** 6 — Beta Hardening
 **Last completed:** Cross-platform numeric Macedonian timestamp remediation
 **In progress:** Phase 25 deployment runbook and Preview hosted Auth activation
-**Next:** Verify the Preview hook/rate settings and run the deployed authenticated smoke matrix, then repeat the runbook against Production
+**Next:** Run the deployed Preview authenticated smoke matrix, then repeat the runbook against Production
 **Blockers:** Authenticated reviewer/learner smoke credentials and Production release approval are required; Production remains untouched
 
 ## Progress
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-26 — Completed the Preview hosted Auth Management API checkpoint. The bounded verifier now passes all checks for disabled public signup, enabled existing-user email login, disabled anonymous-user creation, the migrated `private.before_user_created` hook, Turnstile, and the documented hosted email, OTP, verification, and token-refresh budgets. The temporary Management token was supplied through a masked local prompt, was not printed or persisted, and was cleared immediately after verification. The deployed public, privacy, and sign-in routes remain reachable through Vercel Deployment Protection with `vercel curl`; the Ready Preview sign-in page includes the Turnstile script and no missing-configuration alert. The authenticated reviewer/learner smoke matrix remains open, and Production remains untouched.
 
 - 2026-08-26 — GitHub run `32969874729` passed both the fast `verify` job and the dependent full `release` job for commit `5e253b4`; the Linux-only timestamp failure is closed. Began the Phase 25 Preview-first deployment runbook with fixed Vercel/Supabase target identities, pre-migration export, migration/seed restrictions, hosted Auth activation, deployed smoke tests, Production promotion, rollback/repair, and a credential-free release record. Added a fail-closed, type-checked hosted Auth helper that accepts only the fixed Preview/Production refs, requires an exact mutation confirmation, times out remote requests, and uses a bounded Management API PATCH for only disabled signup, the migrated Before User Created hook, and Turnstile; it separately verifies existing-user email login, anonymous-user denial, hook/CAPTCHA state, and hosted rate budgets without reading or printing the CAPTCHA secret. The runbook uses executable PowerShell environment syntax. The current Preview still needs its real Turnstile pair and authenticated activation before smoke testing; Production remains untouched.
 

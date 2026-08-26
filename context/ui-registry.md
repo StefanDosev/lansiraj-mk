@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-26 after the cross-platform timestamp remediation. Submission and review timestamps retain the registered numeric Macedonian contract across ICU implementations while the existing Magic Link Form and removed-learner review states remain unchanged.
+Last reviewed: 2026-08-26 after the 360 px Macedonian heading-wrap remediation. Display headings now share the global anywhere-wrap contract with body and link content so long curriculum words cannot widen product pages; submission timestamps, the Magic Link Form, and removed-learner review states remain unchanged.
 
 ## How to Use
 
@@ -310,7 +310,7 @@ Last updated: 2026-08-12
 | Shadow | none |
 | Accent usage | Cobalt identifies curriculum context; status colours remain state-specific |
 
-**Pattern notes:** Assignment reading order is stage/task identity, state metadata, guidance, semantic acceptance-criteria list, proof requirement, then contextual state guidance. Criteria are never checkboxes before review. The desktop context rail becomes a normal trailing section on narrow screens, and locked assignments remain readable without exposing progress mutations.
+**Pattern notes:** Assignment reading order is stage/task identity, state metadata, guidance, semantic acceptance-criteria list, proof requirement, then contextual state guidance. Criteria are never checkboxes before review. The desktop context rail becomes a normal trailing section on narrow screens, and locked assignments remain readable without exposing progress mutations. Display headings inherit the global `overflow-wrap: anywhere` contract so long Macedonian curriculum words wrap inside the 360 px reading column instead of widening the page.
 
 ### Current Assignment Dashboard
 
