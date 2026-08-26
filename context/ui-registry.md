@@ -2,7 +2,7 @@
 
 Living document. Read this before building a component and update it immediately after the component is accepted. The registry records implemented reality; planned components belong in `build-plan.md`, not here.
 
-Last reviewed: 2026-08-25 after the Phase 23 privacy and failure-state work. Marketing, auth, onboarding, learner, evidence, history, reviewer, privacy, and route-state surfaces are registered below.
+Last reviewed: 2026-08-25 after the security-remediation work. The existing Magic Link Form now includes a provider-enforced Turnstile checkpoint, and removed-learner review detail uses the registered read-only decision state without introducing a second form or visual language.
 
 ## How to Use
 
@@ -106,7 +106,7 @@ Last updated: 2026-08-25
 ### Magic Link Form
 
 File: `features/auth/components/magic-link-form.tsx`
-Last updated: 2026-08-07
+Last updated: 2026-08-25
 
 | Property | Class |
 | --- | --- |
@@ -120,7 +120,7 @@ Last updated: 2026-08-07
 | Shadow | none |
 | Accent usage | `bg-launch` for the primary submit action |
 
-**Pattern notes:** Authentication fields always pair a visible label with persistent help text, inline validation, `aria-invalid`, and a polite status region. Provider outcomes use neutral copy so the UI does not reveal whether an invitation or account exists. Both authorization-code and token-hash email verification failures reuse the same neutral retry state; protocol details must never appear in the interface. Submit actions retain a 44 px minimum target and remove transform motion for reduced-motion users.
+**Pattern notes:** Authentication fields always pair a visible label with persistent help text, inline validation, `aria-invalid`, and a polite status region. The Turnstile widget occupies a clipped `min-h-16` checkpoint between the email field and action, loads only on the sign-in route through `next/script`, and is a legitimate keyboard stop before submit. The primary action remains disabled until a fresh provider token exists; expired, failed, and consumed challenges clear the token and fail closed. Missing production configuration surfaces a text alert instead of silently allowing submission. Provider and invite-hook outcomes use neutral copy so the UI does not reveal whether an invitation or account exists. Both authorization-code and token-hash email verification failures reuse the same neutral retry state; protocol details must never appear in the interface. Submit actions retain a 44 px minimum target and remove transform motion for reduced-motion users.
 
 ### Sign-out Action
 
@@ -548,7 +548,7 @@ Last updated: 2026-08-20
 | Shadow | shared `ProofArtifact` treatment only |
 | Accent usage | Cobalt for navigation/context; `StatusMarker` for submission state |
 
-**Pattern notes:** The review route renders the exact frozen submission version as the primary artifact, with learner/project/cohort metadata in a secondary ruled aside. External evidence links retain their type and visible URL. The criterion decision follows the artifact, never precedes it, and completed feedback replaces the editable form without changing the selected evidence.
+**Pattern notes:** The review route renders the exact frozen submission version as the primary artifact, with learner/project/cohort metadata in a secondary ruled aside. External evidence links retain their type and visible URL. The criterion decision follows the artifact, never precedes it, and completed feedback replaces the editable form without changing the selected evidence. Historical evidence for a removed learner remains readable, but its decision form is replaced by an explicit inactive-membership notice; the database independently rechecks the same condition at submission time.
 
 ### Criterion Review Form
 

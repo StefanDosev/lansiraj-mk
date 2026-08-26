@@ -130,6 +130,7 @@ export type ReviewerSubmissionDetail = {
   version: number;
   evidenceText: string;
   status: SubmissionStatus;
+  reviewable: boolean;
   submittedAt: string;
   reviewedAt: string | null;
   learnerId: string;

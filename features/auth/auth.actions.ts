@@ -15,13 +15,19 @@ export async function requestMagicLink(
   _previousState: MagicLinkState,
   formData: FormData,
 ): Promise<MagicLinkState> {
-  const parsed = magicLinkSchema.safeParse({ email: formData.get("email") });
+  const parsed = magicLinkSchema.safeParse({
+    email: formData.get("email"),
+    captchaToken: formData.get("captchaToken"),
+  });
 
   if (!parsed.success) {
+    const fieldErrors = parsed.error.flatten().fieldErrors;
     return {
       status: "error",
-      message: "Провери ја email адресата и обиди се повторно.",
-      fieldErrors: parsed.error.flatten().fieldErrors,
+      message: fieldErrors.email
+        ? "Провери ја email адресата и обиди се повторно."
+        : "Потврди ја безбедносната проверка и обиди се повторно.",
+      fieldErrors: { email: fieldErrors.email },
     };
   }
 
@@ -30,7 +36,8 @@ export async function requestMagicLink(
     email: parsed.data.email,
     options: {
       emailRedirectTo: `${getAppOrigin()}/auth/confirm`,
-      shouldCreateUser: true,
+      shouldCreateUser: false,
+      captchaToken: parsed.data.captchaToken,
     },
   });
 

@@ -1,16 +1,8 @@
 import { expect, test, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { join } from "node:path";
 
-function runLocalSql(sql: string) {
-  const cliEntryPoint = join(process.cwd(), "node_modules", "supabase", "dist", "supabase.js");
-  execFileSync(process.execPath, [cliEntryPoint, "db", "query", "--local", sql], {
-    encoding: "utf8",
-    env: { ...process.env, SUPABASE_TELEMETRY_DISABLED: "1" },
-  });
-}
+import { runLocalSql } from "@/tests/helpers/local-supabase";
 
 async function openLatestMagicLink(page: Page, request: APIRequestContext, email: string) {
   const mailpitUrl = process.env.E2E_MAILPIT_URL;
@@ -18,21 +10,28 @@ async function openLatestMagicLink(page: Page, request: APIRequestContext, email
 
   await page.goto("/auth/sign-in");
   await page.getByLabel("Email адреса").fill(email);
-  await page.getByRole("button", { name: "Испрати magic link" }).click();
+  const submitButton = page.getByRole("button", { name: "Испрати magic link" });
+  await expect(submitButton).toBeEnabled({ timeout: 15_000 });
+  await submitButton.click();
   await expect(page.getByText("Ако адресата може да се најави, ќе добиеш безбеден линк по email.")).toBeVisible();
 
   const query = encodeURIComponent(`to:${email}`);
+  let messageId = "";
   await expect
     .poll(
       async () => {
-        const response = await request.get(`${mailpitUrl}/view/latest.html?query=${query}`);
-        return response.ok() ? response.text() : "";
+        const response = await request.get(`${mailpitUrl}/api/v1/search?query=${query}`);
+        if (!response.ok()) return "";
+
+        const result = await response.json() as { messages?: Array<{ ID: string }> };
+        messageId = result.messages?.[0]?.ID ?? "";
+        return messageId;
       },
       { timeout: 15_000 },
     )
-    .toContain("href=");
+    .not.toBe("");
 
-  const message = await (await request.get(`${mailpitUrl}/view/latest.html?query=${query}`)).text();
+  const message = await (await request.get(`${mailpitUrl}/view/${messageId}.html`)).text();
   const link = message.match(/href="([^"]+)"/)?.[1]?.replaceAll("&amp;", "&");
   expect(link).toBeTruthy();
   await page.goto(link!);
@@ -67,26 +66,47 @@ async function expectKeyboardOrder(page: Page, locators: Locator[]) {
   }
 }
 
-test("authenticated outsider receives neutral pending access and can sign out", async ({ page, request }, testInfo) => {
+test("uninvited address receives a neutral response without email or Auth user creation", async ({ page, request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "One deterministic local email flow is sufficient.");
-
-  const email = `outsider-${Date.now()}@gmail.com`;
-  await openLatestMagicLink(page, request, email);
-  await expect(page).toHaveURL(/\/access-pending$/);
-  await expect(page.getByRole("heading", { name: "Сè уште немаш активна покана" })).toBeVisible();
-
-  await page.getByRole("button", { name: "Одјави се" }).click();
-  await expect(page).toHaveURL(/\/auth\/sign-in$/);
-});
-
-test("onboarding state guards direct learner navigation", async ({ page, request }, testInfo) => {
-  test.setTimeout(120_000);
-
-  test.skip(testInfo.project.name === "reduced-motion", "Desktop and mobile cover this stateful email flow.");
 
   const supabaseUrl = process.env.E2E_SUPABASE_URL;
   const secretKey = process.env.E2E_SUPABASE_SECRET_KEY;
   expect(supabaseUrl).toBeTruthy();
+  expect(secretKey).toBeTruthy();
+  const admin = createClient(supabaseUrl!, secretKey!, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const email = `outsider-${Date.now()}@gmail.com`;
+  await page.goto("/auth/sign-in");
+  await page.getByLabel("Email адреса").fill(email);
+  const submitButton = page.getByRole("button", { name: "Испрати magic link" });
+  await expect(submitButton).toBeEnabled({ timeout: 15_000 });
+  await submitButton.click();
+  await expect(page.getByText("Ако адресата може да се најави, ќе добиеш безбеден линк по email.")).toBeVisible();
+
+  const mailpitUrl = process.env.E2E_MAILPIT_URL;
+  expect(mailpitUrl).toBeTruthy();
+  const query = encodeURIComponent(`to:${email}`);
+  const mailResult = await (await request.get(`${mailpitUrl}/api/v1/search?query=${query}`)).json() as {
+    messages?: Array<{ ID: string }>;
+  };
+  expect(mailResult.messages ?? []).toHaveLength(0);
+
+  const { data: users, error: usersError } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  expect(usersError).toBeNull();
+  expect(users.users.some((user) => user.email === email)).toBe(false);
+});
+
+test("release journey: invite, onboard, submit, revise, resubmit, approve, and unlock", async ({ page, request }, testInfo) => {
+  test.setTimeout(120_000);
+
+  test.skip(testInfo.project.name !== "desktop", "The deterministic stateful release journey runs once on desktop.");
+
+  const supabaseUrl = process.env.E2E_SUPABASE_URL;
+  const publishableKey = process.env.E2E_SUPABASE_PUBLISHABLE_KEY;
+  const secretKey = process.env.E2E_SUPABASE_SECRET_KEY;
+  expect(supabaseUrl).toBeTruthy();
+  expect(publishableKey).toBeTruthy();
   expect(secretKey).toBeTruthy();
   const admin = createClient(supabaseUrl!, secretKey!, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -110,6 +130,30 @@ test("onboarding state guards direct learner navigation", async ({ page, request
     runLocalSql(
       `insert into public.cohort_invites (cohort_id, email, expires_at, created_by) values ('${cohortId}', '${learnerEmail}', now() + interval '1 hour', '${reviewer.user!.id}')`,
     );
+
+    await page.goto("/auth/sign-in");
+    const magicLinkButton = page.getByRole("button", { name: "Испрати magic link" });
+    await expect(magicLinkButton).toBeEnabled({ timeout: 15_000 });
+    const captchaToken = await page.locator('input[name="captchaToken"]').inputValue();
+    const publicClient = createClient(supabaseUrl!, publishableKey!, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const passwordSignup = await publicClient.auth.signUp({
+      email: learnerEmail,
+      password: `Blocked-${runId}`,
+      options: { captchaToken },
+    });
+    expect(passwordSignup.error).not.toBeNull();
+    expect(passwordSignup.error?.code).toBe("signup_disabled");
+    expect(passwordSignup.data.user).toBeNull();
+    expect(passwordSignup.data.session).toBeNull();
+
+    const provisionedLearner = await admin.auth.admin.createUser({
+      email: learnerEmail,
+      email_confirm: true,
+    });
+    expect(provisionedLearner.error).toBeNull();
+    expect(provisionedLearner.data.user).toBeTruthy();
 
     await openLatestMagicLink(page, request, learnerEmail);
     await expect(page).toHaveURL(/\/app\/onboarding$/);
@@ -549,19 +593,22 @@ test("onboarding state guards direct learner navigation", async ({ page, request
   }
 });
 
-test("invalid token confirmation returns a neutral retry state", async ({ page }) => {
+test("invalid token confirmation returns a neutral retry state", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Functional callback coverage runs once on desktop.");
   await page.goto("/auth/confirm?token_hash=invalid&type=email");
   await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);
   await expect(page.getByRole("alert").filter({ hasText: "Линкот не може да се потврди" })).toBeVisible();
 });
 
-test("invalid code confirmation returns a neutral retry state", async ({ page }) => {
+test("invalid code confirmation returns a neutral retry state", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Functional callback coverage runs once on desktop.");
   await page.goto("/auth/confirm?code=invalid");
   await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);
   await expect(page.getByRole("alert").filter({ hasText: "Линкот не може да се потврди" })).toBeVisible();
 });
 
-test("invalid callback returns a neutral retry state", async ({ page }) => {
+test("invalid callback returns a neutral retry state", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Functional callback coverage runs once on desktop.");
   await page.goto("/auth/callback");
   await expect(page).toHaveURL(/\/auth\/sign-in\?status=callback-error$/);
   await expect(page.getByRole("alert").filter({ hasText: "Линкот не може да се потврди" })).toBeVisible();

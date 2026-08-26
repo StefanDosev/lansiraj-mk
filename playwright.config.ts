@@ -1,81 +1,67 @@
 import { defineConfig, devices } from "@playwright/test";
-import { execFileSync } from "node:child_process";
-import { join } from "node:path";
 
-function getLocalSupabaseEnvironment() {
-  const cliEntryPoint = join(process.cwd(), "node_modules", "supabase", "dist", "supabase.js");
-  const output = execFileSync(process.execPath, [cliEntryPoint, "status", "-o", "env"], {
-    encoding: "utf8",
-    env: { ...process.env, SUPABASE_TELEMETRY_DISABLED: "1" },
-  });
-  const values = Object.fromEntries(
-    output
-      .split(/\r?\n/)
-      .map((line) => line.match(/^([A-Z_]+)="(.*)"$/))
-      .filter((match): match is RegExpMatchArray => match !== null)
-      .map((match) => [match[1], match[2]]),
-  );
-
-  if (!values.API_URL || !values.PUBLISHABLE_KEY || !values.SECRET_KEY || !values.MAILPIT_URL) {
-    throw new Error("The local Supabase stack is missing required E2E endpoints. Run `npx supabase start` first.");
-  }
-
-  return values as Record<"API_URL" | "PUBLISHABLE_KEY" | "SECRET_KEY" | "MAILPIT_URL", string>;
-}
+import { getLocalSupabaseEnvironment } from "@/tests/helpers/local-supabase";
 
 const localSupabase = getLocalSupabaseEnvironment();
-process.env.E2E_MAILPIT_URL = localSupabase.MAILPIT_URL;
-process.env.E2E_SUPABASE_URL = localSupabase.API_URL;
-process.env.E2E_SUPABASE_SECRET_KEY = localSupabase.SECRET_KEY;
+process.env.E2E_MAILPIT_URL = localSupabase.mailpitUrl;
+process.env.E2E_SUPABASE_URL = localSupabase.apiUrl;
+process.env.E2E_SUPABASE_PUBLISHABLE_KEY = localSupabase.publishableKey;
+process.env.E2E_SUPABASE_SECRET_KEY = localSupabase.secretKey;
 
-export default defineConfig({
-  testDir: "./tests/e2e",
-  outputDir: "test-results",
-  reporter: "list",
-  use: {
-    baseURL: "http://127.0.0.1:3000",
-    screenshot: "only-on-failure",
-    trace: "retain-on-failure",
-  },
-  webServer: {
-    command: "npm.cmd run dev -- --hostname 127.0.0.1",
-    env: {
-      ...process.env,
-      NEXT_PUBLIC_SUPABASE_URL: localSupabase.API_URL,
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: localSupabase.PUBLISHABLE_KEY,
+export function createPlaywrightConfig(webServerCommand: string) {
+  return defineConfig({
+    testDir: "./tests/e2e",
+    outputDir: "test-results",
+    reporter: "list",
+    use: {
+      baseURL: "http://127.0.0.1:3000",
+      screenshot: "only-on-failure",
+      trace: "retain-on-failure",
     },
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
-  projects: [
-    {
-      name: "mobile-360",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 360, height: 800 },
+    webServer: {
+      command: webServerCommand,
+      env: {
+        ...process.env,
+        NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3000",
+        NEXT_PUBLIC_SUPABASE_URL: localSupabase.apiUrl,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: localSupabase.publishableKey,
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
       },
+      url: "http://127.0.0.1:3000",
+      reuseExistingServer: true,
+      timeout: 120_000,
     },
-    {
-      name: "tablet-768",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 768, height: 1024 },
+    projects: [
+      {
+        name: "mobile-360",
+        use: {
+          ...devices["Desktop Chrome"],
+          viewport: { width: 360, height: 800 },
+        },
       },
-    },
-    {
-      name: "desktop",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 1440, height: 1000 },
+      {
+        name: "tablet-768",
+        use: {
+          ...devices["Desktop Chrome"],
+          viewport: { width: 768, height: 1024 },
+        },
       },
-    },
-    {
-      name: "reduced-motion",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 360, height: 800 },
+      {
+        name: "desktop",
+        use: {
+          ...devices["Desktop Chrome"],
+          viewport: { width: 1440, height: 1000 },
+        },
       },
-    },
-  ],
-});
+      {
+        name: "reduced-motion",
+        use: {
+          ...devices["Desktop Chrome"],
+          viewport: { width: 360, height: 800 },
+        },
+      },
+    ],
+  });
+}
+
+export default createPlaywrightConfig("npm run dev -- --hostname 127.0.0.1");

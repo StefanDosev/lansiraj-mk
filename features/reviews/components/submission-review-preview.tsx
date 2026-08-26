@@ -117,7 +117,7 @@ export function SubmissionReviewPreview({ submission }: SubmissionReviewPreviewP
 
       {submission.review ? (
         <CompletedReview review={submission.review} criteria={submission.criteria} />
-      ) : submission.status === "submitted" ? (
+      ) : submission.status === "submitted" && submission.reviewable ? (
         <ReviewDecisionForm
           submissionId={submission.id}
           version={submission.version}
@@ -126,7 +126,11 @@ export function SubmissionReviewPreview({ submission }: SubmissionReviewPreviewP
       ) : (
         <section className="mt-12 border-l-4 border-coral bg-stone-100 p-5" aria-labelledby="review-state-title">
           <h2 id="review-state-title" className="font-display text-xl font-semibold text-ink">Одлуката не е достапна</h2>
-          <p className="mt-2 leading-relaxed text-stone-700">Оваа верзија веќе не е во состојба за преглед.</p>
+          <p className="mt-2 leading-relaxed text-stone-700">
+            {submission.status === "submitted" && !submission.reviewable
+              ? "Членството на ученикот повеќе не е активно, па оваа верзија останува само како историја."
+              : "Оваа верзија веќе не е во состојба за преглед."}
+          </p>
         </section>
       )}
 

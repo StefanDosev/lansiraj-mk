@@ -97,6 +97,16 @@ describe("reviewer workspace presentation", () => {
     });
   });
 
+  it("excludes submissions whose learner is no longer an active cohort member", () => {
+    const workspace = buildReviewerWorkspace({
+      ...source,
+      members: source.members.filter((member) => member.userId !== "learner-a"),
+    });
+
+    expect(workspace.queue).toEqual([]);
+    expect(workspace.cohorts[0]).toMatchObject({ pendingReviewCount: 0 });
+  });
+
   it("formats waiting duration without persisting a second clock", () => {
     const now = new Date("2026-08-19T12:00:00Z");
     expect(formatWaitingDuration("2026-08-19T11:59:45Z", now)).toBe("помалку од 1 мин.");

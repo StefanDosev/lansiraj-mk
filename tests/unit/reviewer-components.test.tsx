@@ -29,6 +29,7 @@ const submission: ReviewerSubmissionDetail = {
   projectAssignmentId: "70000000-0000-4000-8000-000000000001",
   evidenceText: "Три разговори со конкретни корисници.",
   status: "submitted",
+  reviewable: true,
   reviewedAt: null,
   review: null,
   criteria: [
@@ -75,5 +76,14 @@ describe("reviewer components", () => {
     expect(html).toContain('href="https://example.com/notes"');
     expect(html).toContain("Доказот содржи разговори со конкретни корисници.");
     expect(html).toContain("Зачувај конечна одлука");
+  });
+
+  it("keeps removed-learner evidence historical without rendering review controls", () => {
+    const html = renderToStaticMarkup(
+      <SubmissionReviewPreview submission={{ ...submission, reviewable: false }} />,
+    );
+
+    expect(html).toContain("Членството на ученикот повеќе не е активно");
+    expect(html).not.toContain("Зачувај конечна одлука");
   });
 });

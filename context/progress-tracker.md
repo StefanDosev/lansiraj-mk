@@ -5,9 +5,9 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** 23 Privacy, rate protection, activity events, and failure states
+**Last completed:** Repository/local remediation for Codex Security scan `bd10a47e-d6aa-4f97-9426-cd72a19b4510`
 **In progress:** None
-**Next:** Begin Phase 24 automated release gates
+**Next:** Begin Phase 25 deployment, smoke-test, backup, and rollback runbook
 **Blockers:** None
 
 ## Progress
@@ -56,7 +56,7 @@ Update this file after every completed feature. An agent reading it must know wh
 
 - [x] 22 Complete responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
 - [x] 23 Complete privacy, rate protection, activity events, and failure states
-- [ ] 24 Add unit, database, integration, and end-to-end release gates
+- [x] 24 Add unit, database, integration, and end-to-end release gates
 - [ ] 25 Write deployment, smoke-test, backup, and rollback runbook
 
 ### Phase 7 — Pilot Operation
@@ -73,6 +73,12 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-26 — Applied all four pending migrations through the Supabase CLI to the linked `lansiraj.mk APP` Preview database after a clean dry run. Local and remote migration histories now match through `20260825113618`; `public.reviews` and `public.review_criteria` are present, reviewer `SELECT` access is granted behind RLS, and a direct Data API probe no longer returns `PGRST205` while anonymous access remains denied. Preview hosted Auth activation and smoke tests plus the separate Production migration/configuration remain Phase 25 release work, so this branch is not yet ready to merge to `main`.
+
+- 2026-08-25 — Completed and locally verified the repository remediation for the two validated Codex Security findings. Active cohort membership is now part of the database project-owner predicate across all ten learner-facing project/evidence policies, removed owners receive stable authorization failures from draft/submission mutations, reviewer history remains readable, and removed pending submissions are neither queued nor actionable from an exact review URL. Public Auth signup is disabled while existing-user email login remains enabled; magic-link requests never create identities, invited addresses require trusted passwordless Auth pre-provisioning plus the matching database invite, Supabase enforces Turnstile, and the pending-invite Before User Created hook remains defense in depth. Neutral sign-in copy is preserved. ADR 0004 records both boundary decisions. Lint, strict typecheck, production build, 92 unit tests, all 335 pgTAP assertions, the real-Supabase Server Action integration journey, 65 browser checks with 15 intentional skips, public/private schema lint, clean migration drift, and diff checks pass. Phase 25 must still apply the migration and explicitly activate/verify disabled public signup, the Auth hook, real Turnstile keys, hosted rate budgets, and monitoring in Preview and Production before release; local `config.toml` does not configure hosted Auth.
+
+- 2026-08-25 — Completed Phase 24 with dependent `verify` and `release` CI jobs plus one documented clean local command path. The fast job now gates lint, strict typecheck, 87 Vitest domain tests, and the production build. The release job starts an ephemeral local Supabase stack, runs all 306 pgTAP database/RLS assertions, executes a real-Supabase Server Action integration journey through onboarding, start, draft, submit, revision, resubmission, approval, and Assignment 02 unlock, then builds under the same injected local environment and runs Playwright against `next start`. Browser coverage keeps responsive, keyboard, contrast, redirect, and reduced-motion shells across four projects while the stateful invite-to-unlock path and callback failures run once serially on desktop; 65 checks pass and 15 duplicate auth variants skip intentionally. Test helpers obtain only ephemeral local endpoints from the project-pinned CLI, fixtures use unique identifiers, and post-run checks confirm zero temporary Auth users or cohorts. The clean local lifecycle is `supabase stop --no-backup` followed by `supabase start`; this avoids stale local gateway routing observed after an in-place database reset. No hosted secrets, new packages, schema changes, or UI patterns were introduced.
 
 - 2026-08-25 — Completed Phase 23 with a public Macedonian privacy notice naming Stefan Dosev as controller and `privacy@lansiraj.mk` as the request channel. The notice explains data categories, human-review visibility, service and security purposes, recipients and potential international processing, the 90-day post-cohort deletion/anonymization window, participant rights, a 30-day response window, and AZLP escalation without claiming a compliance guarantee. Sign-in, onboarding, and assignment evidence surfaces link directly to it and repeat explicit guidance against secrets and third-party personal data. Supabase Auth retains its built-in abuse limits; HTTP 429 outcomes receive neutral retry-later copy without revealing enrollment, adding CAPTCHA, persisting IP addresses, or logging email addresses. Atomic `onboarding_completed` and Assignment 09 `project_launched` events now complete the seven-event activity model; event metadata contains only operational identifiers and version, and terminal completion cannot duplicate launch. Shared token-only error and not-found panels cover global, public, authentication, learner, and reviewer contexts while protected records remain context-neutral. A clean local reset, all 306 database assertions, local schema lint, all 87 unit tests, 60 responsive shell checks across four browser projects, the 5-test authenticated desktop journey, visual inspection at 360 px and desktop, lint, strict typecheck, production build, log/palette scans, and diff checks pass. No waitlist implementation existed to protect, so none was introduced; `context/library-docs.md` remains the source of truth over stale historical scope.
 

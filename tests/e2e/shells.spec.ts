@@ -95,19 +95,38 @@ test("public and sign-in controls keep 44px touch targets", async ({ page }) => 
 test("keyboard focus follows the sign-in reading order with a visible ring", async ({ page }) => {
   await page.goto("/auth/sign-in");
 
-  const expectedOrder = [
+  const firstPartyBeforeChallenge = [
     page.getByRole("link", { name: "Прескокни до содржината" }),
     page.getByRole("link", { name: "Лансирај — почетна страница" }),
     page.getByLabel("Email адреса"),
-    page.getByRole("button", { name: "Испрати magic link" }),
-    page.getByRole("link", { name: "известувањето за приватност" }),
   ];
+  const submitButton = page.getByRole("button", { name: "Испрати magic link" });
+  const privacyLink = page.getByRole("link", { name: "известувањето за приватност" });
 
-  for (const control of expectedOrder) {
+  for (const control of firstPartyBeforeChallenge) {
     await page.keyboard.press("Tab");
     await expect(control).toBeFocused();
     await expectVisibleFocusRing(control);
   }
+
+  await expect(submitButton).toBeEnabled({ timeout: 15_000 });
+  await expect
+    .poll(() => page.frames().some((frame) => frame.url().startsWith("https://challenges.cloudflare.com/")))
+    .toBe(true);
+
+  let reachedSubmit = false;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    await page.keyboard.press("Tab");
+    reachedSubmit = await submitButton.evaluate((element) => document.activeElement === element);
+    if (reachedSubmit) break;
+    await expect(privacyLink).not.toBeFocused();
+  }
+
+  expect(reachedSubmit).toBe(true);
+  await expectVisibleFocusRing(submitButton);
+  await page.keyboard.press("Tab");
+  await expect(privacyLink).toBeFocused();
+  await expectVisibleFocusRing(privacyLink);
 });
 
 test("privacy notice exposes the controller, retention, rights, and contact", async ({ page }) => {

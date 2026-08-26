@@ -88,6 +88,12 @@ function deriveCurrentAssignment(assignments: ReviewerAssignmentSource[]): {
 export function buildReviewerWorkspace(source: ReviewerWorkspaceSource): ReviewerWorkspace {
   const profileByUserId = new Map(source.profiles.map((profile) => [profile.userId, profile]));
   const projectByMember = new Map<string, ReviewerProjectSource>();
+  const activeMemberKeys = new Set(
+    source.members.map((member) => memberKey(member.cohortId, member.userId)),
+  );
+  const pendingSubmissions = source.pendingSubmissions.filter((submission) =>
+    activeMemberKeys.has(memberKey(submission.cohortId, submission.learnerId)),
+  );
 
   for (const project of source.projects) {
     const key = memberKey(project.cohortId, project.ownerId);
@@ -95,17 +101,17 @@ export function buildReviewerWorkspace(source: ReviewerWorkspaceSource): Reviewe
   }
 
   const pendingByMember = new Set(
-    source.pendingSubmissions.map((submission) => memberKey(submission.cohortId, submission.learnerId)),
+    pendingSubmissions.map((submission) => memberKey(submission.cohortId, submission.learnerId)),
   );
   const pendingCountByCohort = new Map<string, number>();
-  for (const submission of source.pendingSubmissions) {
+  for (const submission of pendingSubmissions) {
     pendingCountByCohort.set(
       submission.cohortId,
       (pendingCountByCohort.get(submission.cohortId) ?? 0) + 1,
     );
   }
 
-  const queue = source.pendingSubmissions
+  const queue = pendingSubmissions
     .map((submission) => ({
       ...submission,
       learnerName: profileByUserId.get(submission.learnerId)?.displayName ?? "Неименуван ученик",

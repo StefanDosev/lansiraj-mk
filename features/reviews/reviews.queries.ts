@@ -315,7 +315,7 @@ export async function getSubmissionForReview(
 
   const project = submission.project_assignment.project;
   const assignment = submission.project_assignment.assignment;
-  const [profileResult, historyResult] = await Promise.all([
+  const [profileResult, historyResult, membershipResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("display_name")
@@ -328,6 +328,12 @@ export async function getSubmissionForReview(
       )
       .eq("project_assignment_id", submission.project_assignment.id)
       .order("version", { ascending: false }),
+    supabase
+      .from("cohort_members")
+      .select("status")
+      .eq("cohort_id", project.cohort_id)
+      .eq("user_id", project.owner_id)
+      .maybeSingle(),
   ]);
 
   if (profileResult.error) {
@@ -335,6 +341,9 @@ export async function getSubmissionForReview(
   }
   if (historyResult.error) {
     throw new Error("Unable to load submission history.", { cause: historyResult.error });
+  }
+  if (membershipResult.error) {
+    throw new Error("Unable to load submission membership.", { cause: membershipResult.error });
   }
 
   const currentSubmission = mapSubmissionHistoryEntry(submission);
@@ -345,6 +354,7 @@ export async function getSubmissionForReview(
     version: submission.version,
     evidenceText: submission.evidence_text,
     status: submission.status,
+    reviewable: membershipResult.data?.status === "active",
     submittedAt: submission.submitted_at,
     reviewedAt: submission.reviewed_at,
     learnerId: project.owner_id,
