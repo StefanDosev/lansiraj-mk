@@ -99,4 +99,5 @@ The CI release job uses only the ephemeral local Supabase credentials printed by
 
 - Product and engineering context lives in `context/`.
 - Durable architecture decisions live in `docs/adr/`.
+- Preview-first migration, hosted Auth, smoke-test, backup, and rollback steps live in `docs/deployment-runbook.md`.
 - Feature status lives in `context/progress-tracker.md`.

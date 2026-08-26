@@ -6,9 +6,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 **Phase:** 6 — Beta Hardening
 **Last completed:** Cross-platform numeric Macedonian timestamp remediation
-**In progress:** Phase 25 release-gate verification
-**Next:** Push the timestamp fix, obtain green `verify` and `release` CI jobs, then activate and smoke-test Preview hosted Auth controls
-**Blockers:** None
+**In progress:** Phase 25 deployment runbook and Preview hosted Auth activation
+**Next:** Configure a real Preview Turnstile pair, apply the bounded Preview hosted Auth patch, redeploy, and run the deployed smoke matrix
+**Blockers:** Real Preview Turnstile site/secret keys and authenticated Supabase Management API access are required for the remaining hosted activation
 
 ## Progress
 
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-26 — GitHub run `32969874729` passed both the fast `verify` job and the dependent full `release` job for commit `5e253b4`; the Linux-only timestamp failure is closed. Began the Phase 25 Preview-first deployment runbook with fixed Vercel/Supabase target identities, pre-migration export, migration/seed restrictions, hosted Auth activation, deployed smoke tests, Production promotion, rollback/repair, and a credential-free release record. Added a fail-closed, type-checked hosted Auth helper that accepts only the fixed Preview/Production refs, requires an exact mutation confirmation, times out remote requests, and uses a bounded Management API PATCH for only disabled signup, the migrated Before User Created hook, and Turnstile; it separately verifies existing-user email login, anonymous-user denial, hook/CAPTCHA state, and hosted rate budgets without reading or printing the CAPTCHA secret. The runbook uses executable PowerShell environment syntax. The current Preview still needs its real Turnstile pair and authenticated activation before smoke testing; Production remains untouched.
 
 - 2026-08-26 — Fixed the Linux-only Phase 25 release-gate failure without changing the established learner-facing date contract. `formatSubmissionDate(...)` now uses explicit `Europe/Skopje` numeric date/time parts with Latin digits and assembles the documented `day.month.year г., во HH:mm` string instead of accepting platform-dependent `dateStyle: "medium"` output. Focused coverage includes summer DST and a winter midnight rollover. All 94 unit tests, lint, strict typecheck, production build, and focused diff checks pass locally; GitHub `verify` and dependent `release` confirmation remain pending until the fix is pushed.
 
