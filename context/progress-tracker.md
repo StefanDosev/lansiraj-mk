@@ -5,10 +5,10 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** Cross-platform numeric Macedonian timestamp remediation
+**Last completed:** Preview authenticated revision, resubmission, approval, and Assignment 03 unlock smoke loop
 **In progress:** Phase 25 deployment runbook and Preview hosted Auth activation
-**Next:** Run the deployed Preview authenticated smoke matrix, then repeat the runbook against Production
-**Blockers:** Authenticated reviewer/learner smoke credentials and Production release approval are required; Production remains untouched
+**Next:** Complete the remaining deployed Preview denial-path checks, then repeat the runbook against Production
+**Blockers:** Production release approval is required; Production remains untouched
 
 ## Progress
 
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-08-26 — Completed the deployed Preview authenticated revision-to-unlock smoke loop with disposable fixtures. The learner submitted Assignment 02 version 1; the reviewer evaluated the exact frozen version, passed criteria 1–2, returned criterion 3 with specific feedback, and the learner saw the priority correction while Assignment 03 remained locked. The retained draft reopened unchanged, the learner appended a synthetic contradiction analysis, and resubmission created immutable version 2 while preserving version 1 and its complete decision history. The reviewer queue showed exactly version 2, all three criteria were approved, the queue returned to zero, progress advanced from 1/10 to 2/10, and Assignment 03 became the active task. The deployed 360 px assignment view has no horizontal overflow after the global heading-wrap correction. GitHub run `33004796060` passed both `verify` and `release`, including database/RLS, Server Action integration, and production browser gates; the Ready deployment emitted no error-level Vercel logs during the smoke window. Uninvited and password-signup denial paths remain to be exercised against the deployed Preview. Production remains untouched.
 
 - 2026-08-26 — Completed the Preview hosted Auth Management API checkpoint. The bounded verifier now passes all checks for disabled public signup, enabled existing-user email login, disabled anonymous-user creation, the migrated `private.before_user_created` hook, Turnstile, and the documented hosted email, OTP, verification, and token-refresh budgets. The temporary Management token was supplied through a masked local prompt, was not printed or persisted, and was cleared immediately after verification. The deployed public, privacy, and sign-in routes remain reachable through Vercel Deployment Protection with `vercel curl`; the Ready Preview sign-in page includes the Turnstile script and no missing-configuration alert. The authenticated reviewer/learner smoke matrix remains open, and Production remains untouched.
 
