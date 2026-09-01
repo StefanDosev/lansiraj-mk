@@ -5,10 +5,10 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** Production backup/migrations/Auth activation, distinct Production Turnstile verification, and a reviewer data-access authorization regression fix
-**In progress:** Validate and release the reviewer guard fix from an exact green commit; the Preview password-signup denial gate is explicitly deferred
-**Next:** Pass GitHub release gates, deploy that exact commit, repeat public/auth-denial/Turnstile/log smokes, then promote only if every gate passes
-**Blockers:** Current Ready deployment `dpl_8Tocm5SBtVQaVPhbzSwgwqCqqPpi` contains the pre-fix build and logged an unauthenticated reviewer query permission error; it must be replaced and reverified before promotion
+**Last completed:** Phase 25 Production release from exact green commit `fc02e4f4b33659afc153a368bfa88a22841b2d4f`
+**In progress:** Phase 26 founder dogfood preparation; the Preview password-signup denial gate remains explicitly deferred
+**Next:** Run the complete founder learner/reviewer journey in Production and record product confusion, review time, revisions, and scope pressure
+**Blockers:** None for the Production release
 
 ## Progress
 
@@ -57,7 +57,7 @@ Update this file after every completed feature. An agent reading it must know wh
 - [x] 22 Complete responsive, keyboard, contrast, reduced-motion, and Macedonian glyph QA
 - [x] 23 Complete privacy, rate protection, activity events, and failure states
 - [x] 24 Add unit, database, integration, and end-to-end release gates
-- [ ] 25 Write deployment, smoke-test, backup, and rollback runbook
+- [x] 25 Write deployment, smoke-test, backup, and rollback runbook
 
 ### Phase 7 — Pilot Operation
 
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-09-01 — Completed the Phase 25 Production release from exact GitHub-green commit `fc02e4f4b33659afc153a368bfa88a22841b2d4f`; CI run `33496945052` passed both `verify` and the dependent database/RLS, Server Action integration, and production-browser `release` job. Vercel built Ready deployment `dpl_Dz9rms8M6yQecAu3jt6mNxFR2gsn` at `https://lansiraj-4lqn6siar-stefandosevs-projects.vercel.app` and assigned the Production alias `https://lansiraj-stefandosevs-projects.vercel.app`. Public, privacy, and sign-in routes return HTTP 200; anonymous `/admin` and `/app` return 307 to sign-in. A fresh Chrome session confirmed the distinct Production Turnstile widget completes non-interactively, enables magic-link submission, and emits no alert or console error. The final bounded 200-entry deployment-log review found zero warnings, errors, fatal entries, HTTP 5xx responses, or reviewer permission-denied signatures. The prior deployment remains the documented rollback target, no founder dogfood data was created, and the explicitly deferred Preview password-signup denial gate was not silently reclassified as passed.
 
 - 2026-09-01 — The distinct Production Turnstile widget and matching Vercel/Supabase values now pass a fresh live challenge on `lansiraj-stefandosevs-projects.vercel.app`; the prior Cloudflare `110200` blocker is closed. Ready deployment `dpl_8Tocm5SBtVQaVPhbzSwgwqCqqPpi` also passes HTTP 200 public/sign-in smokes and redirects unauthenticated `/admin` and `/app` requests to sign-in. Its log review exposed one release-blocking `42501` error: Next.js rendered the `/admin` page data request independently of the layout guard, so the anonymous request reached the reviewer queue before redirecting. Reviewer workspace, submission-review, and project-scope reads now call `requireReviewerAccess()` inside the data-access function before creating a Supabase client; the layout guard remains defense in depth, and a focused regression proves all three paths stop before any table query. All 102 unit tests, lint, strict typecheck, and the Next.js 16.2.12 production build pass locally. The pre-fix deployment is not approved for promotion.
 
