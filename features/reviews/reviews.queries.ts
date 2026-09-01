@@ -1,5 +1,6 @@
 import "server-only";
 
+import { requireReviewerAccess } from "@/features/auth/auth.queries";
 import { buildReviewerWorkspace } from "@/features/reviews/reviews.presentation";
 import type {
   ReviewerCompletedReview,
@@ -169,6 +170,7 @@ function mapCompletedReview(
 }
 
 export async function getReviewerWorkspace(): Promise<ReviewerWorkspace> {
+  await requireReviewerAccess();
   const supabase = await createClient();
   const [queueResult, cohortsResult, membersResult, profilesResult, projectsResult] =
     await Promise.all([
@@ -282,6 +284,7 @@ export async function getReviewerWorkspace(): Promise<ReviewerWorkspace> {
 export async function getSubmissionForReview(
   submissionId: string,
 ): Promise<ReviewerSubmissionDetail | null> {
+  await requireReviewerAccess();
   const supabase = await createClient();
   const [submissionResult, reviewResult] = await Promise.all([
     supabase

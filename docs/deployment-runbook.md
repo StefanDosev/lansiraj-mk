@@ -23,7 +23,7 @@ Do not print environment values, access tokens, database passwords, publishable 
 
 ## 2. Export before migration
 
-Create the export outside the repository in a restricted directory. In PowerShell, set the target database's percent-encoded direct connection URL as a temporary environment variable, then substitute an absolute restricted backup directory in the commands below.
+Create the export outside the repository in a restricted directory. Prefer the target database's percent-encoded direct connection URL. Supabase direct endpoints use IPv6 unless the project has the IPv4 add-on; when the release host or Docker cannot use that endpoint, use the project's Session pooler URI from the Supabase Connect panel on port `5432`. Do not use transaction mode on port `6543` for backup or migration commands. Set the selected target URL as a temporary PowerShell environment variable, then substitute an absolute restricted backup directory in the commands below.
 
 ```powershell
 $env:SUPABASE_DB_URL = "<paste percent-encoded target connection URL securely>"
@@ -38,7 +38,7 @@ The CLI logical dump excludes Supabase-managed schemas such as `auth` and `stora
 
 ## 3. Apply migrations
 
-Use the target's direct database URL so the repository never has to relink from Preview to Production.
+Use the same fixed-target direct or Session pooler URL that passed the export checkpoint so the repository never has to relink from Preview to Production.
 
 ```powershell
 npx supabase migration list --db-url "$env:SUPABASE_DB_URL"

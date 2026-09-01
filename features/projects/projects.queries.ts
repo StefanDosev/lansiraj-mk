@@ -1,5 +1,6 @@
 import "server-only";
 
+import { requireReviewerAccess } from "@/features/auth/auth.queries";
 import { createClient } from "@/lib/supabase/server";
 import type { CurrentProject, ProjectAssignmentSummary, ProjectScopeAssessment } from "@/features/projects/projects.types";
 
@@ -118,9 +119,8 @@ export async function getCurrentProject(): Promise<CurrentProject> {
 }
 
 export async function getProjectForReview(projectId: string): Promise<CurrentProject | null> {
+  await requireReviewerAccess();
   const supabase = await createClient();
-  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claimsData?.claims?.sub) throw new Error("Authenticated reviewer required.");
 
   const { data, error } = await supabase
     .from("projects")
