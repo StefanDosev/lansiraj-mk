@@ -66,6 +66,16 @@ async function expectKeyboardOrder(page: Page, locators: Locator[]) {
   }
 }
 
+test("Turnstile initializes after repeated sign-in mounts", async ({ page }) => {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await page.goto("/auth/sign-in");
+    await expect(page.getByRole("button", { name: "Испрати magic link" })).toBeEnabled({
+      timeout: 15_000,
+    });
+    await page.goto("/");
+  }
+});
+
 test("uninvited address receives a neutral response without email or Auth user creation", async ({ page, request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "One deterministic local email flow is sufficient.");
 

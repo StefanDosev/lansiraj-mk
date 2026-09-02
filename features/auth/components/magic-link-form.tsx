@@ -18,10 +18,14 @@ declare global {
   interface Window {
     turnstile?: {
       render: (container: HTMLElement, options: TurnstileOptions) => string;
+      remove: (widgetId: string) => void;
       reset: (widgetId: string) => void;
     };
   }
 }
+
+const TURNSTILE_READY_RETRY_MS = 250;
+const TURNSTILE_READY_ATTEMPTS = 40;
 
 export function MagicLinkForm() {
   const [state, action, pending] = useActionState(requestMagicLink, initialMagicLinkState);
@@ -49,6 +53,44 @@ export function MagicLinkForm() {
       theme: "light",
     });
   }, [siteKey]);
+
+  useEffect(() => {
+    if (!siteKey) return;
+
+    let cancelled = false;
+    let attempts = 0;
+    let retryId: number | undefined;
+
+    const renderWhenReady = () => {
+      if (cancelled || widgetIdRef.current) return;
+
+      if (challengeRef.current && window.turnstile) {
+        renderChallenge();
+        return;
+      }
+
+      attempts += 1;
+      if (attempts >= TURNSTILE_READY_ATTEMPTS) {
+        setChallengeFailed(true);
+        return;
+      }
+
+      retryId = window.setTimeout(renderWhenReady, TURNSTILE_READY_RETRY_MS);
+    };
+
+    renderWhenReady();
+
+    return () => {
+      cancelled = true;
+      if (retryId !== undefined) window.clearTimeout(retryId);
+
+      const widgetId = widgetIdRef.current;
+      if (widgetId && window.turnstile) {
+        window.turnstile.remove(widgetId);
+        widgetIdRef.current = null;
+      }
+    };
+  }, [renderChallenge, siteKey]);
 
   useEffect(() => {
     if (state.status === "idle" || !widgetIdRef.current || !window.turnstile) return;
@@ -95,7 +137,10 @@ export function MagicLinkForm() {
             id="cloudflare-turnstile"
             src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
             strategy="afterInteractive"
-            onReady={renderChallenge}
+            onReady={() => {
+              setChallengeFailed(false);
+              renderChallenge();
+            }}
             onError={() => setChallengeFailed(true)}
           />
         </>
