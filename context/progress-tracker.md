@@ -6,9 +6,9 @@ Update this file after every completed feature. An agent reading it must know wh
 
 **Phase:** 6 — Beta Hardening
 **Last completed:** Production Auth repair and live magic-link verification from exact commit `a81c07b`
-**In progress:** Phase 26 founder dogfood preparation; the Preview password-signup denial gate remains explicitly deferred
-**Next:** Run the complete founder learner/reviewer journey in Production and record product confusion, review time, revisions, and scope pressure
-**Blockers:** None for the Production release
+**In progress:** Phase 26 founder dogfood provisioning; the reviewer, first active cohort, learner Auth principal, and pending invite are ready in Production
+**Next:** Retry the learner invitation email after the Production mail window reopens, then verify invite acceptance, onboarding, and first-project creation
+**Blockers:** Supabase's default Production mailer is temporarily at its 2-email-per-hour limit; no code, database, or deployment blocker remains
 
 ## Progress
 
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-09-05 — Began Phase 26 founder dogfood provisioning in Production. The confirmed founder identity is now the first trusted reviewer/admin, one active `Основачки dogfood 2026` cohort exists, and the learner identity is pre-provisioned as an unconfirmed Auth user with exactly one pending 14-day cohort invite and no premature membership. The database bootstrap was applied through one short, idempotent query and independently read back. Supabase refused the outbound invitation email with `over_email_send_rate_limit`: the default mailer is configured for two emails per hour, and successful sends at 18:30 and 18:38 CEST consumed both slots. Retry the learner invitation after the first slot reopens shortly after 19:30 CEST; the learner must confirm through the Production link before invite acceptance creates the active membership.
 
 - 2026-09-05 — Repaired the live Production magic-link path after proving Vercel's Production `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` still targeted the Preview Supabase project. Replaced the Production site URL, Supabase URL, and publishable key as browser-safe Vercel Config variables while leaving all Preview values untouched, then forced a clean Production build from exact commit `a81c07b`. Ready deployment `dpl_6TLLf4Gvgpr7RBLv1545y1VS4U4x` is assigned to both stable aliases. A fresh live Turnstile challenge succeeded, the sign-in POST returned HTTP 200 with no Vercel error logs, and Production Supabase ref `tsbrhpyhseqhsdroszqu` recorded both a successful `/otp` request and `mail.send` magic-link event at the test timestamp. Preview ref `tutadgptycduscmezbeg` recorded zero matching events in the same window. The delayed Turnstile initialization regression remains covered by the component cleanup/retry implementation and repeated-mount browser test already registered in `ui-registry.md`.
 
