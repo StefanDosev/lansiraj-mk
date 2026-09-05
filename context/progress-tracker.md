@@ -5,7 +5,7 @@ Update this file after every completed feature. An agent reading it must know wh
 ## Current Status
 
 **Phase:** 6 — Beta Hardening
-**Last completed:** Phase 25 Production release from exact green commit `fc02e4f4b33659afc153a368bfa88a22841b2d4f`
+**Last completed:** Production Auth repair and live magic-link verification from exact commit `a81c07b`
 **In progress:** Phase 26 founder dogfood preparation; the Preview password-signup denial gate remains explicitly deferred
 **Next:** Run the complete founder learner/reviewer journey in Production and record product confusion, review time, revisions, and scope pressure
 **Blockers:** None for the Production release
@@ -73,6 +73,8 @@ Update this file after every completed feature. An agent reading it must know wh
 - 2026-08-03 — Submitted evidence is immutable; review and unlock occur through controlled database functions.
 
 ## Notes
+
+- 2026-09-05 — Repaired the live Production magic-link path after proving Vercel's Production `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` still targeted the Preview Supabase project. Replaced the Production site URL, Supabase URL, and publishable key as browser-safe Vercel Config variables while leaving all Preview values untouched, then forced a clean Production build from exact commit `a81c07b`. Ready deployment `dpl_6TLLf4Gvgpr7RBLv1545y1VS4U4x` is assigned to both stable aliases. A fresh live Turnstile challenge succeeded, the sign-in POST returned HTTP 200 with no Vercel error logs, and Production Supabase ref `tsbrhpyhseqhsdroszqu` recorded both a successful `/otp` request and `mail.send` magic-link event at the test timestamp. Preview ref `tutadgptycduscmezbeg` recorded zero matching events in the same window. The delayed Turnstile initialization regression remains covered by the component cleanup/retry implementation and repeated-mount browser test already registered in `ui-registry.md`.
 
 - 2026-09-01 — Completed the Phase 25 Production release from exact GitHub-green commit `fc02e4f4b33659afc153a368bfa88a22841b2d4f`; CI run `33496945052` passed both `verify` and the dependent database/RLS, Server Action integration, and production-browser `release` job. Vercel built Ready deployment `dpl_Dz9rms8M6yQecAu3jt6mNxFR2gsn` at `https://lansiraj-4lqn6siar-stefandosevs-projects.vercel.app` and assigned the Production alias `https://lansiraj-stefandosevs-projects.vercel.app`. Public, privacy, and sign-in routes return HTTP 200; anonymous `/admin` and `/app` return 307 to sign-in. A fresh Chrome session confirmed the distinct Production Turnstile widget completes non-interactively, enables magic-link submission, and emits no alert or console error. The final bounded 200-entry deployment-log review found zero warnings, errors, fatal entries, HTTP 5xx responses, or reviewer permission-denied signatures. The prior deployment remains the documented rollback target, no founder dogfood data was created, and the explicitly deferred Preview password-signup denial gate was not silently reclassified as passed.
 
