@@ -8,7 +8,7 @@ export function BrandSignature({ inverse = false }: BrandSignatureProps) {
   return (
     <Link
       href="/"
-      className={`font-display text-sm font-semibold tracking-tight ${
+      className={`inline-flex min-h-11 items-center font-display text-sm font-semibold tracking-tight ${
         inverse ? "text-white" : "text-ink"
       }`}
       aria-label="Лансирај — почетна страница"

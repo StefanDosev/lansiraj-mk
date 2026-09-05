@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -62,6 +62,111 @@ export type Database = {
             columns: ["assignment_id"]
             isOneToOne: false
             referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_events: {
+        Row: {
+          actor_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          project_id: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          project_id: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_draft_links: {
+        Row: {
+          created_at: string
+          draft_id: string
+          id: string
+          label: string
+          link_type: string
+          position: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          draft_id: string
+          id?: string
+          label: string
+          link_type: string
+          position: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          draft_id?: string
+          id?: string
+          label?: string
+          link_type?: string
+          position?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_draft_links_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "assignment_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_drafts: {
+        Row: {
+          created_at: string
+          evidence_text: string
+          id: string
+          project_assignment_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_drafts_project_assignment_id_fkey"
+            columns: ["project_assignment_id"]
+            isOneToOne: true
+            referencedRelation: "project_assignments"
             referencedColumns: ["id"]
           },
         ]
@@ -288,18 +393,396 @@ export type Database = {
         }
         Relationships: []
       }
+      project_assignments: {
+        Row: {
+          approved_at: string | null
+          assignment_id: string
+          available_at: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          project_id: string
+          state: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          assignment_id: string
+          available_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          project_id: string
+          state: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          assignment_id?: string
+          available_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          project_id?: string
+          state?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_assignments_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_scope_assessments: {
+        Row: {
+          created_at: string
+          note: string | null
+          project_id: string
+          readiness: string
+          reviewed_at: string
+          reviewed_by: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          project_id: string
+          readiness: string
+          reviewed_at?: string
+          reviewed_by: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          project_id?: string
+          readiness?: string
+          reviewed_at?: string
+          reviewed_by?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_scope_assessments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          cohort_id: string
+          core_action: string
+          created_at: string
+          curriculum_version: string | null
+          id: string
+          live_url: string | null
+          non_features: string[]
+          owner_id: string
+          problem_statement: string
+          status: string
+          target_launch_date: string
+          target_user: string
+          title: string
+          updated_at: string
+          weekly_hours: number
+        }
+        Insert: {
+          cohort_id: string
+          core_action: string
+          created_at?: string
+          curriculum_version?: string | null
+          id?: string
+          live_url?: string | null
+          non_features: string[]
+          owner_id: string
+          problem_statement: string
+          status?: string
+          target_launch_date: string
+          target_user: string
+          title: string
+          updated_at?: string
+          weekly_hours: number
+        }
+        Update: {
+          cohort_id?: string
+          core_action?: string
+          created_at?: string
+          curriculum_version?: string | null
+          id?: string
+          live_url?: string | null
+          non_features?: string[]
+          owner_id?: string
+          problem_statement?: string
+          status?: string
+          target_launch_date?: string
+          target_user?: string
+          title?: string
+          updated_at?: string
+          weekly_hours?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_criteria: {
+        Row: {
+          acceptance_criterion_id: string
+          created_at: string
+          id: string
+          note: string | null
+          outcome: string
+          review_id: string
+        }
+        Insert: {
+          acceptance_criterion_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          outcome: string
+          review_id: string
+        }
+        Update: {
+          acceptance_criterion_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          outcome?: string
+          review_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_criteria_acceptance_criterion_id_fkey"
+            columns: ["acceptance_criterion_id"]
+            isOneToOne: false
+            referencedRelation: "acceptance_criteria"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_criteria_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          created_at: string
+          decision: string
+          id: string
+          priority_correction: string | null
+          reviewer_id: string
+          submission_id: string
+          summary: string
+        }
+        Insert: {
+          created_at?: string
+          decision: string
+          id?: string
+          priority_correction?: string | null
+          reviewer_id: string
+          submission_id: string
+          summary: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          id?: string
+          priority_correction?: string | null
+          reviewer_id?: string
+          submission_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_links: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          link_type: string
+          position: number
+          submission_id: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          link_type: string
+          position: number
+          submission_id: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          link_type?: string
+          position?: number
+          submission_id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_links_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          evidence_text: string
+          id: string
+          project_assignment_id: string
+          reviewed_at: string | null
+          status: string
+          submitted_at: string
+          supersedes_submission_id: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          evidence_text: string
+          id?: string
+          project_assignment_id: string
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string
+          supersedes_submission_id?: string | null
+          version: number
+        }
+        Update: {
+          created_at?: string
+          evidence_text?: string
+          id?: string
+          project_assignment_id?: string
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string
+          supersedes_submission_id?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_project_assignment_id_fkey"
+            columns: ["project_assignment_id"]
+            isOneToOne: false
+            referencedRelation: "project_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_supersedes_submission_id_fkey"
+            columns: ["supersedes_submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       accept_cohort_invite: { Args: never; Returns: string }
+      assess_project_scope: {
+        Args: { p_note: string; p_project_id: string; p_readiness: string }
+        Returns: undefined
+      }
+      complete_onboarding: {
+        Args: {
+          p_core_action: string
+          p_display_name: string
+          p_non_features: string[]
+          p_problem_statement: string
+          p_project_title: string
+          p_target_launch_date: string
+          p_target_user: string
+          p_weekly_hours: number
+        }
+        Returns: string
+      }
       get_access_state: {
         Args: never
         Returns: {
           has_active_membership: boolean
           is_reviewer: boolean
           onboarding_completed: boolean
+        }[]
+      }
+      save_assignment_draft: {
+        Args: {
+          p_evidence_text: string
+          p_expected_updated_at?: string
+          p_links: Json
+          p_project_assignment_id: string
+        }
+        Returns: {
+          draft_id: string
+          updated_at: string
+        }[]
+      }
+      review_submission: {
+        Args: {
+          p_criteria: Json
+          p_decision: string
+          p_priority_correction: string
+          p_submission_id: string
+          p_summary: string
+        }
+        Returns: {
+          decision: string
+          review_id: string
+          reviewed_at: string
+        }[]
+      }
+      start_project: { Args: never; Returns: string }
+      submit_assignment: {
+        Args: {
+          p_expected_draft_updated_at: string
+          p_project_assignment_id: string
+        }
+        Returns: {
+          submission_id: string
+          submitted_at: string
+          version: number
         }[]
       }
     }
@@ -437,4 +920,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

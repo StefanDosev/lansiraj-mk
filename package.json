@@ -14,18 +14,25 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:database": "supabase test db",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
     "test:e2e": "playwright test",
+    "test:e2e:release:run": "playwright test --config=playwright.release.config.ts --workers=1",
+    "test:e2e:release": "npm run test:e2e:release:run",
+    "test:release": "npm run check && npm run test:unit && npm run test:database && npm run test:integration && npm run test:e2e:release:run",
+    "hosted-auth": "node scripts/hosted-auth-config.mjs",
     "check": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.5.7",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.111.0",
+    "gsap": "^3.15.0",
     "lucide-react": "^1.28.0",
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.83.0",
+    "react-markdown": "10.1.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
